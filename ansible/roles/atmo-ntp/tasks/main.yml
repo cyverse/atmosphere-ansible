@@ -1,0 +1,38 @@
+# tasks file for ntp
+#- include: centos5-setup.yml
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "../vars/{{ ansible_distribution }}.yml"
+    - "../vars/{{ ansible_os_family }}.yml"
+    
+- name: install ntp package
+  action: >
+    {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
+
+- name: verify that ntp is installed
+  stat: path=/etc/ntp.conf
+  register: ntp_installed
+
+- name: update system date manually
+  shell: ntpdate 1.us.pool.ntp.org
+  when: ntp_installed.stat.exists == False
+
+# Only run if on a hardware system. i.e. non-vm
+#- name: update hardware clock manually
+#  shell: hwclock --systohc
+#  when: ntp_installed.stat.exists == False
+
+- name: configure ntp
+  template: src={{ item }} dest={{ NTP_CONFIG }}
+  with_first_found:
+    - "../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.ntp.conf.j2"
+    - "../templates/{{ ansible_distribution }}.ntp.conf.j2"
+    - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
+
+- name: start ntp service
+  action: >
+    service name={{ NTP_SERVICE }} state=started enabled=yes

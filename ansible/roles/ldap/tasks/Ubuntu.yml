@@ -1,0 +1,30 @@
+- name: template common-session
+  template: src=Ubuntu.common-session.j2 dest=/etc/pam.d/common-session backup=yes
+  tags: common-session
+
+- name: template nsswitch.conf
+  template: src=Ubuntu.nsswitch.conf.j2 dest=/etc/nsswitch.conf backup=yes
+  tags: nsswitch-conf
+
+- name: template ldap.conf
+  template: src=Ubuntu.ldap.conf.j2 dest={{ LDAP_CONF_PATH }} backup=yes
+  tags: ldap-conf
+
+- name: template nslcd.conf
+  template: src=Ubuntu.nslcd.conf.j2 dest=/etc/nslcd.conf backup=yes
+  tags: nslcd-conf
+
+- name: restart nslcd
+  service: name=nslcd state=restarted enabled=yes
+  tags: restart-nslcd
+
+- name: restart dbus
+  service: name=dbus state=restarted enabled=yes
+  tags: restart-dbus
+
+- name: restart services again just to be safe
+  shell: service {{ item }} restart
+  with_items:
+    - nscd
+    - nslcd
+    - dbus

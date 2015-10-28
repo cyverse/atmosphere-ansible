@@ -1,0 +1,15 @@
+POST_SCRIPT_DIR: /etc/atmo/post-scripts.d
+POST_SCRIPT_LOG_DIR: /var/log/atmo/post-scripts
+POST_SCRIPT_LOG_STDOUT: "{{ POST_SCRIPT_LOG_DIR }}/stdout" 
+POST_SCRIPT_LOG_STDERR: "{{ POST_SCRIPT_LOG_DIR }}/stderr"
+
+POST_MAKE_DIR: 
+  - "{{ POST_SCRIPT_DIR }}"
+  - "{{ POST_SCRIPT_LOG_DIR }}"
+
+
+POST_SCRIPT_LOGS: 
+  - "{{ POST_SCRIPT_LOG_STDOUT }}"
+  - "{{ POST_SCRIPT_LOG_STDERR }}"
+
+POST_SCRIPT_DIR_RUN: "/etc/atmo/post-scripts.d/*"

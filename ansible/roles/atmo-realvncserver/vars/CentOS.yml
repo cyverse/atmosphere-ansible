@@ -1,0 +1,22 @@
+---
+
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/Xorg
+  packages:
+    - xorg-x11-xauth
+    - /tmp/VNC-Server-5.2.3-Linux-x64.rpm
+  type: name
+  extra_args: disable_gpg_check=no
+  files_to_add:
+    - { FROM: VNC-Server-5.2.3-Linux-x64.rpm, TO: /tmp/VNC-Server-5.2.3-Linux-x64.rpm }
+    - { FROM: vncserver.custom-cent, TO: /etc/pam.d/vncserver.custom }
+    - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
+    - { FROM: config.custom, TO: /etc/vnc/config.custom }
+    #- { FROM: , TO:  }
+  files_to_remove:
+    - { PATH: /tmp/.X1-lock, STATE: absent }
+    - { PATH: /tmp/.X11-unix, STATE: absent }
+    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.deb, STATE: absent }
+  dirs_to_make:
+    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt" }

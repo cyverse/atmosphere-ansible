@@ -1,0 +1,22 @@
+- set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- set_fact:
+    home_mounted: true
+  when: item.mount == '/home'
+  with_items: ansible_mounts
+
+- name: remove mount /home
+  mount: name=/home src={{ item }} fstype={{ MOUNTTYPE }} state=absent
+  with_items:
+    - /dev/sda2
+    - /dev/xvda2
+  ignore_errors: yes
+  when: home_mounted is not defined
+  tags: mount_home
+
+- name: mount /home
+  mount: name={{ MOUNTNAME }} src=/dev/{{ MOUNTSOURCE }} fstype={{ MOUNTTYPE }} state=mounted
+  when: (ansible_devices.{{ MOUNTSOURCE }} is defined) and (home_mounted is not defined)
+  tags: mount_home
+

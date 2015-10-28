@@ -1,0 +1,28 @@
+- name: uninstall sssd
+  yum: name={{ item }} state=absent
+  with_items:
+    - sssd
+
+- name: run ldap authentication command
+  shell: "{{ LDAP_AUTHCONFIG }}"
+  tags: authconfig
+
+- name: template ldap.conf
+  template: src={{ item }} dest={{ LDAP_CONF_PATH }} backup=yes
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.ldap.conf.j2"
+    - "{{ ansible_distribution }}.ldap.conf.j2"
+    - "{{ ansible_os_family }}.ldap.conf.j2"
+  tags: ldap
+
+- name: template system-auth
+  template: src={{ item }} dest=/etc/pam.d/system-auth
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.system-auth.j2"
+    - "{{ ansible_distribution }}.system-auth.j2"
+    - "{{ ansible_os_family }}.system-auth.j2"
+  tags: system-auth
+
+- name: template nsswitch.conf
+  template: src=CentOS-5.nsswitch.conf.j2 dest=/etc/nsswitch.conf backup=yes
+  tags: nsswitch-conf

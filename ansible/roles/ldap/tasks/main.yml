@@ -1,0 +1,44 @@
+# - include: centos5-setup.yml
+#   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
+  tags: python
+
+# tasks to install LDAP
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "defaults.yml"
+  tags: vars
+    
+- name: install ldap packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state={{ LDAP_PACKAGES.state }}
+  with_items: LDAP_PACKAGES.packages
+  tags: install
+
+# Include OS specific tasks
+- include: CentOS-5.yml
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
+  tags: centos-5-specific-tasks
+
+- include: CentOS.yml
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version > "5"
+  tags: centos-specific-tasks
+
+- include: Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+  tags: ubuntu-specific-tasks
+
+- name: loop until ldap connection is made, fails if it can't
+  command: id {{ TEST_LDAP_USER }}
+  register: result
+  until: result.rc == 0 
+  retries: 6
+  delay: 10
+  tags: verify-ldap

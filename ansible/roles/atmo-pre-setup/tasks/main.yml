@@ -1,0 +1,15 @@
+- include: Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+  tags: ubuntu-specific-tasks
+
+- name: apt-get update
+  shell: apt-get update &> /dev/null
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: yes
+  tags: update
+
+- name: yum check-update
+  shell: yum check-update &> /dev/null
+  when: ansible_distribution == "CentOS"
+  ignore_errors: yes
+  tags: update

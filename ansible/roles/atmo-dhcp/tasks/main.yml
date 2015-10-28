@@ -1,0 +1,36 @@
+# tasks file for dhcp
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
+  tags: python
+
+- name: atmo-dhcp - gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "../vars/{{ ansible_distribution }}.yml"
+    - "../vars/{{ ansible_os_family }}.yml"
+
+- name: atmo-dhcp - install dig
+  action: >
+      {{ ansible_pkg_mgr }} name={{ DIG_PACKAGE.name }} state={{ DIG_PACKAGE.state }}
+  tags: install-dig
+
+- name: atmo-dhcp - install dhcp
+  action: >
+      {{ ansible_pkg_mgr }} name={{ DHCP_PACKAGE.name }} state={{ DHCP_PACKAGE.state }}
+  tags: install-dhcp
+
+- name: atmo-dhcp - create atmo dhcp log file
+  shell: mkdir -p /var/log/atmo && touch /var/log/atmo/dhcp_hostname.log
+  
+- name: atmo-dhcp - change atmo dhcp log file permissions
+  file: path=/var/log/atmo/dhcp_hostname.log state=touch mode=0744
+
+- name: atmo-dhcp - move over dhcp script
+  copy: src=hostname-exit-hook.sh dest={{ DHCP_DESTINATION }} mode=0755
+  tags: copy-dhcp 
+
+- name: atmo-dhcp - manually execute hostname update script
+  shell: "{{ DHCP_DESTINATION }}"
+  tags: set-hostname
