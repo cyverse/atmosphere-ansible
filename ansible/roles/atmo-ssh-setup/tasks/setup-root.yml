@@ -1,0 +1,13 @@
+# This file assumes SSHKEYS and use_remote_user
+
+- name: remove the standard cloud disable command
+  lineinfile: dest=/root/.ssh/authorized_keys state=absent regexp="command\="
+  become: true
+  remote_user: "{{ use_remote_user }}"
+
+- name: add ssh keys to authorzied_keys
+  authorized_key: user=root key="{{ item }}" state=present
+  become: true
+  remote_user: "{{ use_remote_user }}"
+  with_items:
+    SSHKEYS
