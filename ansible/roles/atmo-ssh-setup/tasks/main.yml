@@ -1,0 +1,72 @@
+- name: test default ansible connection
+  local_action: shell ssh -p {{ ansible_ssh_port }} {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "echo hello"
+  register: default_remote_user
+  ignore_errors: yes
+
+###
+# CENTOS SETUP
+###
+- name: test centos connection
+  local_action: shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} "echo hello"
+  register: centos_remote_user
+  ignore_errors: yes
+  when: default_remote_user|failed
+
+# note: success is apparently not a complete condition, must also check for skipped state
+- name: register use_remote_user = centos
+  set_fact: use_remote_user=centos
+  when: centos_remote_user is not skipped and centos_remote_user|success
+
+- include: setup-root.yml
+  when: centos_remote_user is not skipped and centos_remote_user|success
+
+###
+# UBUNTU SETUP
+###
+- name: test ubuntu connection
+  local_action: shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} "echo hello"
+  register: ubuntu_remote_user
+  ignore_errors: yes
+  when: default_remote_user|failed and centos_remote_user|failed
+
+# note: success is apparently not a complete condition, must also check for skipped state
+- name: register use_remote_user = ubuntu
+  set_fact: use_remote_user=ubuntu
+  when: ubuntu_remote_user is not skipped and ubuntu_remote_user|success
+
+- include: setup-root.yml
+  when: ubuntu_remote_user is not skipped and ubuntu_remote_user|success
+
+###
+# WRAP-UP CLOUD USER FIX
+###
+- name: root should be able to access at this point. perform a simple ping
+  ping:
+
+# this may be needed when default_remote_user succeeded
+- name: make sure ssh directory exists
+  file: path=/root/.ssh/ state=directory mode="0700"
+  when: default_remote_user|success
+
+# this is duplicated code from that of the setup-root, but this needs to be run if root succeeded initially
+- name: add ssh keys to authorzied_keys
+  authorized_key: user=root key="{{ item }}" state=present
+  with_items:
+    SSHKEYS
+  when: default_remote_user|success
+
+# at this point, we could disable cloud user, but for now, let's leave for now.
+
+###
+# OTHER SSH CONFIG CHANGES
+##
+- name: /etc/ssh/sshd_config changes
+  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp}}" line="{{ item.line }}"
+  with_items:
+    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
+    - { regexp: '^UseDNS', line: 'UseDNS no'}
+
+- name: Append AllowGroups Line to /etc/ssh/sshd_config 
+  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
+  notify:
+  - restart ssh
