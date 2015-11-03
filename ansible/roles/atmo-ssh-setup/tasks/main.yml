@@ -55,7 +55,7 @@
     SSHKEYS
   when: default_remote_user|success
 
-# at this point, we could disable cloud user, but for now, let's leave for now.
+# at this point, we could disable cloud user, but for now, let's leave in.
 
 ###
 # OTHER SSH CONFIG CHANGES

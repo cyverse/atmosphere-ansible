@@ -1,5 +1,10 @@
 # This file assumes SSHKEYS and use_remote_user
 
+- name: task to clear the tty from suoers
+  raw: sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
+  become: true
+  remote_user: "{{ use_remote_user }}"
+
 - name: remove the standard cloud disable command
   lineinfile: dest=/root/.ssh/authorized_keys state=absent regexp="command\="
   become: true
