@@ -1,5 +1,6 @@
+# TODO NOTE: when moving to ansible 2.0 we should use ansible_host, ansible_port, and ansible_user
 - name: test default ansible connection
-  local_action: shell ssh -p {{ ansible_ssh_port }} {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "echo hello"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} {{ ansible_ssh_user }}@{{ ansible_ssh_host }} 'echo hello world test' | grep 'hello world test'"
   register: default_remote_user
   ignore_errors: yes
 
@@ -7,7 +8,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} "echo hello"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} 'echo hello'"
   register: centos_remote_user
   ignore_errors: yes
   when: default_remote_user|failed
@@ -15,16 +16,16 @@
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = centos
   set_fact: use_remote_user=centos
-  when: centos_remote_user is not skipped and centos_remote_user|success
+  when: not centos_remote_user|skipped and centos_remote_user|success
 
 - include: setup-root.yml
-  when: centos_remote_user is not skipped and centos_remote_user|success
+  when: not centos_remote_user|skipped and centos_remote_user|success
 
 ###
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} "echo hello"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} 'echo hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   when: default_remote_user|failed and centos_remote_user|failed
@@ -32,10 +33,10 @@
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = ubuntu
   set_fact: use_remote_user=ubuntu
-  when: ubuntu_remote_user is not skipped and ubuntu_remote_user|success
+  when: not ubuntu_remote_user|skipped and ubuntu_remote_user|success
 
 - include: setup-root.yml
-  when: ubuntu_remote_user is not skipped and ubuntu_remote_user|success
+  when: not ubuntu_remote_user|skipped and ubuntu_remote_user|success
 
 ###
 # WRAP-UP CLOUD USER FIX
