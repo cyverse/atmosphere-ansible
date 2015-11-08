@@ -58,3 +58,7 @@ target/
 \#*\#
 *.swp
 single_host
+
+# ansible specific files
+ansible/hosts
+ansible/group_vars
