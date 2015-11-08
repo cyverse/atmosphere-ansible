@@ -23,9 +23,3 @@
 
 - name: make sure ssh directory exists
   file: path=/root/.ssh/ state=directory mode="0700"
-
-# look in the vars directory for the keys
-- name: add ssh keys to authorzied_keys
-  authorized_key: user=root key="{{ item }}" state=present
-  with_items:
-    sshkeys
