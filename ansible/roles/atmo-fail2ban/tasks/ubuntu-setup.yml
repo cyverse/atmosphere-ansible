@@ -3,7 +3,7 @@
   tags: uninstall-denyhosts
 
 - name: install fail2ban for Ubuntu
-  apt: name=fail2ban state=present
+  apt: name=fail2ban state=present force=yes
   tags: install-fail2ban
 
 - name: configure fail2ban local jails
