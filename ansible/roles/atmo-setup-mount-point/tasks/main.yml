@@ -15,6 +15,13 @@
   when: home_mounted is not defined
   tags: mount_home
 
+# if variable exists, then attempt unmount to these items first
+- name: if exists, remove additional mounts
+  mount: name="{{ item.name }}" src="{{ item.source }}" fstype="{{ item.fstype }}" state=unmounted
+  with_items:
+    ADDITIONAL_UNMOUNTS
+  when: ADDITIONAL_UNMOUNTS is defined
+
 - name: mount /home
   mount: name={{ MOUNTNAME }} src=/dev/{{ MOUNTSOURCE }} fstype={{ MOUNTTYPE }} state=mounted
   when: (ansible_devices.{{ MOUNTSOURCE }} is defined) and (home_mounted is not defined)
