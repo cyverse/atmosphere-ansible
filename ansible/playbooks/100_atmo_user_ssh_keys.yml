@@ -1,0 +1,5 @@
+---
+- name: Playbook to add users personal ssh keys
+  hosts: atmosphere
+  roles:
+      - atmo-user-ssh-keys
