@@ -49,7 +49,7 @@ done
 
 # attempt external ip resolution through dyndns
 if [[ -z $hostname_value ]]; then
-  myip=$(curl -s 'http://checkip.dyndns.org' | sed 's/.*Current IP Address: \([0-9\.]*\).*/\1/g')
+  myip=$(timeout -s SIGTERM 10 curl -s 'http://checkip.dyndns.org' | sed 's/.*Current IP Address: \([0-9\.]*\).*/\1/g')
   if [ $? -eq 0 -a -n "$myip" ]; then
     echo $(date +"%m%d%y %H:%M:%S") "	attempting to set using dyndns (found ip = $myip) " >> $LOG
     reverse_lookup $myip
