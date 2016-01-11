@@ -1,8 +1,13 @@
-Atmosphere's Ansible Deployment Setup
-======================================
+Atmosphere's Ansible Instance Deployment Setup
+==============================================
 
-This is Atmosphere's Ansible deploy. It's called from within Atmosphere. See the service.deploy module and our subspace modules.
+This is an extension point for [Atmosphere](https://github.com/iPlantCollaborativeOpenSource/atmosphere). It defines (with Ansible) how Atmosphere's instances deploy within the targeted cloud provider. To look at how Atmosphere utilizes this modules, look at the [`service.deploy.py`](https://github.com/iPlantCollaborativeOpenSource/atmosphere/blob/master/service/deploy.py) and our [subspace](https://github.com/iPlantCollaborativeOpenSource/subspace) module.
+
+Extension Point?
+----------------
+We use this term to denote that an installation of Atmosphere could customize / modify the actions performance when deploy virtual machine instances to a cloud provider by alter the [playbooks](ansible/playbooks) defined here. 
+
 
 # License
 
-See LICENSE file.
+See [LICENSE](LICENSE) file.
