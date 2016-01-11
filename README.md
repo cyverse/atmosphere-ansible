@@ -5,9 +5,9 @@ This is an extension point for [Atmosphere](https://github.com/iPlantCollaborati
 
 Extension Point?
 ----------------
-We use this term to denote that an installation of Atmosphere could customize / modify the actions performance when deploy virtual machine instances to a cloud provider by alter the [playbooks](master/ansible/playbooks) defined here. 
+We use this term to denote that an installation of Atmosphere could customize / modify the actions performance when deploy virtual machine instances to a cloud provider by alter the [playbooks](ansible/playbooks) defined here. 
 
 
 # License
 
-See [LICENSE](master/LICENSE) file.
+See [LICENSE](LICENSE) file.
