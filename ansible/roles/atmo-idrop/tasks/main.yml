@@ -19,6 +19,9 @@
 - name: copy over idrop.desktop to /etc/skel
   copy: src=idrop.desktop dest=/etc/skel/Desktop/idrop.desktop
 
+- name: add atmousername to home directory just in case
+  file: path=/home/{{ ATMOUSERNAME }}/Desktop state=directory
+
 - name: find and replace old idrop.desktop files with new one
   shell: find /home -name "idrop.desktop" -exec cp /etc/skel/Desktop/idrop.desktop {} \;
 
