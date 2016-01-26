@@ -24,8 +24,8 @@ The number prefixing the name of a playbook (example: [`20_atmo_dhcp.yml`](ansib
 ├── 35_iplant_ldap.yml
 ├── 40_atmo_setup_user.yml
 ├── 45_atmo_fail2ban.yml
-├── 50_atmo_idrop.yml
-├── 55_atmo_realvnc.yml
+├── 50_atmo_realvnc.yml
+├── 55_atmo_idrop.yml
 ├── 60_atmo_postbootscripts.yml
 └── 65_atmo_shellinabox.yml
 ```
