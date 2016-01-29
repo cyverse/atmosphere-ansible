@@ -16,6 +16,9 @@
     - fuse-devel.x86_64
     - python
     - python-ldap
+    - unzip
+    - bzip2
+    - vim
 
 - name: Remove old timezone link
   file: dest=/etc/localtime state=absent
