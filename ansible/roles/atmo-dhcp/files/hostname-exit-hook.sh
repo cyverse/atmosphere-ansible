@@ -82,14 +82,4 @@ else
        hostname $hostname_value
     fi
     echo $(date +"%m%d%y %H:%M:%S") "   Hostname has been set to `hostname`" >> $LOG
-    # reset host networking in case OpenStack drops it's IP
-    if [ -e /etc/redhat-release ]; then
-      echo $(date +"%m%d%y %H:%M:%S") "   Host networking for CentOS has been restarted" >> $LOG
-      service network restart
-    else
-      echo $(date +"%m%d%y %H:%M:%S") "   Host networking for Ubuntu has been restarted" >> $LOG
-      service networking restart
-    fi
 fi
-
-exit 0
