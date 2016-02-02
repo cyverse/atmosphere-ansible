@@ -40,6 +40,13 @@
   when: xsession.stat.exists and xterm.stat.exists
   tags: vnc
 
+- name: install the dependencies for vncserver
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
+  with_items: XGUI.vnc_dependencies
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
 - name: copy required files to remote host
   copy: src={{ item.FROM }} dest={{ item.TO }}
   with_items: XGUI.files_to_add

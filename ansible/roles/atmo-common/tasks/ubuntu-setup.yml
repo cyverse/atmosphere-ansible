@@ -1,6 +1,7 @@
 - name: install ubuntu dependencies
   apt: name={{ item }} state=present
   with_items:
+    - libfam0
     - python
     - python-ldap
     - python-software-properties
