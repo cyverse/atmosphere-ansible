@@ -8,6 +8,7 @@ XGUI:
     - libxext-dev 
     - libx11-dev 
     - libc6-dev 
+    - libthunar-vfs-1-2 
     - libc6
  
   packages:
