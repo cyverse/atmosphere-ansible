@@ -1,0 +1,5 @@
+---
+- name: Playbook to install dhcp scripts and copy over dhcp scripts
+  hosts: atmosphere
+  roles:
+    - atmo-hostname

@@ -1,2 +1,6 @@
 ---
-# tasks file for atmo-hostname
+
+- debug: msg="{{ HOSTNAME_PREFIX }}{{ ansible_ssh_host.split('.')[2] }}-{{ ansible_ssh_host.split('.')[3] }}.{{ DOMAINNAME }}"
+
+- name: set atmo vm's hostname
+  hostname: name="{{ HOSTNAME_PREFIX }}{{ ansible_ssh_host.split('.')[2] }}-{{ ansible_ssh_host.split('.')[3] }}.{{ DOMAINNAME }}"
