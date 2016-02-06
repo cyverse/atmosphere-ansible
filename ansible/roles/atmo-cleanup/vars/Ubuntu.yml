@@ -1,0 +1,24 @@
+---
+
+PACKAGE:
+  to_remove:
+    - xscreensaver
+
+PROCESSES:
+  to_kill:
+    - xscreensaver
+
+SERVICES:
+  enabled:
+    - ssh
+    - ufw
+    - ntp
+  disabled:
+    - cups
+    - hplip
+    - iscsi
+    - bluetooth
+    - hidd
+    - isdn
+    - avahi-daemon
+    
