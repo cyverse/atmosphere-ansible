@@ -1,0 +1,36 @@
+# this role expects the following variables:
+# 	ATMOUSERNAME - the username 
+#       GATEONE_LOCAL_PUBKEY_DIR - (optional) the directory to transfer the public key; otherwise, /tmp is used
+#	IMPORTANT_NOTE: the directory must end in a '/'
+#       GATEONE_KEY_NAME - (optional) unix file-compatible key name; otherwise, "username_default" is used
+# Assumption #1: gateone is installed as root and requires root privileges
+# Assumption #2: keys generated will automatically be added as a default key
+# TODO: change this role configure away from root and default locations
+
+- name: ensure the existence of the user directory
+  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh" owner=root group=root mode=0700 state=directory
+
+- name: set key name, if GATEONE_KEY_NAME is defined
+  set_fact: gateone_real_key="{{ GATEONE_KEY_NAME }}"
+  when: GATEONE_KEY_NAME is defined
+
+- name: set key name, if GATEONE_KEY_NAME is not defined
+  set_fact: gateone_real_key="{{ ATMOUSERNAME }}_default"
+  when: GATEONE_KEY_NAME is not defined
+
+- name: check the existence of a given ssh key by name
+  stat: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}"
+  register: go_key
+
+- name: generate the public key
+  command: "/usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f /var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }} -C {{ ATMOUSERNAME }}"
+  when: go_key.stat.exists == False
+
+- name: set the permissions on the private key file
+  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}" mode=0700
+
+- name: add the key name to .default_ids
+  lineinfile: dest="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/.default_ids" line="{{ gateone_real_key }}" create=yes state=present
+
+- name: finally, transfer the public key locally
+  fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes

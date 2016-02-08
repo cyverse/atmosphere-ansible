@@ -1,0 +1,5 @@
+---
+- name: this is the playbook for adding an ssh key to a gateone user
+  hosts: 128.196.172.233
+  roles:
+    - gateone-gen-sshkey
