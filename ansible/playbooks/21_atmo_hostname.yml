@@ -1,5 +1,0 @@
----
-- name: Playbook to set the instance hostname
-  hosts: atmosphere
-  roles:
-    - atmo-hostname
