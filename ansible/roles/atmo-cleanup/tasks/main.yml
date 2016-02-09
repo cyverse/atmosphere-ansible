@@ -1,0 +1,30 @@
+---
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags: os-vars
+
+- name: remove non-required packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=absent
+  with_items: PACKAGE.to_remove
+  tags: remove-packages
+
+- name: kill off non-needed processes
+  shell: pkill {{ item }}
+  with_items: PROCESSES.to_kill
+  tags: kill-procs
+
+- name: ensure that all services are running and enabled
+  service: name={{ item }} state=started enabled=yes
+  with_items: SERVICES.enabled
+  tags: enable-services
+
+- name: disable non-required services
+  service: name={{ item }} state=started enabled=no
+  with_items: SERVICES.disabled
+  failed_when: False
+  tags: disable-services
