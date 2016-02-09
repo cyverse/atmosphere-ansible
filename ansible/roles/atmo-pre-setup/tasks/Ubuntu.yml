@@ -1,0 +1,30 @@
+# for some reason, we found some ubuntu 14.04 boxes that registered x64 as a foreign architecture
+- name: check for x64 foreign architecture
+  shell: dpkg --print-foreign-architectures | grep x64
+  register: x64_arch_exists
+  ignore_errors: yes
+
+- name: if x64 found, remove x64 architecture
+  shell: dpkg --remove-architecture x64
+  when: x64_arch_exists|success
+
+- name: if x64 found, add amd64
+  shell: dpkg --add-architecture amd64
+  when: x64_arch_exists|success
+
+# - wait_for: path=/var/lib/apt/lists/lock state=absent
+  # retries: 6
+  # delay: 10
+
+
+# - command: ps -e | grep -e apt -e adept | grep -v grep
+#   register: apt_lock
+#   until: apt_lock.stdout.find("apt") > -1
+#   retries: 6
+#   delay: 10
+
+# - action: shell ps -e | grep -e apt -e adept | grep -v grep
+#   register: result
+#   until: result.stdout.find("apt") != -1
+#   retries: 5
+#   delay: 10

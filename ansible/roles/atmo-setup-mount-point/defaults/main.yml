@@ -1,0 +1,3 @@
+MOUNTSOURCE: "vdb"
+MOUNTNAME: "/home"
+MOUNTTYPE: "ext3"

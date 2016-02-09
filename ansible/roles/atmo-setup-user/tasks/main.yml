@@ -1,0 +1,63 @@
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
+  tags: python
+
+- name: add core services to sudoers
+  lineinfile:
+    dest=/etc/sudoers
+    backup=yes
+    line="{{ item }}" 
+  with_items: 
+    - '%core-services ALL=(ALL) ALL'  
+    - '%users ALL=(ALL) ALL'  
+
+- name: add user to sudoers
+  lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL)ALL"
+
+- name: start setting up /etc/skel/.bashrc
+  lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
+
+- name: add irods home dir
+  lineinfile: dest=/etc/skel/.bashrc line='export IDS_HOME="/irods/data.iplantc.org/iplant/home/{{ATMOUSERNAME}}"'
+
+- name: add ids_home varaible to skel .bashrc
+  lineinfile: dest=/etc/skel/.bashrc line="alias ids_home='cd $IDS_HOME'"
+
+- name: close setting up /etc/skel/.bashrc
+  lineinfile: dest=/etc/skel/.bashrc line='## End System'
+
+  # tasks file for exit-code
+- name: see if user is already located in /etc/group
+  command: grep {{ ATMOUSERNAME }} /etc/group
+  register: user_not_present
+  ignore_errors: yes
+
+- name: add user to /etc/group if user does not exist
+  lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
+  when: user_not_present.rc == 1
+
+# add user to docker group
+- name: see if user is already located in /etc/group
+  command: grep docker /etc/group
+  register: docker_user_present
+  ignore_errors: yes
+
+- name: add user to docker group in /etc/group if docker group exist
+  lineinfile: dest=/etc/group regexp='^(docker:x:999:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
+  when: docker_user_present.rc == 0
+
+- name: check if the home directory exists yet
+  stat: path="/home/{{ ATMOUSERNAME }}"
+  register: atmouser_home
+
+- name: copy skel files into home directory
+  shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
+  when: not atmouser_home.stat.exists
+
+# This chown will cause errors if /home/ATMOUSERNAME/.gvfs is mounted.  We should add code to manually unmount it if
+# it exists, then chown that user's home. -mgd
+- name: set ownership for user's home
+  file: path="/home/{{ ATMOUSERNAME }}" owner="{{ ATMOUSERNAME }}" group=iplant-everyone mode=0755 recurse=yes
+  ignore_errors: yes
+  tags: chown_users_home

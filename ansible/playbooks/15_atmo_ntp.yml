@@ -1,0 +1,5 @@
+---
+- name: Playbook to install and configure ntp
+  hosts: atmosphere
+  roles:
+    - atmo-ntp

@@ -1,0 +1,25 @@
+- include_vars: "{{ item }}"
+  with_first_found:
+  - "{{ ansible_distribution }}.yml"
+  - "default.yml"
+
+- include: centos5-setup.yml
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6' 
+
+- include: centos6-setup.yml
+  when: ansible_distribution == "CentOS"  and ansible_distribution_major_version == '6' 
+
+- include: centos7-setup.yml
+  when: ansible_distribution == "CentOS"  and ansible_distribution_major_version > '6' 
+
+- include: ubuntu-setup.yml
+  when: ansible_distribution == "Ubuntu"
+
+- name: copy fuse conf file over
+  copy: src=fuse.conf dest=/etc/fuse.conf
+
+- name: change fusermount permissions
+  file: path=/bin/fusermount state=touch mode="u+s,a+rx"
+
+- name: make sure ssh directory exists
+  file: path=/root/.ssh/ state=directory mode="0700"

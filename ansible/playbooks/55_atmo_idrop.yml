@@ -1,0 +1,6 @@
+---
+- name: Playbook to install idrop
+  hosts: atmosphere
+  roles:
+    # Requires ATMOUSERNAME
+    - atmo-idrop

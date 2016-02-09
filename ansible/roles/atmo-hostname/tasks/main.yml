@@ -1,0 +1,16 @@
+---
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags: os-vars
+
+- name: set atmo vm's hostname
+  hostname: name="{{ HOSTNAME_PREFIX }}{{ ansible_ssh_host.split('.')[2] }}-{{ ansible_ssh_host.split('.')[3] }}.{{ DOMAINNAME }}"
+  tags: hostname
+
+- name: remove dhcp hostname exit script
+  file: path={{ DHCP_DESTINATION }} state=absent
+  tags: remove-dhcp-script

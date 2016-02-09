@@ -1,0 +1,7 @@
+NTP_PACKAGE:
+  name: ntp
+  state: present
+
+NTP_SERVICE: ntpd
+
+NTP_CONFIG: /etc/ntp.conf

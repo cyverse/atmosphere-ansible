@@ -1,0 +1,104 @@
+---
+# tasks to install RealVNC server on non-headless instances
+
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags:
+    - vnc
+    - x
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - vnc
+    - x
+
+# Only install RealVNC Server if VM is NOT headless
+- name: verify that X server exists
+  stat: path={{ XGUI.xsession_path }}
+  register: xsession
+  tags:
+    - vnc
+    - x
+
+- name: verify that xterm session exists
+  stat: path={{ XGUI.xterm_path }}
+  register: xterm 
+  tags:
+    - vnc
+    - x
+
+# Perform install/config if NOT headless
+- name: create needed directories
+  file: path=/etc/vnc/config.d state=directory mode=0755
+  with_items: XGUI.dirs_to_make
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: install the dependencies for vncserver
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
+  with_items: XGUI.vnc_dependencies
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: copy required files to remote host
+  copy: src={{ item.FROM }} dest={{ item.TO }}
+  with_items: XGUI.files_to_add
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: install the package for vncserver
+  action: >
+    {{ ansible_pkg_mgr }} {{ XGUI.type }}={{ item }} state=present "{{ XGUI.extra_args }}"
+  with_items: XGUI.packages
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: remove locks and un-needed files
+  shell: /bin/rm -rf {{ item.PATH }}
+  with_items: XGUI.files_to_remove
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: create needed directories
+  file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
+  with_items: XGUI.dirs_to_make
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: kill all running vncserver sessions
+  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'" || /bin/true
+  with_items:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+  ignore_errors: yes
+  tags: kill-vnc
+
+- name: install license and start vncserver
+  shell: "{{ item }}"
+  with_items:
+    - /usr/bin/vnclicense -add {{ VNCLICENSE }}
+    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver
+  #ignore_errors: yes
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python26
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags:
+    - vnc
+    - x

@@ -1,0 +1,4 @@
+# handlers file for ntp
+- name: restart ntp service
+  action: >
+    service name={{ NTP_SERVICE }} state=restarted

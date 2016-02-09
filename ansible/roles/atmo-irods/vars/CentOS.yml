@@ -1,0 +1,7 @@
+IRODS_EXECUTABLE: irodsFs_v32.rhel5.x86_64
+IRODS_DESTINATION: /usr/local/bin/irodsFs.x86_64
+IRODS_LINK: /usr/local/bin/irodsFs
+
+ICOMMANDS_TAR: icommands_v331.centos.x86_64.tar.bz2
+ICOMMANDS_DESTINATION: /opt
+BIN_PATH: /usr/local/bin

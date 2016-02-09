@@ -1,0 +1,40 @@
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "defaults.yml"
+  tags: vars
+
+- include: centos5-setup.yml
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- name: install shellinabox dependencies
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state={{ SIAB_PACKAGES.state }}
+  with_items: SIAB_PACKAGES.packages
+  tags: install
+
+- name: copy in shellinabox script
+  copy: src="shellinaboxd-install.sh" dest=/root mode=0755
+  tags: copy-script
+
+- name: install shellinabox
+  shell: /root/shellinaboxd-install.sh
+  tags: install-siab
+
+#- name: remove shellinabox script
+#  file: path=/home/{{ ATMOUSERNAME }}/shellinaboxd-install.sh state=absent
+#  tags: remove-script
+
+- name: determine if shellinabox is already running
+  shell: ps aux | grep '{{ SIAB_PS }}' | grep -v grep
+  ignore_errors: yes
+  register: siab_state
+  tags: is-siab-running
+
+- name: launch shellinabox
+  shell: /usr/bin/nohup /usr/local/bin/shellinaboxd -b -t -f beep.wav:/dev/null > /var/log/atmo/shellinaboxd.log 2>&1 &
+  when: siab_state.stdout.find('{{SIAB_PS}}') == -1
+  tags: launch-siab

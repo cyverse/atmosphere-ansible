@@ -1,0 +1,11 @@
+SSHD: sshd
+
+DHCP_PACKAGE:
+  name: dhcp
+  state: present
+
+DIG_PACKAGE:
+  name: bind-utils
+  state: present
+
+DHCP_DESTINATION: /etc/dhclient-exit-hooks

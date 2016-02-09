@@ -1,0 +1,2 @@
+- name: Set python interpreter for centos5
+  set_fact: ansible_python_interpreter="/usr/bin/python"

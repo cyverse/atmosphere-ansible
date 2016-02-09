@@ -1,0 +1,11 @@
+SSHD: ssh
+
+DHCP_PACKAGE:
+  name: isc-dhcp-server
+  state: present
+
+DIG_PACKAGE:
+  name: dnsutils
+  state: present
+
+DHCP_DESTINATION: /etc/dhcp/dhclient-exit-hooks.d/hostname
