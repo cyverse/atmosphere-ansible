@@ -10,36 +10,29 @@
 - name: ensure the existence of the user directory
   file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh" owner=root group=root mode=0700 state=directory
 
-- name: set key name, if GATEONE_KEY_NAME is defined
-  set_fact: gateone_real_key="{{ GATEONE_KEY_NAME }}"
-  when: GATEONE_KEY_NAME is defined
+# - name: set key name, if GATEONE_KEY_NAME is defined
+#   set_fact: gateone_real_key="{{ GATEONE_KEY_NAME }}"
+#   when: GATEONE_KEY_NAME is defined
 
-- name: set key name, if GATEONE_KEY_NAME is not defined
-  set_fact: gateone_real_key="{{ ATMOUSERNAME }}_default"
-  when: GATEONE_KEY_NAME is not defined
+# - name: set key name, if GATEONE_KEY_NAME is not defined
+#   set_fact: gateone_real_key="{{ ATMOUSERNAME }}_default"
+#   when: GATEONE_KEY_NAME is not defined
 
 - name: check the existence of a given ssh key by name
-  stat: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}"
+  stat: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default"
   register: go_key
 
 - name: generate the public key
-  command: "/usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f /var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }} -C {{ ATMOUSERNAME }}"
+  command: "/usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f /var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default -C {{ ATMOUSERNAME }}"
   when: go_key.stat.exists == False
 
 - name: set the permissions on the private key file
-  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}" mode=0700
+  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default" mode=0644
 
 - name: add the key name to .default_ids
-  lineinfile: dest="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/.default_ids" line="{{ gateone_real_key }}" create=yes state=present
+  lineinfile: dest="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/.default_ids" line="{{ ATMOUSERNAME }}_default" create=yes state=present
 
 - name: finally, transfer the public key locally
-  fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
+  fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
 
-- name: copy over pub key to root key
-  copy: src=/tmp/{{ ATMOUSERNAME }}.pub dest=/root/.ssh/{{ ATMOUSERNAME}}_gateone.pub
 
-- name: copy over pub key to users home directory
-  copy: src=/tmp/{{ ATMOUSERNAME }}.pub dest=/home/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME}}_gateone.pub
-
-#- name: delete key from local
-#  local_action: file path=/tmp/{{ ATMOUSERNAME}}.pub state=absent

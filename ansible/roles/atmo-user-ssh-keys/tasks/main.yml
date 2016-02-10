@@ -3,6 +3,15 @@
   become: yes
   when: USERSSHKEYS is defined
 
-- name: Add users ssh keys to authorized_keys2 to home directory of user
+- name: Add users ssh keys to authorized_keys to home directory of user
   authorized_key: user={{ ATMOUSERNAME }} key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=yes path=/home/{{ ATMOUSERNAME }}/.ssh/authorized_keys
   when: USERSSHKEYS is defined
+
+- name: distribute the generated gate one key to the instance
+  authorized_key: >
+    key="{{ lookup('file', '/tmp/{{ ATMOUSERNAME }}_default.pub') }}"
+    state=present
+    user=root
+  ignore_errors: yes
+  tags:
+    - ssh-keys
