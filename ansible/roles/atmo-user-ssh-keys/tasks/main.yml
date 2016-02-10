@@ -7,9 +7,12 @@
   authorized_key: user={{ ATMOUSERNAME }} key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=yes path=/home/{{ ATMOUSERNAME }}/.ssh/authorized_keys
   when: USERSSHKEYS is defined
 
+- name: build ssh private key path
+  set_fact: pk_path="/tmp/{{ ATMOUSERNAME }}_default.pub"
+
 - name: distribute the generated gate one key to the instance
   authorized_key: >
-    key="{{ lookup('file', '/tmp/{{ ATMOUSERNAME }}_default.pub') }}"
+    key="{{ lookup('file', '{{ pk_path }}') }}"
     state=present
     user=root
   ignore_errors: yes
