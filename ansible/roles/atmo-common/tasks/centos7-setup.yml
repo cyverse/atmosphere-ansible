@@ -1,6 +1,7 @@
 - name: install dependencies
   yum: name={{ item }} state=present
   with_items:
+    - libselinux-python
     - zsh
     - tmux
     - screen
@@ -20,6 +21,10 @@
     - bzip2
     - vim
     - qemu-guest-agent
+
+- name: disable SELinux
+  selinux: state=disabled
+  tags: selinux
 
 - name: Remove old timezone link
   file: dest=/etc/localtime state=absent

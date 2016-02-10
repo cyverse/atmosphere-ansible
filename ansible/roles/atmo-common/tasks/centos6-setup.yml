@@ -1,6 +1,7 @@
 - name: install dependencies
   yum: name={{ item }} state=present
   with_items:
+    - libselinux-python
     - zsh
     - screen
     - autoconf
@@ -22,6 +23,10 @@
   yum: name={{ item }} state=present
   with_items:
     - epel-release
+
+- name: disable SELinux
+  selinux: state=disabled
+  tags: selinux
 
 - name: Remove old timezone link
   file: dest=/etc/localtime state=absent
