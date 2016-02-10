@@ -19,6 +19,7 @@
     - unzip
     - bzip2
     - vim
+    - qemu-guest-agent
 
 - name: Remove old timezone link
   file: dest=/etc/localtime state=absent

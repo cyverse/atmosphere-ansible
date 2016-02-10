@@ -16,6 +16,7 @@
     - tcsh
     - zsh
     - mosh
+    - qemu-guest-agent
 
 - name: install ubuntu dependencies
   apt: name={{ item }} state=present

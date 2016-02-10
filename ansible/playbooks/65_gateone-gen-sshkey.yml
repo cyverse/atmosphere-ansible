@@ -4,4 +4,4 @@
   remote_user: jsansible
   sudo: yes
   roles:
-    #- gateone-gen-sshkey
+    - gateone-gen-sshkey

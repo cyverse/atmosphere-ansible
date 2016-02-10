@@ -16,6 +16,7 @@
     - fuse-devel.x86_64
     - python
     - python-ldap
+    - qemu-guest-agent
 
 - name: install dependencies
   yum: name={{ item }} state=present
