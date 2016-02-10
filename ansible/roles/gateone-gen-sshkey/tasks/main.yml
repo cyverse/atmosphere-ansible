@@ -34,3 +34,12 @@
 
 - name: finally, transfer the public key locally
   fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
+
+- name: copy over pub key to root key
+  copy: src=/tmp/{{ ATMOUSERNAME }}.pub dest=/root/.ssh/{{ ATMOUSERNAME}}_gateone.pub
+
+- name: copy over pub key to users home directory
+  copy: src=/tmp/{{ ATMOUSERNAME }}.pub dest=/home/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME}}_gateone.pub
+
+#- name: delete key from local
+#  local_action: file path=/tmp/{{ ATMOUSERNAME}}.pub state=absent
