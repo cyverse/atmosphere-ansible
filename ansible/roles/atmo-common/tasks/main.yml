@@ -25,4 +25,4 @@
   file: path=/root/.ssh/ state=directory mode="0700"
 
 # Fully quoted because of the ': ' on the line
-- lineinfile: "dest=/etc/sudoers state=present line='{{ ATMOUSERNAME }}  ALL = (ALL) NOPASSWD: ALL'"
+- lineinfile: "dest=/etc/sudoers state=present validate='visudo -cf %s' line='{{ ATMOUSERNAME }}  ALL = (ALL) NOPASSWD: ALL'"
