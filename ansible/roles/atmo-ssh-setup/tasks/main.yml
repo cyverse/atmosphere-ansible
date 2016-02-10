@@ -67,7 +67,7 @@
     - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
     - { regexp: '^UseDNS', line: 'UseDNS no'}
 
-- name: Append AllowGroups Line to /etc/ssh/sshd_config 
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
+- name: Append AllowUsers Line to /etc/ssh/sshd_config 
+  lineinfile: dest=/etc/ssh/sshd_config line="AllowUsers root {{ ATMOUSERNAME }}"
   notify:
   - restart ssh
