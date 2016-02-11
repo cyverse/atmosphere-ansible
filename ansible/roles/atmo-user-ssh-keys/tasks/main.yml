@@ -17,6 +17,7 @@
     key='{{ pk_file }}'
     state=present
     user="{{ item }}"
+  when: pk_file is defined
   with_items:
     - root
     - "{{ ATMOUSERNAME }}"

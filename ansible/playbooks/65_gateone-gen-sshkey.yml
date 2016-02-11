@@ -1,7 +1,5 @@
 ---
 - name: this is the playbook for adding an ssh key to a gateone user
-  hosts: gateone-hosts
-  remote_user: jsansible
-  sudo: yes
+  hosts: atmosphere
   roles:
     - gateone-gen-sshkey
