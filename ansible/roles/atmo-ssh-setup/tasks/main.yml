@@ -2,7 +2,7 @@
 - name: test default ansible connection
   local_action: "shell ssh -p {{ ansible_ssh_port }} {{ ansible_ssh_user }}@{{ ansible_ssh_host }} 'echo hello world test' | grep 'hello world test'"
   register: default_remote_user
-  ignore_errors: yes
+  failed_when: False
 
 ###
 # CENTOS SETUP
