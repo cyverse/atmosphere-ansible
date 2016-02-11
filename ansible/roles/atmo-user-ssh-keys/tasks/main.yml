@@ -19,13 +19,12 @@
   with_items:
     - root
     - "{{ ATMOUSERNAME }}"
-  ignore_errors: yes
   tags:
     - ssh-keys
     - debug
 
-- name: remove user key from controller node
-  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
-  tags:
-    - ssh-keys
-    - delete-key
+#- name: remove user key from controller node
+#  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+#  tags:
+#    - ssh-keys
+#    - delete-key
