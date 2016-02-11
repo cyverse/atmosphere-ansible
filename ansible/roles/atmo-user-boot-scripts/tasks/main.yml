@@ -15,4 +15,4 @@
             $SCRIPT 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
         fi
     done
-  ignore_errors: yes
+  failed_when: False

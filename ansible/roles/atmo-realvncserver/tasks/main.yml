@@ -83,7 +83,7 @@
     - 6
     - 7
     - 8
-  ignore_errors: yes
+  failed_when: False
   tags: kill-vnc
 
 - name: install license and start vncserver
@@ -91,7 +91,6 @@
   with_items:
     - /usr/bin/vnclicense -add {{ VNCLICENSE }}
     - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver
-  #ignore_errors: yes
   when: xsession.stat.exists and xterm.stat.exists
   tags: vnc
 
