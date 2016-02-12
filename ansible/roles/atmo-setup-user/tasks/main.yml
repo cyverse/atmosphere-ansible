@@ -13,7 +13,7 @@
     - '%users ALL=(ALL) NOPASSWD: ALL'  
 
 - name: add user to sudoers
-  lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD: ALL"
+  lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
 
 - name: start setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
