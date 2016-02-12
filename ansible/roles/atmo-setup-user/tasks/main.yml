@@ -9,8 +9,8 @@
     backup=yes
     line="{{ item }}" 
   with_items: 
-    - '%core-services ALL=(ALL) ALL'  
-    - '%users ALL=(ALL) ALL'  
+    - '%core-services ALL=(ALL) NOPASSWD: ALL'  
+    - '%users ALL=(ALL) NOPASSWD: ALL'  
 
 - name: add user to sudoers
   lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL)ALL"
