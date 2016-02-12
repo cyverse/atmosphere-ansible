@@ -18,7 +18,6 @@
 
 - name: configure fail2ban local jails
   action: template src=centos7-jail.local.j2 dest=/etc/fail2ban/jail.local mode=0644
-  notify: restart fail2ban centos7
   tags: configure-fail2ban
 
 - name: disable and stop firewalld
