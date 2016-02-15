@@ -8,7 +8,11 @@
     - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "../vars/{{ ansible_distribution }}.yml"
     - "../vars/{{ ansible_os_family }}.yml"
-    
+
+- name: stop ntp service
+  action: >
+    service name={{ NTP_SERVICE }} state=stopped
+
 - name: install ntp package
   action: >
     {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
@@ -16,6 +20,9 @@
 - name: verify that ntp is installed
   stat: path=/etc/ntp.conf
   register: ntp_installed
+
+- name: sync time with hardware clock
+  shell: hwclock -s
 
 - name: update system date manually
   shell: ntpdate 1.us.pool.ntp.org
@@ -35,4 +42,4 @@
 
 - name: start ntp service
   action: >
-    service name={{ NTP_SERVICE }} state=started enabled=yes
+    service name={{ NTP_SERVICE }} state=restarted enabled=yes
