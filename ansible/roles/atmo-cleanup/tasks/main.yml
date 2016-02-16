@@ -16,6 +16,8 @@
 - name: kill off non-needed processes
   shell: pkill {{ item }}
   with_items: PROCESSES.to_kill
+  ignore_errors: yes
+  failed_when: False
   tags: kill-procs
 
 - name: ensure that all services are running and enabled
