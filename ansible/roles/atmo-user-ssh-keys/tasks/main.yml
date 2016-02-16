@@ -1,4 +1,4 @@
-- name: Add users ssh keys to authorized_keys2
-  authorized_key: user=root key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=yes path=/root/.ssh/authorized_keys2
+- name: Add users ssh keys to authorized_keys
+  authorized_key: user="{{ ATMOUSERNAME }}" key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=yes
   become: yes
   when: USERSSHKEYS is defined
