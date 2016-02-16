@@ -11,6 +11,7 @@
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=absent
   with_items: PACKAGE.to_remove
+  failed_when: False
   tags: remove-packages
 
 - name: kill off non-needed processes
