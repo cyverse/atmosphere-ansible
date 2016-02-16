@@ -27,7 +27,7 @@
   when: go_key.stat.exists == False
 
 - name: set the permissions on the private key file
-  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}" mode=0700
+  file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ gateone_real_key }}" mode=0600
 
 - name: add the key name to .default_ids
   lineinfile: dest="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/.default_ids" line="{{ gateone_real_key }}" create=yes state=present
