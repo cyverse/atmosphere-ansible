@@ -23,6 +23,7 @@
 - name: ensure that all services are running and enabled
   service: name={{ item }} state=started enabled=yes
   with_items: SERVICES.enabled
+  failed_when: False
   tags: enable-services
 
 - name: disable non-required services
