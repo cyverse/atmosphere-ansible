@@ -9,13 +9,13 @@
     - "../vars/{{ ansible_distribution }}.yml"
     - "../vars/{{ ansible_os_family }}.yml"
 
-- name: stop ntp service
-  action: >
-    service name={{ NTP_SERVICE }} state=stopped
-
 - name: install ntp package
   action: >
     {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
+
+- name: stop ntp service
+  action: >
+    service name={{ NTP_SERVICE }} state=stopped
 
 - name: verify that ntp is installed
   stat: path=/etc/ntp.conf
