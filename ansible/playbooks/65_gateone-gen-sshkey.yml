@@ -1,5 +1,6 @@
 ---
 - name: this is the playbook for adding an ssh key to a gateone user
-  hosts: atmosphere
+  hosts: 127.0.0.1
+  connection: local
   roles:
     - gateone-gen-sshkey
