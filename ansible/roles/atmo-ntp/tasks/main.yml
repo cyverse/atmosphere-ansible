@@ -23,6 +23,8 @@
 
 - name: sync time with hardware clock
   shell: hwclock -s
+  ignore_errors: yes
+  failed_when: False
 
 - name: update system date manually
   shell: ntpdate 1.us.pool.ntp.org
