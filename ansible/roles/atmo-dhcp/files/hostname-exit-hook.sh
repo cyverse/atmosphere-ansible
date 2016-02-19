@@ -90,9 +90,9 @@ if [[ -z $hostname_value ]]; then
     third_octet=$(echo $myip | cut -f 3 -d '.')
     fourth_octet=$(echo $myip | cut -f 4 -d '.')
     fallback_hostname=${PREFIX}${third_octet}-${fourth_octet}${domainname}
-    echo $(date +"%m%d%y %H:%M:%S") " Hostname could not be determined. using $fallback_hostname" >> $LOG
     # Set hostname to constructed hostname, not machine default
     hostname $fallback_hostname
+    echo $(date +"%m%d%y %H:%M:%S") " Hostname could not be determined. using `hostname`" >> $LOG
 else
     if [[ $hostname_value  == 129.114.5.* ]]; then
        hostname "austin5-"$(echo $hostname_value | awk 'BEGIN {FS="."};{print $4}')".cloud.bio.ci"
