@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PREFIX=vm
+
 LOG=/var/log/atmo/dhcp_hostname.log
 
 # Sync OS time using the host's hardware time
@@ -81,7 +83,16 @@ fi
 
 # retest hostname value
 if [[ -z $hostname_value ]]; then
-    echo $(date +"%m%d%y %H:%M:%S") "	Hostname could not be determined. using `hostname`" >> $LOG
+    domainname=".$(dnsdomainname)"
+    if [ $domainname == ".(none)" ];then
+        domainname=""
+    fi
+    third_octet=$(echo $myip | cut -f 3 -d '.')
+    fourth_octet=$(echo $myip | cut -f 4 -d '.')
+    fallback_hostname=${PREFIX}${third_octet}-${fourth_octet}${domainname}
+    echo $(date +"%m%d%y %H:%M:%S") " Hostname could not be determined. using $fallback_hostname" >> $LOG
+    # Set hostname to constructed hostname, not machine default
+    hostname $fallback_hostname
 else
     if [[ $hostname_value  == 129.114.5.* ]]; then
        hostname "austin5-"$(echo $hostname_value | awk 'BEGIN {FS="."};{print $4}')".cloud.bio.ci"
