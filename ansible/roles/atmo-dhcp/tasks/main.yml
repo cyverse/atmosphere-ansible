@@ -13,13 +13,13 @@
 
 - name: install required dependencies
   action: >
-    {{ ansible_pkg_mgr }} name={{ DIG_PACKAGE.name }} state=present
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
   with_items: PKG_DEPENDENCIES.to_install
   tags: install-dig
 
 - name: atmo-dhcp - create atmo dhcp log file
   shell: mkdir -p /var/log/atmo && touch /var/log/atmo/dhcp_hostname.log
-  
+
 - name: atmo-dhcp - change atmo dhcp log file permissions
   file: path=/var/log/atmo/dhcp_hostname.log state=touch mode=0744
 
