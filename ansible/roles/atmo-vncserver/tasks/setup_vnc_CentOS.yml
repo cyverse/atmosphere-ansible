@@ -24,16 +24,16 @@
 
 - name: remove old X11 locks
   file: path=/tmp/.X1-lock state=absent
-  ignore_errors: yes
+  failed_when: False
 
 - name: remove old X11 sockets
   file: path=/tmp/.X11-unix state=absent
-  ignore_errors: yes
-  
+  failed_when: False
+
 - name: touch X11-unix
   file: path=/tmp/.X11-unix state=directory mode="a+rwxt"
-  ignore_errors: yes
+  failed_when: False
 
 - name: start vnc as atmo_user
   shell: /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver
-  ignore_errors: yes
+  failed_when: False

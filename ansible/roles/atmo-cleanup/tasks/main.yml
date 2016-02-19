@@ -11,20 +11,24 @@
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=absent
   with_items: PACKAGE.to_remove
+  failed_when: False
   tags: remove-packages
 
 - name: kill off non-needed processes
   shell: pkill {{ item }}
   with_items: PROCESSES.to_kill
+  ignore_errors: yes
+  failed_when: False
   tags: kill-procs
 
 - name: ensure that all services are running and enabled
   service: name={{ item }} state=started enabled=yes
   with_items: SERVICES.enabled
+  failed_when: False
   tags: enable-services
 
 - name: disable non-required services
-  service: name={{ item }} state=started enabled=no
+  service: name={{ item }} state=stopped enabled=no
   with_items: SERVICES.disabled
   failed_when: False
   tags: disable-services

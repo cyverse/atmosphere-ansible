@@ -2,6 +2,13 @@
 
 LOG=/var/log/atmo/dhcp_hostname.log
 
+# Sync OS time using the host's hardware time
+echo $(date +"%m%d%y %H:%M:%S") "Syncing system time with hardware time" >> $LOG
+echo "     DEBUG: Date BEFORE sync:" $(date) >> $LOG
+hwclock -s
+rc=$?
+echo "     DEBUG: Date AFTER sync:" $(date)  "hwclock exit status: $rc" >> $LOG
+
 # Function: get_hostname()
 # Description: Gets the hostname, depending on the distro
 get_hostname() {
