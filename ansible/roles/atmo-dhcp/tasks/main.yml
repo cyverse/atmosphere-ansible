@@ -11,15 +11,11 @@
     - "../vars/{{ ansible_distribution }}.yml"
     - "../vars/{{ ansible_os_family }}.yml"
 
-- name: atmo-dhcp - install dig
+- name: install required dependencies
   action: >
-      {{ ansible_pkg_mgr }} name={{ DIG_PACKAGE.name }} state={{ DIG_PACKAGE.state }}
+    {{ ansible_pkg_mgr }} name={{ DIG_PACKAGE.name }} state=present
+  with_items: PKG_DEPENDENCIES.to_install
   tags: install-dig
-
-- name: atmo-dhcp - install dhcp
-  action: >
-      {{ ansible_pkg_mgr }} name={{ DHCP_PACKAGE.name }} state={{ DHCP_PACKAGE.state }}
-  tags: install-dhcp
 
 - name: atmo-dhcp - create atmo dhcp log file
   shell: mkdir -p /var/log/atmo && touch /var/log/atmo/dhcp_hostname.log

@@ -1,11 +1,9 @@
 SSHD: sshd
 
-DHCP_PACKAGE:
-  name: dhcp
-  state: present
-
-DIG_PACKAGE:
-  name: bind-utils
-  state: present
+PKG_DEPENDENCIES:
+  to_install:
+    - dhcp
+    - bind-utils
+    - python-simplejson
 
 DHCP_DESTINATION: /etc/dhclient-exit-hooks

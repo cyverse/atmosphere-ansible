@@ -1,11 +1,9 @@
 SSHD: ssh
 
-DHCP_PACKAGE:
-  name: isc-dhcp-server
-  state: present
-
-DIG_PACKAGE:
-  name: dnsutils
-  state: present
+PKG_DEPENDENCIES:
+  to_install:
+    - isc-dhcp-server
+    - dnsutils
+    - python-simplejson
 
 DHCP_DESTINATION: /etc/dhcp/dhclient-exit-hooks.d/hostname
