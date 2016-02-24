@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PREFIX=vm
+PREFIX="js-"
 
 LOG=/var/log/atmo/dhcp_hostname.log
 

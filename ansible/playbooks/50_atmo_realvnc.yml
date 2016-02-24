@@ -3,4 +3,4 @@
   hosts: atmosphere
   roles:
     # Requires ATMOUSERNAME and VNCLICENSE
-    #- atmo-realvncserver
+    - atmo-realvncserver
