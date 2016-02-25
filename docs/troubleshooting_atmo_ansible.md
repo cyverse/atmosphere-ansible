@@ -42,10 +42,16 @@ If at any point during the troubleshooting process, you are unable to move to th
 		```
 	1. If either step is successful proceed to next step.
 1. Once logged in, perform some basic tests
-	1. Is `Ansible` still running? If so, check the `ELK` server for `Ansible` deployment logs and check for any deployment errors in the final report.
+	1. Is `Ansible` still running? If so, check the `ELK` server for `Ansible` deployment logs and check for any deployment errors in the final report. 
 		
 		```
 		sudo ps aux | grep 'ansible'
+		```
+		
+	1. If `ELK` is inaccessible or down, tail the logs from the Atmosphere controller
+		
+		```
+		tail -n 1000 -f /opt/dev/atmosphere/logs/atmosphere_deploy.log | grep <instance-id>
 		```
 		
 	1. Verify that Atmosphere's deployment key is in `/root/.ssh/authorized_keys`.  This public key can be found on the Atmosphere server under `/opt/dev/atmosphere/extras/ssh/id_rsa.pub`.  Verfiy that these key's match.  If Atmosphere's key is not present, inject the public key, and re-deploy the instance.
