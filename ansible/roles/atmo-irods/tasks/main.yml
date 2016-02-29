@@ -18,7 +18,7 @@
   unarchive: src={{ ICOMMANDS_TAR }} dest={{ ICOMMANDS_DESTINATION }} copy=yes creates=yes
 
 - name: register list of files
-  shell: ls -1 {{ ICOMMANDS_DESTINATION }}/icommands
+  shell: find {{ ICOMMANDS_DESTINATION }}/icommands -type f -printf "%f\n" -maxdepth 1
   register: contents
 
 - name: link icommand executables to bin path
