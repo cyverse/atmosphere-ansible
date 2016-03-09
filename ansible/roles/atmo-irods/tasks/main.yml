@@ -11,8 +11,8 @@
 - name: copy over irods executables
   copy: src={{ IRODS_EXECUTABLE }} dest={{ IRODS_DESTINATION }} mode=a+x
 
-- name: create additional symlink
-  file: src={{ IRODS_DESTINATION }} dest={{ IRODS_LINK }} state=link
+# - name: create additional symlink
+#   file: src={{ IRODS_DESTINATION }} dest={{ IRODS_LINK }} state=link
 
 - name: copy over icommands
   unarchive: src={{ ICOMMANDS_TAR }} dest={{ ICOMMANDS_DESTINATION }} copy=yes creates=yes
