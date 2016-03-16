@@ -1,0 +1,5 @@
+---
+
+SSH_PORT: 22
+SSH_TIMEOUT: 300
+
