@@ -5,7 +5,7 @@
   tags: verify-ssh
 
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} root@{{ ansible_ssh_host }} 'echo hello world test' | grep 'hello world test'"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} root@{{ ansible_ssh_host }} 'echo hello' | grep 'hello'"
   register: default_remote_user
   ignore_errors: yes
 
@@ -13,7 +13,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} 'echo hello' | grep 'hello'"
   register: centos_remote_user
   ignore_errors: yes
   when: default_remote_user|failed
@@ -22,7 +22,7 @@
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} 'echo hello' | grep 'hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   when: default_remote_user|failed and centos_remote_user|failed
@@ -33,7 +33,7 @@
 
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
-  when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello world test") or 
-        (centos_remote_user.stdout is defined and centos_remote_user.stdout != "hello world test") or 
-        (ubuntu_remote_user.stdout is defined and ubuntu_remote_user.stdout != "hello world test")
+  when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello") or 
+        (centos_remote_user.stdout is defined and centos_remote_user.stdout != "hello") or 
+        (ubuntu_remote_user.stdout is defined and ubuntu_remote_user.stdout != "hello")
 
