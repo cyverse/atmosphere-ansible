@@ -1,11 +1,4 @@
-- name: gather os specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-    - "{{ ansible_distribution }}.yml"
-  tags: 
-    - os-vars
-    - debug
+---
 
 # TODO NOTE: when moving to ansible 2.0 we should use ansible_host, ansible_port, and ansible_user
 - name: test default ansible connection
@@ -84,7 +77,26 @@
 
 - name: Append AllowUsers Line to /etc/ssh/sshd_config 
   lineinfile: dest=/etc/ssh/sshd_config line="AllowUsers root {{ ATMOUSERNAME }}"
-  notify:
-    - restart ssh
   tags:
     - debug
+
+- name: manual OS detection
+  stat: path=/etc/redhat-release
+  register: os_ver
+  tags:
+    - debug
+    - ssh-restart
+
+- name: restart ssh if ubuntu
+  service: name=ssh state=restarted
+  when: not os_ver.exists
+  tags:
+    - debug
+    - ssh-restart
+
+- name: restart sshd if centos
+  service: name=sshd state=restarted
+  when: os_ver.exists
+  tags:
+    - debug
+    - ssh-restart
