@@ -1,6 +1,6 @@
 ---
 - name: Playbook to configure ssh connections for login; fixes stock cloud images
   hosts: atmosphere
-  gather_facts: false
+  #gather_facts: false
   roles:
     - atmo-ssh-setup
