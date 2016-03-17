@@ -87,16 +87,21 @@
     - debug
     - ssh-restart
 
+- debug: var=os_ver
+  tags:
+    - debug
+    - ssh-restart
+
 - name: restart ssh if ubuntu
   service: name=ssh state=restarted
-  when: not os_ver.exists
+  when: not os_ver.stat.exists
   tags:
     - debug
     - ssh-restart
 
 - name: restart sshd if centos
   service: name=sshd state=restarted
-  when: os_ver.exists
+  when: os_ver.stat.exists
   tags:
     - debug
     - ssh-restart
