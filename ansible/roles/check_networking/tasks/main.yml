@@ -42,7 +42,6 @@
 
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
-  when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello") or 
-        (centos_remote_user.stdout is defined and centos_remote_user.stdout != "hello") or 
+  when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello") and
+        (centos_remote_user.stdout is defined and centos_remote_user.stdout != "hello") and
         (ubuntu_remote_user.stdout is defined and ubuntu_remote_user.stdout != "hello")
-
