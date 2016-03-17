@@ -82,6 +82,13 @@ If one or more of the above steps fail, depending on the severity, outside actio
 Some additional tests to perform.
 
 1. If host is neither no longer responding to pings or SSH, attempt a Reboot, and if that fails, attempt a Hard Reboot.
+1. Check to see if the operating system booted and the instance is running.  If nothing is listed here, proceed to the next step to see the instance display.
+
+	```
+	ssh root@<openstack-controller>
+	nova console-log <instance-id>
+	```
+
 1. If the host is still unreachable, or will not move into the deploying stat, verify that the image is not hung at boot, or in total system failure.
 	1. Use `virt-manager` to connect to the console of the instance.  Steps to follow below.
 	1. Copy the instance ID from the instance details page.
