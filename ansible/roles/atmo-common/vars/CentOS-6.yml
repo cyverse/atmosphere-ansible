@@ -1,0 +1,23 @@
+---
+
+SSHD: sshd
+
+PACKAGES:
+  - epel-release
+  - libselinux-python
+  - zsh
+  - screen
+  - autoconf
+  - gcc
+  - make
+  - tcsh
+  - nss
+  - nss_db
+  - nss-tools
+  - nss-devel.x86_64
+  - patch
+  - fuse
+  - fuse-devel.x86_64
+  - python
+  - python-ldap
+  - qemu-guest-agent

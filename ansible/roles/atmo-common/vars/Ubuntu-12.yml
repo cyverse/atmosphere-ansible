@@ -19,3 +19,5 @@ PACKAGES:
   - zsh
   - mosh
   - qemu-guest-agent
+  - fuse-utils
+  - fuse
