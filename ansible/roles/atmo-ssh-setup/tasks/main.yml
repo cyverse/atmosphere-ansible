@@ -5,6 +5,7 @@
   local_action: "shell ssh -p {{ ansible_ssh_port }} root@{{ ansible_ssh_host }} 'echo hello world test' | grep 'hello world test'"
   register: default_remote_user
   ignore_errors: yes
+  failed_when: False
 
 ###
 # CENTOS SETUP
@@ -13,6 +14,7 @@
   local_action: "shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} 'echo hello'"
   register: centos_remote_user
   ignore_errors: yes
+  failed_when: False
   when: default_remote_user|failed
 
 # note: success is apparently not a complete condition, must also check for skipped state
@@ -30,6 +32,7 @@
   local_action: "shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} 'echo hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
+  failed_when: False
   when: default_remote_user|failed and centos_remote_user|failed
 
 # note: success is apparently not a complete condition, must also check for skipped state
