@@ -1,19 +1,94 @@
-- include_vars: "{{ item }}"
+---
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
   with_first_found:
-  - "{{ ansible_distribution }}.yml"
-  - "default.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags: vars
 
-- include: centos5-setup.yml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6' 
 
-- include: centos6-setup.yml
-  when: ansible_distribution == "CentOS"  and ansible_distribution_major_version == '6' 
+- name: install dependencies
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
+  with_items: PACKAGES
+  tags: install
 
-- include: centos7-setup.yml
-  when: ansible_distribution == "CentOS"  and ansible_distribution_major_version > '6' 
+############
+# Timezone #
+############
+- name: Remove old timezone link
+  file: dest=/etc/localtime state=absent
+  tags:
+    - timezone
 
-- include: ubuntu-setup.yml
+- name: template new timezone file
+  template: src=etc_timezone.j2 dest=/etc/timezone
+  tags:
+    - timezone
+
+- name: update timezone manually
+  shell: /bin/su {{ item }} -c export TZ={{ TIMEZONE }}
+  with_items:
+    - root
+    - "{{ ATMOUSERNAME }}"
+
+- name: Update timezone
+  file: src={{ ZONEINFO }} dest=/etc/localtime owner=root group=root state=link
+  tags:
+    - timezone
+
+########
+# MOTD #
+########
+- name: install motd
+  copy: src=motd dest=/etc/motd
+
+- name: remove motd help text file, if present
+  file: path=/etc/update-motd.d/10-help-text state=absent
   when: ansible_distribution == "Ubuntu"
+
+##########
+# CentOS #
+##########
+- name: disable SELinux
+  selinux: state=disabled
+  when: ansible_distribution == "CentOS"
+  tags: selinux
+
+- name: download get-pip.py
+  get_url:  dest=/tmp/ url=https://bootstrap.pypa.io/get-pip.py validate_certs=no
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
+
+- name: install/upgrade pip
+  shell: /usr/bin/python26 get-pip.py chdir=/tmp/
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
+
+##########
+# Ubuntu #
+##########
+- name: check ubuntu legal notice
+  stat: path=/etc/legal
+  register: ubuntu_legal
+  when: ansible_distribution == "Ubuntu"
+  tags:
+    - legal
+
+- name: move ubuntu legal file if it exists
+  command: mv /etc/legal /etc/legal.disabled
+  when: (ansible_distribution == "Ubuntu") and (ubuntu_legal.stat.exists is defined) and (ubuntu_legal.stat.exists)
+  tags:
+    - legal
+
+###########
+# General #
+###########
+- name: add necessary lines to rc.local
+  lineinfile: dest=/etc/rc.d/rc.local line="\n# this is for atmosphere\nif [ -x /etc/rc.d/rc.local.atmo ]; then\n\t/etc/rc.d/rc.local.atmo\nfi" 
+  when: ansible_distribution == "CentOS"
+
+- name: create rc.local.atmo
+  lineinfile: dest=/etc/rc.d/rc.local.atmo create=yes state=present line='#!/bin/sh -e\ndepmod -a\nmodprobe acpiphp\nhostname {{ ansible_hostname }}\n'
 
 - name: copy fuse conf file over
   copy: src=fuse.conf dest=/etc/fuse.conf
@@ -23,3 +98,6 @@
 
 - name: make sure ssh directory exists
   file: path=/root/.ssh/ state=directory mode="0700"
+
+# Fully quoted because of the ': ' on the line
+- lineinfile: "dest=/etc/sudoers state=present validate='visudo -cf %s' line='{{ ATMOUSERNAME }}  ALL = (ALL) NOPASSWD: ALL'"
