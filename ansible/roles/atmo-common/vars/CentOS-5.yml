@@ -3,7 +3,8 @@
 SSHD: sshd
 
 PACKAGES:
-  - zsh 
+  - epel-release
+  - zsh
   - tmux
   - screen
   - autoconf
