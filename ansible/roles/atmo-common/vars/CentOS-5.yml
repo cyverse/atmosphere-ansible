@@ -1,0 +1,18 @@
+---
+
+SSHD: sshd
+
+PACKAGES:
+  - zsh 
+  - tmux
+  - screen
+  - autoconf
+  - gcc
+  - make
+  - tcsh
+  - nss_ldap
+  - patch
+  - fuse
+  - fuse-devel.x86_64
+  - python
+  - python-ldap
