@@ -90,11 +90,6 @@
     - debug
     - ssh-restart
 
-- debug: var=os_ver
-  tags:
-    - debug
-    - ssh-restart
-
 - name: restart ssh if ubuntu
   service: name=ssh state=restarted
   when: not os_ver.stat.exists
