@@ -72,9 +72,14 @@
 ##########
 # CentOS #
 ##########
-- name: disable SELinux
+- name: disable SELinux for CentOS versions greater than 5
   selinux: state=disabled
-  when: ansible_distribution == "CentOS"
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version > '5')
+  tags: selinux
+
+- name: disable SELinux for CentOS 5
+  selinux: state=disabled conf=/etc/selinux/semanage.conf
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
   tags: selinux
 
 - name: download get-pip.py
