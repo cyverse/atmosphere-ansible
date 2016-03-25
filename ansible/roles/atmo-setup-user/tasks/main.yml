@@ -9,11 +9,11 @@
     backup=yes
     line="{{ item }}" 
   with_items: 
-    - '%core-services ALL=(ALL) NOPASSWD: ALL'  
-    - '%users ALL=(ALL) NOPASSWD: ALL'  
+    - '%users ALL=(ALL) NOPASSWD: ALL'
+    - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
 
-- name: add user to sudoers
-  lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
+#- name: add user to sudoers
+#  lineinfile: dest=/etc/sudoers state=present line="{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
 
 - name: start setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
