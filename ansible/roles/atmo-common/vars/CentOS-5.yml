@@ -4,6 +4,7 @@ SSHD: sshd
 
 PACKAGES:
   - epel-release
+  - python26
   - zsh
   - tmux
   - screen
