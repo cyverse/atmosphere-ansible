@@ -2,6 +2,8 @@
 
 SSHD: ssh
 
+RC_LOCAL_ATMO: /etc/rc.local.atmo
+
 PACKAGES:
   - libfam0
   - python
@@ -20,3 +22,6 @@ PACKAGES:
   - mosh
   - fuse-utils
   - fuse
+
+MODULES_TO_LOAD:
+  - acpiphp

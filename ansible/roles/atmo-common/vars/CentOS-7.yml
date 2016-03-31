@@ -2,6 +2,8 @@
 
 SSHD: sshd
 
+RC_LOCAL_ATMO: /etc/rc.d/rc.local.atmo
+
 PACKAGES:
   - epel-release
   - libselinux-python
@@ -24,3 +26,6 @@ PACKAGES:
   - bzip2
   - vim
   - qemu-guest-agent
+
+MODULES_TO_LOAD:
+  - acpiphp
