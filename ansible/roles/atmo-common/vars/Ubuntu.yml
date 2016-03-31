@@ -21,3 +21,6 @@ PACKAGES:
   - zsh
   - mosh
   - qemu-guest-agent
+
+MODULES_TO_LOAD:
+  - acpiphp

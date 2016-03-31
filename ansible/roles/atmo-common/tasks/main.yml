@@ -120,8 +120,8 @@
   failed_when: False 
 
 - name: load acpiphp module
-  modprobe: name=acpiphp state=present
-  tags:
+  modprobe: name={{ item }} state=present
+  with_items: MODULES_TO_LOAD
 
 - name: copy fuse conf file over
   copy: src=fuse.conf dest=/etc/fuse.conf

@@ -23,3 +23,6 @@ PACKAGES:
   - python
   - python-ldap
   - qemu-guest-agent
+
+MODULES_TO_LOAD:
+  - acpiphp

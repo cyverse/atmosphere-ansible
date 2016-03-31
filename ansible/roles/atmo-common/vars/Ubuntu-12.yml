@@ -22,3 +22,6 @@ PACKAGES:
   - mosh
   - fuse-utils
   - fuse
+
+MODULES_TO_LOAD:
+  - acpiphp
