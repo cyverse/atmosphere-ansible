@@ -13,7 +13,6 @@
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
-    - "{{ ansible_os_family }}.yml"
   tags:
     - vnc
     - x
@@ -90,7 +89,7 @@
   shell: "{{ item }}"
   with_items:
     - /usr/bin/vnclicense -add {{ VNCLICENSE }}
-    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver
+    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1
   when: xsession.stat.exists and xterm.stat.exists
   tags: vnc
 
