@@ -1,5 +1,0 @@
----
-- name: Playbook to install irods
-  hosts: atmosphere
-  roles:
-    - atmo-irods
