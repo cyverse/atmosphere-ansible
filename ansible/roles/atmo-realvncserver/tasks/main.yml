@@ -73,15 +73,6 @@
 
 - name: kill all running vncserver sessions
   shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'"
-  with_items:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
   failed_when: False
   tags: kill-vnc
 
@@ -93,7 +84,6 @@
   when: xsession.stat.exists and xterm.stat.exists
   failed_when: False
   tags: vnc
-
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26

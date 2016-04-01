@@ -7,11 +7,10 @@
   lineinfile:
     dest=/etc/sudoers
     backup=yes
-    line="{{ item }}" 
+    line="{{ item }}"
   with_items: 
-    - '%core-services ALL=(ALL) ALL'  
-    - '%users ALL=(ALL) ALL'
-    - '{{ ATMOUSERNAME }} ALL=(ALL)ALL'
+    - '%users ALL=(ALL) NOPASSWD: ALL'
+    - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
 
 - name: start setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
