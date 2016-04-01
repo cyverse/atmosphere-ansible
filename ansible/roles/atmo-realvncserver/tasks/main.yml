@@ -72,7 +72,7 @@
   tags: vnc
 
 - name: kill all running vncserver sessions
-  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'" || /bin/true
+  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'"
   with_items:
     - 1
     - 2
@@ -91,6 +91,7 @@
     - /usr/bin/vnclicense -add {{ VNCLICENSE }}
     - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1
   when: xsession.stat.exists and xterm.stat.exists
+  failed_when: False
   tags: vnc
 
 
