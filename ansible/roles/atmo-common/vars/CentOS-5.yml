@@ -21,5 +21,7 @@ PACKAGES:
   - python
   - python-ldap
 
-MODULES_TO_LOAD:
-  - acpiphp
+
+# Add modules to be loaded here
+#MODULES_TO_LOAD:
+#  - 
