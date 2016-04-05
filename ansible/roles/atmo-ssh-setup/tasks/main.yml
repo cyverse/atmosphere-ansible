@@ -79,7 +79,7 @@
     - delete
 
 - name: Append AllowGroups Line to /etc/ssh/sshd_config 
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups root users"
+  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups root core-services users"
   tags:
     - debug
 
