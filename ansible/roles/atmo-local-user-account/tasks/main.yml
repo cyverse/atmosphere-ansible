@@ -1,0 +1,11 @@
+---
+# tasks file for atmo-local-user-account
+
+- name: create local user account
+  user: name="{{ ATMOUSERNAME }}" state=present shell=/bin/bash 
+  tags: account
+
+
+- name: create home directory for user if not already created
+  file: path=/home/{{ ATMOUSERNAME }} state=directory mode=0700
+  tags: home-dir
