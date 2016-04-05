@@ -78,19 +78,14 @@
     - debug
     - delete
 
-- name: Append AllowUsers Line to /etc/ssh/sshd_config 
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowUsers root {{ ATMOUSERNAME }}"
+- name: Append AllowGroups Line to /etc/ssh/sshd_config 
+  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups root users"
   tags:
     - debug
 
 - name: manual OS detection
   stat: path=/etc/redhat-release
   register: os_ver
-  tags:
-    - debug
-    - ssh-restart
-
-- debug: var=os_ver
   tags:
     - debug
     - ssh-restart

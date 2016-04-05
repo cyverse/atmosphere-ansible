@@ -13,7 +13,6 @@
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
-    - "{{ ansible_os_family }}.yml"
   tags:
     - vnc
     - x
@@ -73,7 +72,7 @@
   tags: vnc
 
 - name: kill all running vncserver sessions
-  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'" || /bin/true
+  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'"
   with_items:
     - 1
     - 2
@@ -90,10 +89,10 @@
   shell: "{{ item }}"
   with_items:
     - /usr/bin/vnclicense -add {{ VNCLICENSE }}
-    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver
+    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1
   when: xsession.stat.exists and xterm.stat.exists
+  failed_when: False
   tags: vnc
-
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26

@@ -1,0 +1,8 @@
+SSHD: sshd
+
+PKG_DEPENDENCIES:
+  to_install:
+    - dhcp
+    - bind-utils
+
+DHCP_DESTINATION: /etc/dhcp/dhclient-exit-hooks

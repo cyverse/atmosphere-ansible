@@ -1,6 +1,6 @@
 # vncserver common.custom configuration.
 SecurityTypes=RA2
-Permissions=root:f,%core-services:f,:f
+Permissions=root:f,:f
 EnableAutoUpdateChecks=1
 
 # Atmosphere port configuration.
