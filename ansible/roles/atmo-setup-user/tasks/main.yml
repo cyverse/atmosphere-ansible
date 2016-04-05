@@ -29,13 +29,15 @@
 
   # tasks file for exit-code
 - name: see if user is already located in /etc/group
-  command: grep {{ ATMOUSERNAME }} /etc/group
+  command: grep "users:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
   register: user_not_present
   failed_when: False
+  tags: debug-ssh
 
 - name: add user to /etc/group if user does not exist
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
   when: user_not_present.rc == 1
+  tags: debug-ssh
 
 # add user to docker group
 - name: see if user is already located in /etc/group
