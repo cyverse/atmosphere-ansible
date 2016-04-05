@@ -2,6 +2,8 @@
 
 SSHD: sshd
 
+RC_LOCAL_ATMO: /etc/rc.d/rc.local.atmo
+
 PACKAGES:
   - epel-release
   - libselinux-python
@@ -21,3 +23,7 @@ PACKAGES:
   - python
   - python-ldap
   - qemu-guest-agent
+
+# Add modules to be loaded here
+#MODULES_TO_LOAD:
+#  - 

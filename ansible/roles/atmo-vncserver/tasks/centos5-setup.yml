@@ -1,2 +1,0 @@
-#DON'T DELETE FILE UNLESS YOU ARE FOR CERTAIN THAT IS WHAT YOU WANT TO DO
-- set_fact: ansible_python_interpreter=/usr/bin/python

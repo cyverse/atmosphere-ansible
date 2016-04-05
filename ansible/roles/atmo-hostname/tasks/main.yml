@@ -7,10 +7,13 @@
     - "{{ ansible_distribution }}.yml"
   tags: os-vars
 
-- name: set atmo vm's hostname
-  hostname: name="{{ HOSTNAME_PREFIX }}{{ ansible_ssh_host.split('.')[2] }}-{{ ansible_ssh_host.split('.')[3] }}.{{ DOMAINNAME }}"
-  tags: hostname
+- name: get hostname set by dhcp script
+  shell: hostname
+  register: dhcp_hostname
 
-- name: remove dhcp hostname exit script
-  file: path={{ DHCP_DESTINATION }} state=absent
-  tags: remove-dhcp-script
+- name: state which host will be added
+  debug: msg="Add /etc/hosts entry for {{ dhcp_hostname.stdout }}"
+
+- name: add FQDN hostname to /etc/hosts
+  lineinfile: dest=/etc/hosts regexp='^127\.0\.0\.1' line='127.0.0.1 localhost {{ dhcp_hostname.stdout }}' owner=root group=root mode=0644
+  tags: hostname
