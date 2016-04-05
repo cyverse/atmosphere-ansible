@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PREFIX=vm
+PREFIX="js-"
 
 LOG=/var/log/atmo/dhcp_hostname.log
 
@@ -94,10 +94,6 @@ if [[ -z $hostname_value ]]; then
     hostname $fallback_hostname
     echo $(date +"%m%d%y %H:%M:%S") " Hostname could not be determined. using `hostname`" >> $LOG
 else
-    if [[ $hostname_value  == 129.114.5.* ]]; then
-       hostname "austin5-"$(echo $hostname_value | awk 'BEGIN {FS="."};{print $4}')".cloud.bio.ci"
-    else
-       hostname $hostname_value
-    fi
+    hostname $hostname_value
     echo $(date +"%m%d%y %H:%M:%S") "   Hostname has been set to `hostname`" >> $LOG
 fi

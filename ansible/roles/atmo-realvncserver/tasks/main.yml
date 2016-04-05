@@ -94,7 +94,6 @@
   failed_when: False
   tags: vnc
 
-
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
