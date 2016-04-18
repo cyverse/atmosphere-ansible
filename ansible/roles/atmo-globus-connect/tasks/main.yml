@@ -24,3 +24,23 @@
 - name: template bash profile.d with globus-connect path
   template: src=globus-connect-profile.j2 dest=/etc/profile.d/globus-connect.sh mode=0755
   tags: configure
+
+# - name: add globus endpoint
+#   shell: /bin/su {{ ATMOUSERNAME }} -c endpoint-add -n {{ GLOBUS_ENDPOINT }} --gc
+#   delegate_to: globus
+#   register: endpoint_id
+#   failed_when: False
+#   tags: user
+
+# - name: print endpoint id
+#   debug: var=endpoint_id
+
+- name: run globus setup
+  shell: /bin/su {{ ATMOUSERNAME }} -c globusconnect -setup {{ GLOBUS_SETUP_KEY }}
+  failed_when: False
+  tags: user
+
+- name: start up globusconnect
+  shell: /bin/su {{ ATMOUSERNAME }} -c globusconnect -start &
+  failed_when: False
+  tags: user
