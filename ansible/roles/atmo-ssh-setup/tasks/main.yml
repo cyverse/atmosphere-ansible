@@ -73,13 +73,16 @@
     - { regexp: '^UseDNS', line: 'UseDNS no'}
 
 - name: Remove all AllowUsers lines to /etc/sshd_config
-  lineinfile: dest=/etc/ssh/sshd_config regexp="AllowUsers" state=absent
+  lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
+  with_items:
+    - AllowUsers
+    - AllowGroups
   tags:
     - debug
     - delete
 
 - name: Append AllowGroups Line to /etc/ssh/sshd_config 
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups root users"
+  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
   tags:
     - debug
 
