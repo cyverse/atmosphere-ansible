@@ -36,70 +36,86 @@
     - vnc
     - x
 
+- name: set flag for GUI systems
+  set_fact: has_gui=True
+  when: xsession.stat.exists and xterm.stat.exists
+  tags:
+    - vnc
+    - x
 
+# - name: show has_gui flag
+#   debug: var=has_gui
+#   tags:
+#     - vnc
+#     - x
+
+###################
+# Remove Packages #
+###################
 - name: remove conflicting ubuntu packages
   apt: name={{ item }} state=absent purge=yes
   with_items: XGUI.packages_to_remove
-  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "Ubuntu")
+  when: has_gui and (ansible_distribution == "Ubuntu")
   tags:
     - uninstall
 
 - name: remove conflicting centos packages
   yum: name={{ item }} state=absent
   with_items: XGUI.packages_to_remove
-  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "CentOS")
+  when: has_gui and (ansible_distribution == "CentOS")
   tags:
     - uninstall
 
-# Perform install/config if NOT headless
-- name: create needed directories
-  file: path=/etc/vnc/config.d state=directory mode=0755
-  with_items: XGUI.dirs_to_make
-  when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
+#####################
+# Set up Files/Dirs #
+#####################
+- name: copy vnc password file
+  copy: src=passwd dest="/home/{{ ATMOUSERNAME }}/.vnc/passwd" mode=0600 owner="{{ ATMOUSERNAME }}"
+  when: has_gui
+  tags: vnc 
 
-- name: install the dependencies for vncserver
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: XGUI.vnc_dependencies
-  when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
-
-- name: copy required files to remote host
-  copy: src={{ item.FROM }} dest={{ item.TO }}
-  with_items: XGUI.files_to_add
-  when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
+# - name: copy required files to remote host
+#   copy: src={{ item.FROM }} dest={{ item.TO }}
+#   with_items: REQUIRED.files_to_add
+#   when: has_gui
+#   tags: vnc
 
 # wget -qO- http://github.com/kanaka/noVNC/tarball/master -O novnc.tar
 # tar -xvf master
 # cd kanaka-noVNC-8b0a0f6/
 
 - name: unarchive novnc binaries on centos 5 systems
-  unarchive: src=/tmp/novnc.tar dest=/opt copy=no
-  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "CentOS")
-  tags: centos-5
+  unarchive: src=novnc.tar dest=/opt
+  when: has_gui
+  tags: vnc
 
 ###############
 # VNC Install #
 ###############
+- name: install the dependencies for vncserver
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
+  with_items: XGUI.vnc_dependencies
+  when: has_gui
+  tags: vnc
+
 - name: install vncserver
   action: >
-    {{ ansible_pkg_mgr }} {{ XGUI.type }}={{ item }} state=present "{{ XGUI.extra_args }}"
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
   with_items: XGUI.packages
-  when: xsession.stat.exists and xterm.stat.exists
+  when: has_gui
   tags: vnc
 
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
-  with_items: XGUI.files_to_remove
-  when: xsession.stat.exists and xterm.stat.exists
+  with_items: REQUIRED.files_to_remove
+  when: has_gui
   tags: vnc
 
 - name: create needed directories
   file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
-  with_items: XGUI.dirs_to_make
-  when: xsession.stat.exists and xterm.stat.exists
+  with_items: REQUIRED.dirs_to_make
+  when: has_gui
   tags: vnc
 
 - name: kill all running vncserver sessions
@@ -114,17 +130,32 @@
     - 7
     - 8
     - 9
+  when: has_gui
   failed_when: False
   tags: kill-vnc
 
-- name: install license and start vncserver
+- name: ensure correct permissions
+  file: path="{{ item }}" mode=0755
+  with_items:
+    - /etc/X11/xinit/xinitrc
+
+- name: template xstartup for vncserver
+  template: src=xstartup.j2 dest="/home/{{ ATMOUSERNAME }}/.vnc/xstartup" mode=0755
+  when: has_gui
+  tags: kill-vnc
+
+- name: start vncserver and novnc
   shell: "{{ item }}"
   with_items: VNC_COMMANDS
-
-  when: xsession.stat.exists and xterm.stat.exists
+  when: has_gui
   failed_when: False
   tags: vnc
+  register: shell_cmds
 
+- name: debug all shell commands
+  debug: var=shell_cmds
+  when: has_gui
+  tags: vnc
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26
