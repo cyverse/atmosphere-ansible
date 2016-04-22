@@ -1,0 +1,134 @@
+---
+###########
+# OS vars #
+###########
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags:
+    - vnc
+    - x
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags:
+    - vnc
+    - x
+
+#########################
+# Check for GUI Desktop #
+#########################
+# Only install VNC Server if VM is NOT headless
+- name: verify that X server exists
+  stat: path={{ XGUI.xsession_path }}
+  register: xsession
+  tags:
+    - vnc
+    - x
+
+- name: verify that xterm session exists
+  stat: path={{ XGUI.xterm_path }}
+  register: xterm 
+  tags:
+    - vnc
+    - x
+
+
+- name: remove conflicting ubuntu packages
+  apt: name={{ item }} state=absent purge=yes
+  with_items: XGUI.packages_to_remove
+  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "Ubuntu")
+  tags:
+    - uninstall
+
+- name: remove conflicting centos packages
+  yum: name={{ item }} state=absent
+  with_items: XGUI.packages_to_remove
+  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "CentOS")
+  tags:
+    - uninstall
+
+# Perform install/config if NOT headless
+- name: create needed directories
+  file: path=/etc/vnc/config.d state=directory mode=0755
+  with_items: XGUI.dirs_to_make
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: install the dependencies for vncserver
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present
+  with_items: XGUI.vnc_dependencies
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: copy required files to remote host
+  copy: src={{ item.FROM }} dest={{ item.TO }}
+  with_items: XGUI.files_to_add
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+# wget -qO- http://github.com/kanaka/noVNC/tarball/master -O novnc.tar
+# tar -xvf master
+# cd kanaka-noVNC-8b0a0f6/
+
+- name: unarchive novnc binaries on centos 5 systems
+  unarchive: src=/tmp/novnc.tar dest=/opt copy=no
+  when: (xsession.stat.exists and xterm.stat.exists) and (ansible_distribution == "CentOS")
+  tags: centos-5
+
+###############
+# VNC Install #
+###############
+- name: install vncserver
+  action: >
+    {{ ansible_pkg_mgr }} {{ XGUI.type }}={{ item }} state=present "{{ XGUI.extra_args }}"
+  with_items: XGUI.packages
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: remove locks and un-needed files
+  shell: /bin/rm -rf {{ item.PATH }}
+  with_items: XGUI.files_to_remove
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: create needed directories
+  file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
+  with_items: XGUI.dirs_to_make
+  when: xsession.stat.exists and xterm.stat.exists
+  tags: vnc
+
+- name: kill all running vncserver sessions
+  shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'"
+  with_items:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+  failed_when: False
+  tags: kill-vnc
+
+- name: install license and start vncserver
+  shell: "{{ item }}"
+  with_items: VNC_COMMANDS
+
+  when: xsession.stat.exists and xterm.stat.exists
+  failed_when: False
+  tags: vnc
+
+
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python26
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags:
+    - vnc
+    - x

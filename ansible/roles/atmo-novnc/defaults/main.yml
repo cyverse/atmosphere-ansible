@@ -1,0 +1,7 @@
+---
+# defaults file for atmo-novnc
+
+VNC_COMMANDS:
+  - /usr/bin/pkill websockify
+  - /bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'
+  - /usr/bin/websockify -D --web /usr/share/novnc/ 4200 localhost:5901
