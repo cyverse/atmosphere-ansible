@@ -1,0 +1,35 @@
+---
+PURGE_SETTING: 
+
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/xterm
+  vnc_dependencies:
+    - xterm 
+    - git
+  packages_to_remove:
+    - realvnc-vnc-server
+  packages:
+    - xorg-x11-xauth
+    - vnc-server
+  type: name
+  extra_args: disable_gpg_check=yes
+  files_to_add:
+    - { FROM: passwd, TO: "/home/{{ ATMOUSERNAME }}/.vnc/passwd" }
+    - { FROM: novnc.tar, TO: /tmp/ }
+    - { FROM: vncserver.custom-cent, TO: /etc/pam.d/vncserver.custom }
+    - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
+    - { FROM: config.custom, TO: /etc/vnc/config.custom }
+    #- { FROM: , TO:  }
+  files_to_remove:
+    - { PATH: /tmp/.X1-lock, STATE: absent }
+    - { PATH: /tmp/.X11-unix, STATE: absent }
+    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.rpm, STATE: absent }
+  dirs_to_make:
+    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt" }
+    - { PATH: "/home/{{ ATMOUSERNAME }}", STATE: directory, MODE: "0750" }
+
+VNC_COMMANDS:
+  - for i in $(/usr/bin/pgrep -f "python /opt/kanaka-noVNC-8b0a0f6/utils/websockify/run");do /bin/kill -HUP $i;done
+  - /bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'
+  - /opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen 4200 --vnc localhost:5901 &
