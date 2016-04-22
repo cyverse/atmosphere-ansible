@@ -14,7 +14,7 @@
   tags: verify-ssh
 
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_port }} root@{{ ansible_host }} 'echo hello' | grep 'hello'"
+  local_action: "shell ssh -p {{ ansible_port }} root@{{ inventory_hostname }} 'echo hello' | grep 'hello'"
   register: default_remote_user
   ignore_errors: yes
   failed_when: False
@@ -25,7 +25,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_port }} centos@{{ ansible_host }} 'echo hello' | grep 'hello'"
+  local_action: "shell ssh -p {{ ansible_port }} centos@{{ inventory_hostname }} 'echo hello' | grep 'hello'"
   register: centos_remote_user
   ignore_errors: yes
   when: default_remote_user|failed
@@ -37,7 +37,7 @@
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ ansible_host }} 'echo hello' | grep 'hello'"
+  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ inventory_hostname }} 'echo hello' | grep 'hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   when: default_remote_user|failed and centos_remote_user|failed
@@ -49,11 +49,11 @@
 #- debug: var=centos_remote_user
 #- debug: var=ubuntu_remote_user
 
-- name: Debug all output last.
-  debug: msg="host={{ansible_host}} root={{default_remote_user.stdout}} centos={{centos_remote_user.stdout}} ubuntu={{ubuntu_remote_user.stdout}}"
+#- name: Debug all output last.
+#  debug: msg="host={{ansible_host}} root={{default_remote_user.stdout}} centos={{centos_remote_user.stdout}} ubuntu={{ubuntu_remote_user.stdout}}"
 
-- name: Debug all error last.
-  debug: msg="host={{ansible_host}} root={{default_remote_user.stderr}} centos={{centos_remote_user.stderr}} ubuntu={{ubuntu_remote_user.stderr}}"
+#- name: Debug all error last.
+#  debug: msg="host={{ansible_host}} root={{default_remote_user.stderr}} centos={{centos_remote_user.stderr}} ubuntu={{ubuntu_remote_user.stderr}}"
 
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
