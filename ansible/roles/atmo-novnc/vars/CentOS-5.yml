@@ -6,6 +6,7 @@ XGUI:
   vnc_dependencies:
     - xterm 
     - git
+    - openssl
   packages_to_remove:
     - realvnc-vnc-server
   packages:

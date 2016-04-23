@@ -21,7 +21,8 @@ REQUIRED:
     - { PATH: "/home/{{ ATMOUSERNAME }}", STATE: directory, MODE: "0750" }
 
 VNC_COMMANDS:
+  - "printf '%s\n%s\n' 'display' 'display' | vncpasswd $HOME/.vnc/passwd"
   - "/usr/bin/pkill websockify"
-  - "for i in $(/usr/bin/pgrep -f 'python /opt/kanaka-noVNC-8b0a0f6/utils/websockify/run');do /bin/kill -HUP $i;done"
+  - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'"
-  - "/bin/su root -c '/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen 4200 --vnc localhost:5901 &'"
+  - "cd /opt/kanaka-noVNC-8b0a0f6/utils && ./launch.sh --listen 4200 --vnc localhost:5901 &"

@@ -17,6 +17,7 @@
   tags:
     - vnc
     - x
+    - shell_cmd
 
 #########################
 # Check for GUI Desktop #
@@ -28,6 +29,7 @@
   tags:
     - vnc
     - x
+    - shell_cmd
 
 - name: verify that xterm session exists
   stat: path={{ XGUI.xterm_path }}
@@ -35,6 +37,7 @@
   tags:
     - vnc
     - x
+    - shell_cmd
 
 - name: set flag for GUI systems
   set_fact: has_gui=True
@@ -42,6 +45,7 @@
   tags:
     - vnc
     - x
+    - shell_cmd
 
 # - name: show has_gui flag
 #   debug: var=has_gui
@@ -69,10 +73,10 @@
 #####################
 # Set up Files/Dirs #
 #####################
-- name: copy vnc password file
-  copy: src=passwd dest="/home/{{ ATMOUSERNAME }}/.vnc/passwd" mode=0600 owner="{{ ATMOUSERNAME }}"
-  when: has_gui
-  tags: vnc 
+# - name: copy vnc password file
+#   copy: src=passwd dest="/home/{{ ATMOUSERNAME }}/.vnc/passwd" mode=0600 owner="{{ ATMOUSERNAME }}"
+#   when: has_gui
+#   tags: vnc 
 
 # - name: copy required files to remote host
 #   copy: src={{ item.FROM }} dest={{ item.TO }}
@@ -149,13 +153,17 @@
   with_items: VNC_COMMANDS
   when: has_gui
   failed_when: False
-  tags: vnc
+  tags:
+    - vnc
+    - shell_cmd
   register: shell_cmds
 
 - name: debug all shell commands
   debug: var=shell_cmds
   when: has_gui
-  tags: vnc
+  tags: 
+    - vnc
+    - shell_cmd
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26
