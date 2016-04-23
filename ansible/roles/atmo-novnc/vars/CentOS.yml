@@ -4,7 +4,8 @@ XGUI:
   xsession_path: /usr/bin/xinit
   xterm_path: /usr/bin/Xorg
   vnc_dependencies:
-    - xterm 
+    - xterm
+    - git
   packages:
     - xorg-x11-xauth
     - vnc-server

@@ -10,6 +10,7 @@ XGUI:
     - libc6-dev 
     - libthunar-vfs-1-2 
     - libc6
+    - git
   packages_to_remove:
     - realvnc-vnc-server
     - novnc
