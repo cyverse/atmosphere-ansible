@@ -1,8 +1,8 @@
 ---
 
-# TODO NOTE: when moving to ansible 2.0 we should use ansible_host, ansible_port, and ansible_user
+# TODO NOTE: when moving to ansible 2.0 we should use inventory_hostname, ansible_port, and ansible_user
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_port }} root@{{ ansible_host }} 'echo hello world test' | grep 'hello world test'"
+  local_action: "shell ssh -p {{ ansible_port }} root@{{ inventory_hostname }} 'echo hello world test' | grep 'hello world test'"
   register: default_remote_user
   ignore_errors: yes
   failed_when: False
@@ -11,7 +11,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_port }} centos@{{ ansible_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_port }} centos@{{ inventory_hostname }} 'echo hello'"
   register: centos_remote_user
   ignore_errors: yes
   failed_when: False
@@ -29,7 +29,7 @@
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ ansible_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ inventory_hostname }} 'echo hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   failed_when: False
