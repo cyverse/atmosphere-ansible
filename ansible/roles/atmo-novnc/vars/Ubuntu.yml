@@ -9,6 +9,7 @@ XGUI:
     - libx11-dev 
     - libc6-dev 
     - libc6
+    - git
   packages_to_remove:
     - realvnc-vnc-server
     - novnc

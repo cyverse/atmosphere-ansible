@@ -152,6 +152,7 @@
   shell: "{{ item }}"
   with_items: VNC_COMMANDS
   when: has_gui
+  ignore_errors: yes
   failed_when: False
   tags:
     - vnc
