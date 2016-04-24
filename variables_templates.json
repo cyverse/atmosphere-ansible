@@ -1,0 +1,13 @@
+{
+    "SECTION_MAPPING": {
+        "ansible.cfg": [
+            "ansible.cfg"
+        ]
+    },
+    "CONFIG_FILES": {
+        "ansible.cfg": [
+            "ansible/ansible.cfg.j2",
+            "ansible/ansible.cfg"
+        ]
+    }
+}

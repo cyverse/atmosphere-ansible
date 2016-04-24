@@ -1,0 +1,13 @@
+[COMMON]
+ATMOSPHERE_ANSIBLE_DIR = ; /opt/dev/atmosphere-ansible
+ATMOSPHERE_ANSIBLE_LOG_DIR = ; /opt/dev/atmosphere-ansible/logs
+
+[ansible.cfg]
+ANSIBLE_FACT_CACHE_BACKEND = ; redis or jsonfile
+ANSIBLE_MANAGED_STR = ; Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}
+ANSIBLE_SSH_TIMEOUT = ; 10
+
+SUBSPACE_CALLBACK_PLUGINS = ; /opt/env/atmo/lib/python2.7/site-packages/subspace/plugins/callback
+SUBSPACE_CALLBACK_WHITELIST = ; play_logger
+SUBSPACE_NO_COWS = ; 1 or 0 , 0 = Cows and 1 = No Cows
+SUBSPACE_COW_SELECTION = ; default (NOTE: Only if NO_COWS == 0)
