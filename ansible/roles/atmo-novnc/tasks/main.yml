@@ -8,6 +8,7 @@
   tags:
     - vnc
     - x
+    - tar
 
 - name: gather os specific variables
   include_vars: "{{ item }}"
@@ -18,6 +19,7 @@
     - vnc
     - x
     - shell_cmd
+    - tar
 
 #########################
 # Check for GUI Desktop #
@@ -30,6 +32,7 @@
     - vnc
     - x
     - shell_cmd
+    - tar
 
 - name: verify that xterm session exists
   stat: path={{ XGUI.xterm_path }}
@@ -38,6 +41,7 @@
     - vnc
     - x
     - shell_cmd
+    - tar
 
 - name: set flag for GUI systems
   set_fact: has_gui=True
@@ -46,6 +50,7 @@
     - vnc
     - x
     - shell_cmd
+    - tar
 
 # - name: show has_gui flag
 #   debug: var=has_gui
@@ -88,10 +93,31 @@
 # tar -xvf master
 # cd kanaka-noVNC-8b0a0f6/
 
-- name: unarchive novnc binaries on centos 5 systems
+# - name: set flag for older ubuntu systems
+#   set_fact: ubuntu12=True
+#   when: (ansible_distribution == "Ubuntu") and (ansible_distribution_major_version < "14")
+#   tags:
+#     - tar
+
+# - name: set flag for older centos systems
+#   set_fact: centos5=True
+#   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version < "6")
+#   tags:
+#     - tar
+
+- name: unarchive novnc code base for legacy ubuntu systems
   unarchive: src=novnc.tar dest=/opt
-  when: has_gui
-  tags: vnc
+  when: (ansible_distribution == "Ubuntu") and (ansible_distribution_major_version < "14")
+  tags:
+    - vnc
+    - tar
+
+- name: unarchive novnc code base for legacy centos systems
+  unarchive: src=novnc.tar dest=/opt
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version < "6")
+  tags:
+    - vnc
+    - tar
 
 ###############
 # VNC Install #

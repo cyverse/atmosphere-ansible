@@ -6,9 +6,17 @@ XGUI:
   vnc_dependencies:
     - xterm 
     - git
+    - numpy
     - openssl
   packages_to_remove:
     - realvnc-vnc-server
   packages:
     - xorg-x11-xauth
     - vnc-server
+
+VNC_COMMANDS:
+  - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd /home/{{ ATMOUSERNAME }}/.vnc/passwd"
+  - "/usr/bin/pkill websockify"
+  - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
+  - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'"
+  - "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen 6080 --vnc localhost:5901 &"
