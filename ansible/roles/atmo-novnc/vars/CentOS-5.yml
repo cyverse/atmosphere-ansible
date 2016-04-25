@@ -19,4 +19,4 @@ VNC_COMMANDS:
   - "/usr/bin/pkill websockify"
   - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'"
-  - "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen 6080 --vnc localhost:5901 &"
+  - "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen 4200 --vnc localhost:5901 &"
