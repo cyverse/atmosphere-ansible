@@ -6,6 +6,9 @@ XGUI:
   vnc_dependencies:
     - xterm
     - git
+  packages_to_remove:
+    - realvnc-vnc-server
   packages:
     - xorg-x11-xauth
-    - vnc-server
+    - tigervnc-server
+    - novnc

@@ -12,6 +12,6 @@ XGUI:
     - git
   packages_to_remove:
     - realvnc-vnc-server
-    - novnc
   packages:
     - vnc4server
+    - novnc
