@@ -1,13 +1,10 @@
 --- 
 # TODO NOTE: when moving to ansible 2.0 we should use ansible_host, ansible_port, and ansible_user
-- name: Debug all arguments first.
-  debug: msg="ansible_port= {{ ansible_port }}, ansible_host={{ ansible_host }} inventory_hostname={{ inventory_hostname }}, timeout={{ SSH_PORT_TIMEOUT }}"
-
 - name: verify that host is reachable via ssh port
   local_action:
     module: wait_for
       search_regex=OpenSSH
-      port=1657
+      port={{ ansible_port }}
       host="{{ ansible_host }}"
       delay=1
       timeout={{ SSH_PORT_TIMEOUT }}
