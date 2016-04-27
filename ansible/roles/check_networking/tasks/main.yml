@@ -5,7 +5,7 @@
     module: wait_for
       search_regex=OpenSSH
       port={{ ansible_port }}
-      host="{{ ansible_host }}"
+      host="{{ inventory_hostname }}"
       delay=1
       timeout={{ SSH_PORT_TIMEOUT }}
   tags: verify-ssh
