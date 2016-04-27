@@ -8,7 +8,16 @@ XGUI:
     - git
   packages_to_remove:
     - realvnc-vnc-server
+    - gnome-screensaver
   packages:
     - xorg-x11-xauth
     - tigervnc-server
     - novnc
+
+VNC_COMMANDS:
+  - "/usr/bin/pkill gnome-screensaver"
+  - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd /home/{{ ATMOUSERNAME }}/.vnc/passwd"
+  - "/usr/bin/pkill websockify"
+  - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
+  - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'"
+  - "websockify -D --web /usr/share/novnc/ 4200 localhost:5901"
