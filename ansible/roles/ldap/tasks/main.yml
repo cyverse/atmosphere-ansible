@@ -123,7 +123,7 @@
 
 - name: restart sssd
   service: name={{ LDAP_SERVICE }} state=restarted enabled=yes
-  when: ansible_distribution == "CentOS"
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
   tags: restart-sssd
 
 - name: restart messagebus
@@ -133,7 +133,7 @@
 
 - name: restart oddjobd
   service: name=oddjobd state=restarted enabled=yes
-  when: ansible_distribution == "CentOS"
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
   tags: restart-oddjobd
 
 - name: restart services again just to be safe for CentOS 6

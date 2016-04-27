@@ -12,7 +12,7 @@ XGUI:
     - libc6
  
   packages:
-    - /tmp/VNC-Server-5.2.3-Linux-x64.deb
+    - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
   type: deb
   extra_args: update_cache=yes
   files_to_add:
