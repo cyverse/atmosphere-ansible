@@ -87,6 +87,7 @@
       - "{{ ansible_os_family }}.sssd.conf.j2"
       skip: true
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
+  failed_when: False # Don't fail if template can't be created (Because no dir exists)
   tags: sssd
 
 - name: template ldap.conf

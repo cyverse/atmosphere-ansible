@@ -4,6 +4,7 @@ ATMOSPHERE_ANSIBLE_LOG_DIR = ; /opt/dev/atmosphere-ansible/logs
 
 [ansible.cfg]
 ANSIBLE_FACT_CACHE_BACKEND = ; redis or jsonfile
+ANSIBLE_FACT_CACHE_TIMEOUT = ; Timeout in seconds (14400 == 4 hours)
 ANSIBLE_MANAGED_STR = ; Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}
 ANSIBLE_SSH_TIMEOUT = ; 10
 

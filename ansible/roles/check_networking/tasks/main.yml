@@ -42,16 +42,6 @@
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
-#- debug: var=default_remote_user
-#- debug: var=centos_remote_user
-#- debug: var=ubuntu_remote_user
-
-#- name: Debug all output last.
-#  debug: msg="host={{ansible_host}} root={{default_remote_user.stdout}} centos={{centos_remote_user.stdout}} ubuntu={{ubuntu_remote_user.stdout}}"
-
-#- name: Debug all error last.
-#  debug: msg="host={{ansible_host}} root={{default_remote_user.stderr}} centos={{centos_remote_user.stderr}} ubuntu={{ubuntu_remote_user.stderr}}"
-
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
   when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello") and
