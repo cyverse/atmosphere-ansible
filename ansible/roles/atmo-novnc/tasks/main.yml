@@ -44,8 +44,7 @@
     - tar
 
 - name: set flag for GUI systems
-  set_fact: has_gui=True
-  when: xsession.stat.exists and xterm.stat.exists
+  set_fact: has_gui={{ xsession.stat.exists and xterm.stat.exists }}
   tags:
     - vnc
     - x
