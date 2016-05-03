@@ -62,14 +62,14 @@
 ###################
 - name: remove conflicting ubuntu packages
   apt: name={{ item }} state=absent purge=yes
-  with_items: XGUI.packages_to_remove
+  with_items: "{{ XGUI.packages_to_remove }}"
   when: has_gui and (ansible_distribution == "Ubuntu")
   tags:
     - uninstall
 
 - name: remove conflicting centos packages
   yum: name={{ item }} state=absent
-  with_items: XGUI.packages_to_remove
+  with_items: "{{ XGUI.packages_to_remove }}"
   when: has_gui and (ansible_distribution == "CentOS")
   tags:
     - uninstall
@@ -124,26 +124,26 @@
 - name: install the dependencies for vncserver
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: XGUI.vnc_dependencies
+  with_items: "{{ XGUI.vnc_dependencies }}"
   when: has_gui
   tags: vnc
 
 - name: install vncserver
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: XGUI.packages
+  with_items: "{{ XGUI.packages }}"
   when: has_gui
   tags: vnc
 
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
-  with_items: REQUIRED.files_to_remove
+  with_items: "{{ REQUIRED.files_to_remove }}"
   when: has_gui
   tags: vnc
 
 - name: create needed directories
   file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
-  with_items: REQUIRED.dirs_to_make
+  with_items: "{{ REQUIRED.dirs_to_make }}"
   when: has_gui
   tags: vnc
 
@@ -175,7 +175,7 @@
 
 - name: start vncserver and novnc
   shell: "{{ item }}"
-  with_items: VNC_COMMANDS
+  with_items: "{{ VNC_COMMANDS }}"
   when: has_gui
   ignore_errors: yes
   failed_when: False
