@@ -14,7 +14,7 @@
 # note, separating out the ansible inventory into a separate directory
 # since by default the group and host vars use the base path of
 # the hosts file
-hostfile       = /etc/ansible_inventory/hosts
+hostfile       = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/hosts
 library        = /usr/share/ansible
 remote_tmp     = $HOME/.ansible/tmp
 pattern        = *
