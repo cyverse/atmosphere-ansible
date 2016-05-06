@@ -3,5 +3,4 @@
   hosts: atmosphere
   gather_facts: false
   roles:
-    - check_networking
-    #- atmo-ssh-setup
+    - atmo-ssh-setup
