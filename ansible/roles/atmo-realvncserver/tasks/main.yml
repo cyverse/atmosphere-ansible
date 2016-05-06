@@ -32,6 +32,14 @@
     - vnc
     - x
 
+- name: set flag for GUI systems
+  set_fact: has_gui={{ xsession.stat.exists and xterm.stat.exists }}
+  tags:
+    - vnc
+    - x
+    - shell_cmd
+    - tar
+
 # Perform install/config if NOT headless
 - name: create needed directories
   file: path=/etc/vnc/config.d state=directory mode=0755
@@ -52,11 +60,18 @@
   when: xsession.stat.exists and xterm.stat.exists
   tags: vnc
 
+- name: install the package for vncserver if CentOS 5
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present disable_gpg_check=yes
+  with_items: '{{ XGUI.packages }}'
+  when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
+  tags: vnc
+
 - name: install the package for vncserver if CentOS
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present {{ XGUI.extra_args }}
   with_items: '{{ XGUI.packages }}'
-  when: xsession.stat.exists and xterm.stat.exists and ansible_distribution == "CentOS"
+  when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version > '5')
   tags: vnc
 
 - name: install the package for vncserver if Ubuntu

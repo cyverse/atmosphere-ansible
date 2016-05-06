@@ -1,5 +1,10 @@
 ---
 
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
+  tags: python
+
 # TODO NOTE: when moving to ansible 2.0 we should use inventory_hostname, ansible_port, and ansible_user
 - name: test default ansible connection
   local_action: "shell ssh -p {{ ansible_port }} root@{{ inventory_hostname }} 'echo hello world test' | grep 'hello world test'"
