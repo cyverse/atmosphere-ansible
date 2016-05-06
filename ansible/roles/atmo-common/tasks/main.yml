@@ -143,4 +143,8 @@
   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version != '5')
 
 - name: disable mail_always to prevent Ansible from spamming security
-  lineinfile: dest=/etc/sudoers regexp='Defaults mail_always' line='#Defaults mail_always'
+  lineinfile: dest='{{ item.dest }}' regexp='{{ item.regexp }}' line='{{ item.line }}'
+  with_items:
+    - { dest: '/etc/sudoers', regexp: 'Defaults mail_always', line: '#Defaults mail_always' }
+    - { dest: '/etc/aliases', regexp: '^(.*)support:(.*)', line: '#support:        postmaster' }
+
