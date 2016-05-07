@@ -117,11 +117,12 @@ ansible_managed = {{ ANSIBLE_MANAGED_STR }}
 
 # set plugin path directories here, separate with colons
 action_plugins     = /usr/share/ansible_plugins/action_plugins
-callback_plugins   = {{ SUBSPACE_CALLBACK_PLUGINS }}:/usr/share/ansible_plugins/callback_plugins
+callback_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/callback:/usr/share/ansible_plugins/callback_plugins
 connection_plugins = /usr/share/ansible_plugins/connection_plugins
 lookup_plugins     = /usr/share/ansible_plugins/lookup_plugins
 vars_plugins       = /usr/share/ansible_plugins/vars_plugins
 filter_plugins     = /usr/share/ansible_plugins/filter_plugins
+strategy_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/strategy:/usr/share/ansible/plugins/strategy
 
 callback_whitelist = {{ SUBSPACE_CALLBACK_WHITELIST }}
 

@@ -8,7 +8,7 @@ ANSIBLE_FACT_CACHE_TIMEOUT = ; Timeout in seconds (14400 == 4 hours)
 ANSIBLE_MANAGED_STR = ; Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}
 ANSIBLE_SSH_TIMEOUT = ; 10
 
-SUBSPACE_CALLBACK_PLUGINS = ; /opt/env/atmo/lib/python2.7/site-packages/subspace/plugins/callback
+SUBSPACE_PLUGINS_DIR = ; /opt/env/atmo/lib/python2.7/site-packages/subspace/plugins
 SUBSPACE_CALLBACK_WHITELIST = ; play_logger
 SUBSPACE_NO_COWS = ; 1 or 0 , 0 = Cows and 1 = No Cows
 SUBSPACE_COW_SELECTION = ; default (NOTE: Only if NO_COWS == 0)
