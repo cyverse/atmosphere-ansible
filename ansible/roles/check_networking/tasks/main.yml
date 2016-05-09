@@ -45,6 +45,14 @@
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
+- debug: msg="root output is {{ default_remote_user.stdout }} and err is {{ default_remote_user.stderr }}"
+
+- debug: msg="centos output is {{ centos_remote_user.stdout }} and err is {{ centos_remote_user.stderr }}"
+  when: default_remote_user|failed
+
+- debug: msg="ubuntu output is {{ ubuntu_remote_user.stdout }} and err is {{ ubuntu_remote_user.stderr }}"
+  when: default_remote_user|failed and centos_remote_user|failed
+
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
   when: (default_remote_user.stdout is defined and default_remote_user.stdout != "hello") and
