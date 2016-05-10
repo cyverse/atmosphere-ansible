@@ -3,8 +3,7 @@
 
 REQUIRED:
   files_to_add:
-    - { FROM: passwd, TO: "/home/{{ ATMOUSERNAME }}/.vnc/passwd" }
-    #- { FROM: , TO:  }
+    - { PATH: "/home/{{ ATMOUSERNAME }}/.vnc/passwd", STATE: touch, MODE: "700", OWNER: "{{ ATMOUSERNAME }}", GROUP: "{{ ATMOUSERNAME }}" }
   files_to_remove:
     - { PATH: /tmp/.X1-lock, STATE: absent }
     - { PATH: /tmp/.X11-unix, STATE: absent }
@@ -17,12 +16,14 @@ REQUIRED:
     - { PATH: /etc/vnc/config.d/common.custom, STATE: absent }
     - { PATH: /etc/vnc/config.custom, STATE: absent }
   dirs_to_make:
-    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt" }
-    - { PATH: "/home/{{ ATMOUSERNAME }}", STATE: directory, MODE: "0750" }
+    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt", OWNER: "root", GROUP: "root" }
+    - { PATH: "/home/{{ ATMOUSERNAME }}", STATE: directory, MODE: "0750", OWNER: "{{ ATMOUSERNAME }}", GROUP: "{{ ATMOUSERNAME }}" }
+    - { PATH: "/home/{{ ATMOUSERNAME }}/.vnc", STATE: directory, MODE: "0750", OWNER: "{{ ATMOUSERNAME }}", GROUP: "{{ ATMOUSERNAME }}" }
 
 VNC_COMMANDS:
   - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd /home/{{ ATMOUSERNAME }}/.vnc/passwd"
   - "/usr/bin/pkill websockify"
   - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :1'"
+  # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
   - "websockify -D --web /usr/share/novnc/ 4200 localhost:5901"
