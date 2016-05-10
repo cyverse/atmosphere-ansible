@@ -142,8 +142,14 @@
   tags: vnc
 
 - name: create needed directories
-  file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
+  file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }} owner={{ item.OWNER }} group={{ item.GROUP }}
   with_items: "{{ REQUIRED.dirs_to_make }}"
+  when: has_gui
+  tags: vnc
+
+- name: create needed files
+  file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }} owner={{ item.OWNER }} group={{ item.GROUP }}
+  with_items: "{{ REQUIRED.files_to_add }}"
   when: has_gui
   tags: vnc
 
@@ -168,10 +174,14 @@
   with_items:
     - /etc/X11/xinit/xinitrc
 
+- name: create user .vnc directory in home
+  file: path=/home/{{ ATMOUSERNAME }}/.vnc state=directory
+  tags: vnc
+
 - name: template xstartup for vncserver
-  template: src=xstartup.j2 dest="/home/{{ ATMOUSERNAME }}/.vnc/xstartup" mode=0755
+  template: src=xstartup.j2 dest="/home/{{ ATMOUSERNAME }}/.vnc/xstartup" mode=0755 owner={{ ATMOUSERNAME }} group={{ ATMOUSERNAME }}
   when: has_gui
-  tags: kill-vnc
+  tags: vnc
 
 - name: start vncserver and novnc
   shell: "{{ item }}"
