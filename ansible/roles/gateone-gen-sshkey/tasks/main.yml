@@ -32,25 +32,27 @@
   fetch: src= "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default.pub" dest= "{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
   delegate_to: gateone
 
-# THESE values were in atmo-user-ssh-key and may-or-may-not be required..
-- name: grab local copy of user ssh private key
-  set_fact: pk_file= "{{ lookup('file', '/tmp/' + ATMOUSERNAME + '_default.pub') }}"
-  tags: debug
+# THESE values were in atmo-user-ssh-key and throw an error at thi stage.
+# TODO: discuss if this is required..
 
-- name: distribute the generated gate one key to the instance
-  authorized_key: >
-    key= '{{ pk_file }}'
-    state=present
-    user= "{{ item }}"
-  when: pk_file is defined
-  with_items:
-    - "{{ ATMOUSERNAME }}"
-  tags:
-    - ssh-keys
-    - debug
-
-- name: remove user key from controller node
-  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
-  tags:
-    - ssh-keys
-    - delete-key
+# - name: grab local copy of user ssh private key
+#   set_fact: pk_file= "{{ lookup('file', '/tmp/' + ATMOUSERNAME + '_default.pub') }}"
+#   tags: debug
+# 
+# - name: distribute the generated gate one key to the instance
+#   authorized_key: >
+#     key= '{{ pk_file }}'
+#     state=present
+#     user= "{{ item }}"
+#   when: pk_file is defined
+#   with_items:
+#     - "{{ ATMOUSERNAME }}"
+#   tags:
+#     - ssh-keys
+#     - debug
+# 
+# - name: remove user key from controller node
+#   local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+#   tags:
+#     - ssh-keys
+#     - delete-key
