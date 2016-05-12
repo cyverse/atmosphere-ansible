@@ -1,8 +1,7 @@
 # this role expects the following variables:
 # 	ATMOUSERNAME - the username 
-#       GATEONE_LOCAL_PUBKEY_DIR - (optional) the directory to transfer the public key; otherwise, /tmp is used
-#	IMPORTANT_NOTE: the directory must end in a '/'
-#       GATEONE_KEY_NAME - (optional) unix file-compatible key name; otherwise, "username_default" is used
+#   GATEONE_LOCAL_PUBKEY_DIR - (optional) the directory to transfer the public key; otherwise, /tmp is used - IMPORTANT_NOTE: the directory must end in a '/'
+#   GATEONE_KEY_NAME - (optional) unix file-compatible key name; otherwise, "username_default" is used
 # Assumption #1: gateone is installed as root and requires root privileges
 # Assumption #2: keys generated will automatically be added as a default key
 # TODO: change this role configure away from root and default locations
@@ -30,5 +29,28 @@
   delegate_to: gateone
 
 - name: finally, transfer the public key locally
-  fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
+  fetch: src= "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default.pub" dest= "{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
   delegate_to: gateone
+
+# THESE values were in atmo-user-ssh-key and may-or-may-not be required..
+- name: grab local copy of user ssh private key
+  set_fact: pk_file= "{{ lookup('file', '/tmp/' + ATMOUSERNAME + '_default.pub') }}"
+  tags: debug
+
+- name: distribute the generated gate one key to the instance
+  authorized_key: >
+    key= '{{ pk_file }}'
+    state=present
+    user= "{{ item }}"
+  when: pk_file is defined
+  with_items:
+    - "{{ ATMOUSERNAME }}"
+  tags:
+    - ssh-keys
+    - debug
+
+- name: remove user key from controller node
+  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+  tags:
+    - ssh-keys
+    - delete-key
