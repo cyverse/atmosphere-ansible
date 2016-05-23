@@ -15,4 +15,3 @@
             $SCRIPT 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
         fi
     done
-  failed_when: False
