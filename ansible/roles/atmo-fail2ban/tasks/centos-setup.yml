@@ -24,6 +24,7 @@
 - name: flush all rules from iptables chain
   shell: iptables --flush
   tags: firewall-flush
+  failed_when: false
 
 - name: restart fail2ban service
   service: name=fail2ban state=restarted enabled=yes

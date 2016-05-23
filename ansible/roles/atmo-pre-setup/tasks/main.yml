@@ -1,6 +1,16 @@
-- include: Ubuntu.yml
+- name: check for x64 foreign architecture
+  shell: dpkg --print-foreign-architectures | grep x64
+  register: x64_arch_exists
+  failed_when: False
   when: ansible_distribution == "Ubuntu"
-  tags: ubuntu-specific-tasks
+
+- name: if x64 found, remove x64 architecture
+  shell: dpkg --remove-architecture x64
+  when: ansible_distribution == "Ubuntu" and x64_arch_exists|success
+
+- name: if x64 found, add amd64
+  shell: dpkg --add-architecture amd64
+  when: ansible_distribution == "Ubuntu" and x64_arch_exists|success 
 
 - name: apt-get update
   shell: apt-get update 

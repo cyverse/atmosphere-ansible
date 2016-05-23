@@ -9,9 +9,15 @@
     - "../vars/{{ ansible_distribution }}.yml"
     - "../vars/{{ ansible_os_family }}.yml"
 
-- name: install ntp package
+- name: install ntp package via yum
   action: >
-    {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
+    yum name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
+  when: (ansible_distribution == "CentOS")
+
+- name: install ntp package via apt
+  action: >
+    apt name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }} force=yes
+  when: (ansible_distribution == "Ubuntu")
 
 - name: stop ntp service
   action: >

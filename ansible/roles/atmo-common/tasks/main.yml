@@ -83,7 +83,7 @@
   tags: selinux
 
 - name: download get-pip.py
-  get_url:  dest=/tmp/ url=https://bootstrap.pypa.io/get-pip.py validate_certs=no
+  shell: wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py --no-check-certificate
   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
 
 - name: install/upgrade pip
@@ -133,4 +133,28 @@
   file: path=/root/.ssh/ state=directory mode="0700"
 
 # Fully quoted because of the ': ' on the line
-- lineinfile: "dest=/etc/sudoers state=present validate='visudo -cf %s' line='{{ ATMOUSERNAME }}  ALL = (ALL) NOPASSWD: ALL'"
+- name: Add user to sudoers for centos 5 without validation
+  lineinfile: dest=/etc/sudoers state=present line='{{ ATMOUSERNAME }}  ALL=(ALL) ALL'
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
+
+- name: Add user to sudoers for centos versions greater than 5
+  lineinfile: dest=/etc/sudoers state=present line='{{ ATMOUSERNAME }}  ALL=(ALL) ALL' validate='visudo -cf %s'
+  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version != '5')
+
+- name: Check for file /etc/aliases
+  stat: path=/etc/aliases
+  register: aliases
+  tags: email
+
+- name: disable mail_always to prevent Ansible from spamming security
+  lineinfile: dest='{{ item.dest }}' regexp='{{ item.regexp }}' line='{{ item.line }}'
+  with_items:
+    - { dest: '/etc/sudoers', regexp: 'Defaults mail_always', line: '#Defaults mail_always' }
+  tags: email
+
+- name: disable support mailer in aliases to prevent Ansible from spamming security
+  lineinfile: dest='{{ item.dest }}' regexp='{{ item.regexp }}' line='{{ item.line }}'
+  with_items:
+    - { dest: '/etc/aliases', regexp: '^(.*)support:(.*)', line: '#support:        postmaster' }
+  when: aliases.stat.exists
+  tags: email

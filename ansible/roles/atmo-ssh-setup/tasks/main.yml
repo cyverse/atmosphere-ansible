@@ -1,8 +1,29 @@
 ---
 
-# TODO NOTE: when moving to ansible 2.0 we should use ansible_host, ansible_port, and ansible_user
+#- name: set flag for CentOS boxes
+#  set_fact: is_cent=True
+#  when: ansible_distribution == "CentOS"
+#  tags:
+#    - centos5
+
+#- name: set flag for CentOS 5 boxes
+#  set_fact: is_cent5=True
+#  when: ansible_distribution_major_version == "5"
+#  tags:
+#    - centos5
+
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  tags: python
+ # when: is_cent and is_cent5
+
+- name: get atmo vm ip address
+  set_fact: vm_ip="{{ ansible_host }}"
+
+- debug: msg="Atmo VM IP is {{ vm_ip }}"
+
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} root@{{ ansible_ssh_host }} 'echo hello world test' | grep 'hello world test'"
+  local_action: "shell ssh -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello world test' | grep 'hello world test'"
   register: default_remote_user
   ignore_errors: yes
   failed_when: False
@@ -11,7 +32,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} centos@{{ ansible_ssh_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello'"
   register: centos_remote_user
   ignore_errors: yes
   failed_when: False
@@ -29,7 +50,7 @@
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_ssh_port }} ubuntu@{{ ansible_ssh_host }} 'echo hello'"
+  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   failed_when: False
