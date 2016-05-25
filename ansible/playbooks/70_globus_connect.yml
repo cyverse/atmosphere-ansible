@@ -1,5 +1,5 @@
 ---
-- name: Playbook to add users personal ssh keys
+- name: Playbook to add globus connect to the instance
   hosts: atmosphere
   roles:
       # GLOBUS_ENDPOINT variable required 
