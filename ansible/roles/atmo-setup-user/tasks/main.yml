@@ -3,7 +3,11 @@
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
   tags: python
 
-- name: add core services to sudoers
+- name: remove all instances of atmosphere username in sudoers
+  lineinfile: "dest=/etc/sudoers state=absent regexp='^{{ ATMOUSERNAME }}'"
+  failed_when: false
+
+- name: add atmousername and %users to sudoers
   lineinfile:
     dest=/etc/sudoers
     backup=yes
