@@ -1,3 +1,10 @@
+---
+
+- name: stop denyhosts
+  service: name=denyhosts state=stopped enabled=no
+  ignore_errors: yes
+  failed_when: False
+
 - name: install dependencies
   yum: name={{ item }} state=present
   with_items:
