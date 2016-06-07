@@ -1,0 +1,21 @@
+---
+
+# By default, group_vars will be used to replace this block
+SUDOERS_USERS_AND_GROUPS:
+  TO_ADD:
+    users:
+      line: "%users ALL=(ALL) ALL"
+      reg: "^%users\\s+ALL=\\(ALL\\)\\s*ALL"
+    atmouser:
+      line: "{{ ATMOUSERNAME }} ALL=(ALL) ALL"
+      reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*ALL"
+  TO_REMOVE:
+    users:
+      line: "%users ALL=(ALL) NOPASSWD:ALL"
+      reg: "^%users\\s*ALL=\\(ALL\\)\\s*NOPASSWD:ALL"
+    atmouser_dupe:
+      line: "{{ ATMOUSERNAME }} ALL=(ALL) ALL"
+      reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*ALL"
+    atmouser_nopass:
+      line: "{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
+      reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*NOPASSWD:ALL"

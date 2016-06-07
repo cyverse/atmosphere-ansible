@@ -133,15 +133,6 @@
 - name: make sure ssh directory exists
   file: path=/root/.ssh/ state=directory mode="0700"
 
-# Fully quoted because of the ': ' on the line
-- name: Add user to sudoers for centos 5 without validation
-  lineinfile: dest=/etc/sudoers state=present line='{{ ATMOUSERNAME }}  ALL=(ALL) ALL'
-  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
-
-- name: Add user to sudoers for centos versions greater than 5
-  lineinfile: dest=/etc/sudoers state=present line='{{ ATMOUSERNAME }}  ALL=(ALL) ALL' validate='visudo -cf %s'
-  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version != '5')
-
 - name: Check for file /etc/aliases
   stat: path=/etc/aliases
   register: aliases

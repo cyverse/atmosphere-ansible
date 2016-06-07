@@ -1,17 +1,19 @@
+---
+
 - name: set python for centos-5
   set_fact: ansible_python_interpreter=/usr/bin/python
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
   tags: python
 
-- name: add core services to sudoers
-  lineinfile:
-    dest=/etc/sudoers
-    backup=yes
-    line="{{ item }}" 
-  with_items: 
-    - '%core-services ALL=(ALL) ALL'  
-    - '%users ALL=(ALL) ALL'
-    - '{{ ATMOUSERNAME }} ALL=(ALL)ALL'
+- name: remove conflicting users and groups to sudoers
+  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=absent
+  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}"
+  tags: sudoers
+
+- name: add users and groups to sudoers
+  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=present
+  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
+  tags: sudoers
 
 - name: start setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
