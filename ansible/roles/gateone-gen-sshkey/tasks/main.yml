@@ -1,3 +1,5 @@
+---
+
 # this role expects the following variables:
 # 	ATMOUSERNAME - the username 
 #       GATEONE_LOCAL_PUBKEY_DIR - (optional) the directory to transfer the public key; otherwise, /tmp is used
@@ -9,26 +11,48 @@
 
 - name: ensure the existence of the user directory
   file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh" owner=root group=root mode=0700 state=directory
-  delegate_to: gateone
+  delegate_to: shell
 
 - name: check the existence of a given ssh key by name
   stat: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default"
   register: go_key
-  delegate_to: gateone
+  delegate_to: shell
 
 - name: generate the public key
   command: "/usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f /var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default -C {{ ATMOUSERNAME }}"
   when: go_key.stat.exists == False
-  delegate_to: gateone
+  delegate_to: shell
 
 - name: set the permissions on the private key file
   file: path="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default" mode=0600
-  delegate_to: gateone
+  delegate_to: shell
 
 - name: add the key name to .default_ids
   lineinfile: dest="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/.default_ids" line="{{ ATMOUSERNAME }}_default" create=yes state=present
-  delegate_to: gateone
+  delegate_to: shell
 
 - name: finally, transfer the public key locally
   fetch: src="/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh/{{ ATMOUSERNAME }}_default.pub" dest="{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}" flat=yes
-  delegate_to: gateone
+  delegate_to: shell
+
+- name: grab local copy of user ssh private key
+  set_fact: pk_file="{{ lookup('file', '/tmp/' + ATMOUSERNAME + '_default.pub') }}"
+  tags: debug
+
+- name: distribute the generated gate one key to the instance
+  authorized_key: >
+    key='{{ pk_file }}'
+    state=present
+    user="{{ item }}"
+  when: pk_file is defined
+  with_items:
+    - "{{ ATMOUSERNAME }}"
+  tags:
+    - ssh-keys
+    - debug
+
+- name: remove user key from controller node
+  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+  tags:
+    - ssh-keys
+    - delete-key

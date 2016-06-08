@@ -1,3 +1,5 @@
+---
+
 - name: Add users ssh keys to authorized_keys
   authorized_key: user=root key="{{ item }}" state=present
   with_items: USERSSHKEYS
@@ -7,25 +9,3 @@
 - name: Add users ssh keys to authorized_keys to home directory of user
   authorized_key: user={{ ATMOUSERNAME }} key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=yes
   when: USERSSHKEYS is defined
-
-- name: grab local copy of user ssh private key
-  set_fact: pk_file="{{ lookup('file', '/tmp/' + ATMOUSERNAME + '_default.pub') }}"
-  tags: debug
-
-- name: distribute the generated gate one key to the instance
-  authorized_key: >
-    key='{{ pk_file }}'
-    state=present
-    user="{{ item }}"
-  when: pk_file is defined
-  with_items:
-    - "{{ ATMOUSERNAME }}"
-  tags:
-    - ssh-keys
-    - debug
-
-- name: remove user key from controller node
-  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
-  tags:
-    - ssh-keys
-    - delete-key
