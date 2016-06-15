@@ -1,6 +1,5 @@
+---
 # tasks file for ntp
-#- include: centos5-setup.yml
-#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
 
 - name: gather os specific variables
   include_vars: "{{ item }}"
@@ -8,33 +7,54 @@
     - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "../vars/{{ ansible_distribution }}.yml"
     - "../vars/{{ ansible_os_family }}.yml"
+  tags:
+    - vars
+    - install
 
-- name: install ntp package via yum
+- name: ensure curl is installed
   action: >
-    yum name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
-  when: (ansible_distribution == "CentOS")
-
-- name: install ntp package via apt
-  action: >
-    apt name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }} force=yes
-  when: (ansible_distribution == "Ubuntu")
-
-- name: stop ntp service
-  action: >
-    service name={{ NTP_SERVICE }} state=stopped
-
-- name: verify that ntp is installed
-  stat: path=/etc/ntp.conf
-  register: ntp_installed
+    {{ ansible_pkg_mgr }} name=curl state=present
+  tags:
+    - install
 
 - name: sync time with hardware clock
   shell: hwclock -s
   ignore_errors: yes
   failed_when: False
+  tags:
+    - time
+
+- name: set local time manually from remote server as backup
+  shell: >
+    date -s "$(curl -s --head http://google.com | grep ^Date: | sed 's/Date: //g')"
+  ignore_errors: yes
+  failed_when: False
+  tags:
+    - time
+
+- name: install ntp package
+  action: >
+    {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
+  tags:
+    - install
+
+- name: stop ntp service
+  action: >
+    service name={{ NTP_SERVICE }} state=stopped
+  tags:
+    - ntp
+
+- name: verify that ntp is installed
+  stat: path=/etc/ntp.conf
+  register: ntp_installed
+  tags:
+    - ntp
 
 - name: update system date manually
   shell: ntpdate 1.us.pool.ntp.org
   when: ntp_installed.stat.exists == False
+  tags:
+    - time
 
 # Only run if on a hardware system. i.e. non-vm
 #- name: update hardware clock manually
@@ -47,7 +67,11 @@
     - "../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.ntp.conf.j2"
     - "../templates/{{ ansible_distribution }}.ntp.conf.j2"
     - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
+  tags:
+    - template
 
 - name: start ntp service
   action: >
     service name={{ NTP_SERVICE }} state=restarted enabled=yes
+  tags:
+    - ntp
