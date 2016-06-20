@@ -92,6 +92,10 @@
   with_items:
     - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
     - { regexp: '^UseDNS', line: 'UseDNS no'}
+  
+  #if port line is not commented out it is replaced with "#Port 22" (default) 
+- name: ensure system is using port 22 in sshd_config
+  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="^Port" line="#Port 22"
 
 - name: Remove all AllowUsers lines to /etc/sshd_config
   lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
