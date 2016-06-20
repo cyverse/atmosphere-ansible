@@ -99,7 +99,10 @@
   with_items:
     - ""
     - ""
+  when: ansible_distribution == "Ubuntu"
+
 - lineinfile: dest=/etc/ssh/sshd_config backup=yes insertafter="^# What ports, IPs and protocols we listen for" line="\n#Port 22"
+  when: ansible_distribution == "Ubuntu"
 
 - name: Remove all AllowUsers lines to /etc/sshd_config
   lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
