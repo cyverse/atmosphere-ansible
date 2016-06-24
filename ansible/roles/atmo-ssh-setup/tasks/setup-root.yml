@@ -10,9 +10,16 @@
   become: true
   remote_user: "{{ use_remote_user }}"
 
-- name: add ssh keys to authorzied_keys
+- name: add ssh keys to authorized_keys
   authorized_key: user=root key="{{ item }}" state=present
   become: true
   remote_user: "{{ use_remote_user }}"
-  with_items:
-    SSHKEYS
+  with_items: '{{ SSHKEYS }}'
+  when: SSHKEYS is defined
+
+- name: remove ssh keys from authorized_keys
+  authorized_key: user=root key="{{ item }}" state=absent
+  become: true
+  remote_user: "{{ use_remote_user }}"
+  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
+  when: SSH_KEYS_TO_REMOVE is defined
