@@ -76,10 +76,14 @@
   when: default_remote_user|success
 
 # this is duplicated code from that of the setup-root, but this needs to be run if root succeeded initially
-- name: add ssh keys to authorzied_keys
+- name: add ssh keys to authorized_keys
   authorized_key: user=root key="{{ item }}" state=present
-  with_items:
-    SSHKEYS
+  with_items: '{{ SSHKEYS }}'
+  when: default_remote_user|success
+
+- name: remove ssh keys from authorized_keys
+  authorized_key: user=root key="{{ item }}" state=absent
+  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
   when: default_remote_user|success
 
 # at this point, we could disable cloud user, but for now, let's leave in.
