@@ -1,5 +1,0 @@
----
-- name: Playbook to remove non-needed packages and services
-  hosts: atmosphere
-  roles:
-    - atmo-cleanup

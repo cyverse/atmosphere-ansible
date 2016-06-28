@@ -1,5 +1,0 @@
----
-- name: Playbook to preconfigure vms to allow for proper package manager updates
-  hosts: atmosphere
-  roles:
-    - atmo-pre-setup
