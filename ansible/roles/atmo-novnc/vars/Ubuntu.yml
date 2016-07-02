@@ -11,7 +11,8 @@ XGUI:
     - libc6
     - git
   packages_to_remove:
-    - realvnc-vnc-server
-  packages:
+    # - realvnc-vnc-server
     - vnc4server
+  packages:
+    # - vnc4server
     - novnc
