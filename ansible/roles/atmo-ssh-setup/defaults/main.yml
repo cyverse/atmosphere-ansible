@@ -1,3 +1,4 @@
 ---
 
+SSH_TIMEOUT: 30
 SSH_ALLOW_GROUPS: "root users"
