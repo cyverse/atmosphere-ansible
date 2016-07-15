@@ -38,7 +38,6 @@
   register: centos_remote_user
   ignore_errors: yes
   failed_when: False
-  when: default_remote_user|failed
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
@@ -58,7 +57,6 @@
   register: ubuntu_remote_user
   ignore_errors: yes
   failed_when: False
-  when: default_remote_user|failed and centos_remote_user|failed
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
