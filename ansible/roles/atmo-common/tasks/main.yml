@@ -119,10 +119,11 @@
   file: path={{ RC_LOCAL_ATMO }} state=absent
   failed_when: False 
 
-- name: load acpiphp module
+- name: load modules
   modprobe: name={{ item }} state=present
   with_items: MODULES_TO_LOAD
   when: MODULES_TO_LOAD is defined
+  failed_when: False
 
 - name: copy fuse conf file over
   copy: src=fuse.conf dest=/etc/fuse.conf
