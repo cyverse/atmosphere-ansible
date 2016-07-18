@@ -28,7 +28,7 @@
   ignore_errors: yes
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
-  poll: 1
+  poll: 1 
 
 ###
 # CENTOS SETUP
@@ -44,10 +44,10 @@
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = centos
   set_fact: use_remote_user=centos
-  when: not centos_remote_user|skipped and centos_remote_user|success
+  when: centos_remote_user.rc == 0
 
 - include: setup-root.yml
-  when: not centos_remote_user|skipped and centos_remote_user|success
+  when: centos_remote_user.rc == 0
 
 ###
 # UBUNTU SETUP
@@ -58,15 +58,15 @@
   ignore_errors: yes
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
-  poll: 1
+  poll: 1  
 
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = ubuntu
   set_fact: use_remote_user=ubuntu
-  when: not ubuntu_remote_user|skipped and ubuntu_remote_user|success
+  when: ubuntu_remote_user.rc == 0 
 
 - include: setup-root.yml
-  when: not ubuntu_remote_user|skipped and ubuntu_remote_user|success
+  when: ubuntu_remote_user.rc == 0 
 
 ###
 # WRAP-UP CLOUD USER FIX
