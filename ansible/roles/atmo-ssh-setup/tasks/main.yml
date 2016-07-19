@@ -41,13 +41,16 @@
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
+- name: print debug message
+  debug: msg="centos remote user is {{ centos_remote_user }}"
+
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = centos
   set_fact: use_remote_user=centos
-  when: centos_remote_user.rc == 0
+  when: centos_remote_user.rc is defined and centos_remote_user.rc == 0
 
 - include: setup-root.yml
-  when: centos_remote_user.rc == 0
+  when: centos_remote_user.rc is defined and centos_remote_user.rc == 0
 
 ###
 # UBUNTU SETUP
@@ -60,13 +63,16 @@
   async: "{{ SSH_TIMEOUT }}"
   poll: 1  
 
+- name: print debug message
+  debug: msg="Ubuntu remote user is {{ ubuntu_remote_user }}"
+
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = ubuntu
   set_fact: use_remote_user=ubuntu
-  when: ubuntu_remote_user.rc == 0 
+  when: ubuntu_remote_user.rc is defined and ubuntu_remote_user.rc == 0 
 
 - include: setup-root.yml
-  when: ubuntu_remote_user.rc == 0 
+  when: ubuntu_remote_user.rc is defined and ubuntu_remote_user.rc == 0
 
 ###
 # WRAP-UP CLOUD USER FIX
