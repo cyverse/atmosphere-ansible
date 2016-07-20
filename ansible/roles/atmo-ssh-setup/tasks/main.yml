@@ -28,7 +28,7 @@
   ignore_errors: yes
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
-  poll: 1 
+  poll: "{{ SSH_POLLING_INTERVAL }}"
 
 ###
 # CENTOS SETUP
@@ -39,7 +39,7 @@
   ignore_errors: yes
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
-  poll: 1
+  poll: "{{ SSH_POLLING_INTERVAL }}"
 
 - name: print debug message
   debug: msg="centos remote user is {{ centos_remote_user }}"
@@ -61,7 +61,7 @@
   ignore_errors: yes
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
-  poll: 1  
+  poll: "{{ SSH_POLLING_INTERVAL }}"
 
 - name: print debug message
   debug: msg="Ubuntu remote user is {{ ubuntu_remote_user }}"
