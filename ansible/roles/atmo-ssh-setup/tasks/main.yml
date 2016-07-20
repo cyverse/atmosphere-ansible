@@ -23,56 +23,57 @@
 - debug: msg="Atmo VM IP is {{ vm_ip }}"
 
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello world test' | grep 'hello world test'"
+  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello world test' | grep 'hello'"
   register: default_remote_user
   ignore_errors: yes
   failed_when: False
-  async: "{{ SSH_TIMEOUT }}"
-  poll: "{{ SSH_POLLING_INTERVAL }}"
+
+- name: print debug message
+  debug: msg="default remote user is {{ default_remote_user }}"
 
 ###
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello'"
+  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'" 
   register: centos_remote_user
   ignore_errors: yes
   failed_when: False
-  async: "{{ SSH_TIMEOUT }}"
-  poll: "{{ SSH_POLLING_INTERVAL }}"
+  when: default_remote_user.stdout_lines != ["hello"]
 
 - name: print debug message
   debug: msg="centos remote user is {{ centos_remote_user }}"
+  when: default_remote_user.stdout_lines != ["hello"]
 
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = centos
   set_fact: use_remote_user=centos
-  when: centos_remote_user.rc is defined and centos_remote_user.rc == 0
+  when: not centos_remote_user|skipped and centos_remote_user.stdout_lines == ["hello"]
 
 - include: setup-root.yml
-  when: centos_remote_user.rc is defined and centos_remote_user.rc == 0
+  when: not centos_remote_user|skipped and centos_remote_user.stdout_lines == ["hello"]
 
 ###
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello'"
+  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello' | grep 'hello'"
   register: ubuntu_remote_user
   ignore_errors: yes
   failed_when: False
-  async: "{{ SSH_TIMEOUT }}"
-  poll: "{{ SSH_POLLING_INTERVAL }}"
+  when: default_remote_user.stdout_lines != ["hello"] and centos_remote_user.stdout_lines != ["hello"]
 
 - name: print debug message
   debug: msg="Ubuntu remote user is {{ ubuntu_remote_user }}"
+  when: default_remote_user.stdout_lines != ["hello"] and centos_remote_user.stdout_lines != ["hello"]
 
 # note: success is apparently not a complete condition, must also check for skipped state
 - name: register use_remote_user = ubuntu
   set_fact: use_remote_user=ubuntu
-  when: ubuntu_remote_user.rc is defined and ubuntu_remote_user.rc == 0 
+  when: not ubuntu_remote_user|skipped and ubuntu_remote_user.stdout_lines == ["hello"]
 
 - include: setup-root.yml
-  when: ubuntu_remote_user.rc is defined and ubuntu_remote_user.rc == 0
+  when: not ubuntu_remote_user|skipped and ubuntu_remote_user.stdout_lines == ["hello"]
 
 ###
 # WRAP-UP CLOUD USER FIX

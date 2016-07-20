@@ -1,5 +1,6 @@
 ---
 
-SSH_TIMEOUT: 30
-SSH_POLLING_INTERVAL: 10
+SSH_OPTIONS_TO_PASS_IN: "-o PreferredAuthentications=publickey"
+
 SSH_ALLOW_GROUPS: "root users"
+
