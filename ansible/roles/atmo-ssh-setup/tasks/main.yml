@@ -90,12 +90,12 @@
 - name: add ssh keys to authorized_keys
   authorized_key: user=root key="{{ item }}" state=present
   with_items: '{{ SSHKEYS }}'
-  when: default_remote_user|success
+  when: default_remote_user|success and SSHKEYS is defined
 
 - name: remove ssh keys from authorized_keys
   authorized_key: user=root key="{{ item }}" state=absent
   with_items: '{{ SSH_KEYS_TO_REMOVE }}'
-  when: default_remote_user|success
+  when: default_remote_user|success and SSH_KEYS_TO_REMOVE is defined
 
 # at this point, we could disable cloud user, but for now, let's leave in.
 
