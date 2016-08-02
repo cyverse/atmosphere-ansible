@@ -4,6 +4,7 @@ __pycache__/
 
 # Ansible .retry files
 *.retry
+playbooks/*.retry
 
 # Ignore the variables.ini file
 variables.ini
