@@ -85,7 +85,7 @@
 - name: copy required files to remote host
   copy: src={{ item.FROM }} dest={{ item.TO }}
   with_items: '{{ REQUIRED.files_to_add }}'
-  when: has_gui
+  when: has_gui and (REQUIRED.files_to_add is defined) and (REQUIRED.files_to_add.length >= 1)
   tags: vnc
 
 # wget -qO- http://github.com/kanaka/noVNC/tarball/master -O novnc.tar
