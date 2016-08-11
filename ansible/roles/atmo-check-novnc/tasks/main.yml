@@ -1,0 +1,90 @@
+---
+
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags:
+    - vnc
+    - x
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags:
+    - vnc
+    - x
+
+# Only install RealVNC Server if VM is NOT headless
+- name: verify that X server exists
+  stat: path={{ XGUI.xsession_path }}
+  register: xsession
+  tags:
+    - vnc
+    - x
+
+- name: verify that xterm session exists
+  stat: path={{ XGUI.xterm_path }}
+  register: xterm 
+  tags:
+    - vnc
+    - x
+
+- name: check to see if VNC server is running
+  shell: /bin/ps aux | /bin/grep "/usr/bin/Xvnc-core :1 -auth /home/{{ ATMOUSERNAME }}/" | /bin/grep -v grep
+  ignore_errors: yes
+  failed_when: False
+  register: vnc_state
+  tags:
+    - vnc
+
+- name: check to see if novnc is installed
+  shell: "{{ CHECK_IF_PACKAGE_INSTALLED }}"
+  ignore_errors: yes
+  failed_when: False
+  register: novnc_state
+  tags:
+    - novnc
+
+- name: check to see if websockify is running
+  shell: /bin/ps aux | grep "/usr/bin/websockify" | grep -v grep
+  ignore_errors: yes
+  failed_when: False
+  register: websocketify_state
+  tags:
+    - novnc
+
+- name: Fail if novnc is not installed
+  action: >
+    {{ ansible_pkg_mgr }} name={{ NOVNC_PACAKGE }} state=present
+  tags:
+     - novnc  
+
+- name: fail if OS does not contain a GUI
+  fail: msg="OS does NOT have a GUI for VNC to run on."
+  when: not (xsession.stat.exists and xterm.stat.exists)
+  tags:
+    - no-gui
+    - vnc
+
+- name: fail when VNC is not running
+  fail: msg="VNC is NOT running for user '{{ ATMOUSERNAME }}'"
+  when: vnc_state.stdout == ""
+  tags:
+    - vnc
+    - check-vnc
+
+- name: fail when novnc is not installed
+  fail: msg="novnc is not installed for user '{{ ATMOUSERNAME }}'"
+  when: novnc_state.stdout == ""
+  tags:
+    - novnc
+    - check-novnc
+
+- name: fail when websocketify is not running
+  fail: msg="Websocketify is not running for user '{{ ATMOUSERNAME }}'"
+  when: websocketify_state.stdout == ""
+  tags:
+    - novnc
+    - check-novnc
