@@ -51,6 +51,8 @@ The latest code (usually `master`) for Atmosphere Ansible.
 	SUBSPACE_COW_SELECTION = ; default (NOTE: Only if NO_COWS == 0)
 	```
 
+1. Run the `configure` script in the root of the repository. This will create ansible/ansible.cfg using the variables from the .ini file.
+
 1. Create logs directory in `<path-to-repo-clone>/ansible`
 
 1. Use existing `hosts` and `group_vars`, if available locally, or create them
