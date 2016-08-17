@@ -2,4 +2,4 @@
 - name: Playbook will configure SSH for ansible deployments
   hosts: atmosphere
   roles:
-    - atmo-make-space-on-instace
+    - atmo-instance-pre-clean
