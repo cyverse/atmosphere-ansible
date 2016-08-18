@@ -1,9 +1,0 @@
----
-
-DIRS_TO_BE_CLEANDED:
-  - /root
-  - /opt
-  - /shellinaboxd_install
-
-FILE_TYPES_TO_BE_REMOVED:
-  - -name "*.gz" -o -name "*.tar" -o -name "*.zip" -o -name "*.bz2"

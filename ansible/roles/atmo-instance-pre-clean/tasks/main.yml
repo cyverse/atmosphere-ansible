@@ -1,7 +1,0 @@
----
-
-- name: remove non-required files
-  shell: find {{ item }} -type f \( {{ FILE_TYPES_TO_BE_REMOVED | join() }} \) -delete
-  with_items: "{{ DIRS_TO_BE_CLEANDED }}"
-  failed_when: False
-  tags: remove-files
