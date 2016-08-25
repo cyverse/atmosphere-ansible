@@ -1,0 +1,9 @@
+---
+
+XGUI:
+  xsession_path: /usr/bin/X
+  xterm_path: /usr/bin/xinit
+
+NOVNC_PACAKGE: novnc
+
+CHECK_IF_PACKAGE_INSTALLED: dpkg -l {{ NOVNC_PACAKGE }} | grep ii
