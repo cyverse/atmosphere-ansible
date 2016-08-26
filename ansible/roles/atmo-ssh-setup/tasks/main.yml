@@ -102,12 +102,6 @@
 ###
 # OTHER SSH CONFIG CHANGES
 ##
-- name: /etc/ssh/sshd_config changes
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
-  with_items:
-    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
-    - { regexp: '^UseDNS', line: 'UseDNS no'}
-
 - name: Remove all AllowUsers lines to /etc/sshd_config
   lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
   with_items:
@@ -116,6 +110,13 @@
   tags:
     - debug
     - delete
+    
+- name: /etc/ssh/sshd_config changes
+  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
+  with_items:
+    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
+    - { regexp: '^UseDNS', line: 'UseDNS no'}
+    - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication yes'}
 
 - name: Append AllowGroups Line to /etc/ssh/sshd_config 
   lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
