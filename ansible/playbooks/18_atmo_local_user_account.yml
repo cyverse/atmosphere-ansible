@@ -1,5 +1,0 @@
----
-- name: Playbook to set up local user accounts
-  hosts: atmosphere
-  roles:
-    - atmo-local-user-account

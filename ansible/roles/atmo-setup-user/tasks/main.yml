@@ -1,11 +1,25 @@
+---
+
 - name: set python for centos-5
   set_fact: ansible_python_interpreter=/usr/bin/python
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
   tags: python
 
+- name: remove conflicting users and groups to sudoers
+  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=absent
+  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}"
+  tags: sudoers
+
 - name: remove all instances of atmosphere username in sudoers
   lineinfile: "dest=/etc/sudoers state=absent regexp='^{{ ATMOUSERNAME }}'"
   failed_when: false
+
+#  This is how its done on cyvere's 
+#
+- name: add users and groups to sudoers
+  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=present
+  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
+  tags: sudoers
 
 - name: add atmousername and %users to sudoers
   lineinfile:
@@ -15,18 +29,6 @@
   with_items: 
     - '%users ALL=(ALL) NOPASSWD: ALL'
     - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
-
-- name: start setting up /etc/skel/.bashrc
-  lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
-
-- name: add irods home dir
-  lineinfile: dest=/etc/skel/.bashrc line='export IDS_HOME="/irods/data.iplantc.org/iplant/home/{{ATMOUSERNAME}}"'
-
-- name: add ids_home varaible to skel .bashrc
-  lineinfile: dest=/etc/skel/.bashrc line="alias ids_home='cd $IDS_HOME'"
-
-- name: close setting up /etc/skel/.bashrc
-  lineinfile: dest=/etc/skel/.bashrc line='## End System'
 
   # tasks file for exit-code
 - name: see if user is already located in /etc/group

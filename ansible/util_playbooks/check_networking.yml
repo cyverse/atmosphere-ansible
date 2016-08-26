@@ -1,7 +1,0 @@
----
-- name: Playbook to check networking with basic ssh
-  hosts: atmosphere
-  gather_facts: false
-  roles:
-    - check_networking
-

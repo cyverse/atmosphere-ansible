@@ -1,0 +1,8 @@
+---
+# Requires ATMOUSERNAME and VNCLICENSE
+- name: Playbook lists roles that should be executed after ATMOUSERNAME has been created
+  hosts: atmosphere
+  roles:
+    - atmo-fail2ban
+    #- atmo-realvncserver
+    - atmo-cleanup

@@ -4,6 +4,7 @@ __pycache__/
 
 # Ansible .retry files
 *.retry
+playbooks/*.retry
 
 # Ignore the variables.ini file
 variables.ini
@@ -74,3 +75,10 @@ single_host
 # ansible specific files
 ansible/hosts
 ansible/group_vars
+
+# ignore any initialization files (aka secrets or sensitive infoz)
+clank_init
+clank
+*-extras/*
+secrets*
+scratch

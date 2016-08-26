@@ -1,0 +1,5 @@
+---
+- name: Playbook to fail when VNC is not running
+  hosts: atmosphere
+  roles:
+    - atmo-check-vnc

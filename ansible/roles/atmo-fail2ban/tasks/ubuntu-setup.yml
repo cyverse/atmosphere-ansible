@@ -1,3 +1,10 @@
+---
+
+- name: stop denyhosts
+  service: name=denyhosts state=stopped enabled=no
+  ignore_errors: yes
+  failed_when: False
+
 - name: uninstall denyhosts
   apt: name=denyhosts.noarch state=absent purge=yes
   tags: uninstall-denyhosts
