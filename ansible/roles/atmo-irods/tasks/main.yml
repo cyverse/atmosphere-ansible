@@ -8,22 +8,30 @@
     - "default.yml"
   tags: vars
 
-- name: copy over irods executables
+- name: copy over irods executables for centos 5
   copy: src={{ IRODS_EXECUTABLE }} dest={{ IRODS_DESTINATION }} mode=a+x
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
 
-# - name: create additional symlink
-#   file: src={{ IRODS_DESTINATION }} dest={{ IRODS_LINK }} state=link
-
-- name: copy over icommands
+- name: copy over icommands for centos 5
   unarchive: src={{ ICOMMANDS_TAR }} dest={{ ICOMMANDS_DESTINATION }} copy=yes creates=yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
 
-- name: add icommands to path
+- name: add icommands to path for centos 5
   lineinfile: dest=/home/{{ ATMOUSERNAME }}/.bashrc line='export PATH=$PATH:/opt/icommands'
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
 
-#- name: register list of files
-#  shell: ls -1 {{ ICOMMANDS_DESTINATION }}/icommands/bin
-#  register: contents
-#
-#- name: link icommand executables to bin path
-#  file: src={{ ICOMMANDS_DESTINATION }}/icommands/bin/{{ item }} dest={{ BIN_PATH }}/{{ item }} state=link
-#  with_items: contents.stdout_lines
+- name: delete irods and icommand executables for other os'es
+  file: path={{ item }} state=absent
+  with_items:
+    - "{{ IRODS_DESTINATION }}"
+    - "{{ IRODS_LINK }}"
+    - "{{ ICOMMANDS_DESTINATION }}/icommands"
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+
+- name: delete any dead soft links in /usr/local/bin
+  command: find -L {{ BIN_PATH }} -type l -delete
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+
+- name: remove archaic icommands path from user's bashrc
+  lineinfile: dest=/home/{{ ATMOUSERNAME }}/.bashrc line='export PATH=$PATH:/opt/icommands' state=absent
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
