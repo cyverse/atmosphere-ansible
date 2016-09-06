@@ -28,6 +28,10 @@
     - "{{ ICOMMANDS_DESTINATION }}/icommands"
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
 
+- name: delete any dead soft links in /usr/local/bin
+  command: find -L {{ BIN_PATH }} -type l -delete
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+
 - name: remove archaic icommands path from user's bashrc
   lineinfile: dest=/home/{{ ATMOUSERNAME }}/.bashrc line='export PATH=$PATH:/opt/icommands' state=absent
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
