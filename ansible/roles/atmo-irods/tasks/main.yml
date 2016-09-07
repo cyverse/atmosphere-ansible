@@ -1,4 +1,9 @@
 ---
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
 # tasks to install irods
 - name: gather os specific variables
   include_vars: "{{ item }}"
