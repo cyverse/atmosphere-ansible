@@ -11,14 +11,37 @@
     - vars
     - icommands-setup
 
-- name: copy over irods executables for centos 5
-  copy: src={{ IRODS_EXECUTABLE }} dest={{ IRODS_DESTINATION }} mode=a+x
+- name: Install FUSE dependencies for CentOS
+  yum: name={{ item }}
+  with_items:
+    - fuse
+    - fuse-libs
+  when: (ansible_distribution == "CentOS")
+  tags: icommands-setup
+
+- name: Download iCommands archive for CentOS 5
+  get_url:
+    url: "{{ ICOMMANDS_URL }}"
+    dest: /tmp/{{ ICOMMANDS_TAR }}
+    validate_certs: false
+  changed_when: false
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
-- name: copy over icommands for centos 5
-  unarchive: src={{ ICOMMANDS_TAR }} dest={{ ICOMMANDS_DESTINATION }} copy=yes creates=yes
+- name: Extract iCommands for CentOS 5
+  command: "tar -xvf /tmp/{{ ICOMMANDS_TAR }} -C {{ ICOMMANDS_DESTINATION }}"
+  changed_when: false
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags: icommands-setup
+
+- name: Download iRODS FS for CentOS 5
+  get_url:
+    url: "{{ IRODSFS_URL }}"
+    dest: "{{ IRODSFS_DESTINATION }}"
+    validate_certs: false
+    mode: a+x
+  changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
 - name: add icommands to path for centos 5
@@ -26,17 +49,18 @@
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
   tags: icommands-setup
 
-- name: delete irods and icommand executables for other os'es
+- name: delete irods and icommand executables for non-CentOS 5
   file: path={{ item }} state=absent
   with_items:
-    - "{{ IRODS_DESTINATION }}"
-    - "{{ IRODS_LINK }}"
+    - "{{ IRODSFS_DESTINATION }}"
+    - "{{ IRODSFS_LINK }}"
     - "{{ ICOMMANDS_DESTINATION }}/icommands"
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
 - name: delete any dead soft links in /usr/local/bin
   command: find -L {{ BIN_PATH }} -type l -delete
+  changed_when: false
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
@@ -45,34 +69,23 @@
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
-- name: Copy installation package for Ubuntu
-  # We use Ubuntu 14.04 installation package for Ubuntu 16.04
-  copy: src=irods-icommands-4.1.9-ubuntu{{ [ansible_distribution_major_version, 14] | min }}-x86_64.deb dest=/tmp/
-  when: ansible_distribution == "Ubuntu"
-  tags: icommands-setup
-
-- name: Copy installation package for CentOS 6 and 7
-  copy: src=irods-icommands-4.1.9-centos{{ ansible_distribution_major_version }}-x86_64.rpm dest=/tmp/
-  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
-  tags: icommands-setup
-
-- name: Install FUSE dependencies for CentOS 6 and 7
-  yum: name={{ item }}
-  with_items:
-    - fuse
-    - fuse-libs
-  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
+- name: Download installation package for non-CentOS 5
+  get_url:
+    url: "{{ ICOMMANDS_URL }}"
+    dest: /tmp/icommands-pkg.rpm
+  changed_when: false
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
 - name: Install iCommands for Ubuntu
   apt:
-    deb: /tmp/irods-icommands-4.1.9-ubuntu{{ [ansible_distribution_major_version, 14] | min }}-x86_64.deb
+    deb: /tmp/icommands-pkg.rpm
   when: ansible_distribution == "Ubuntu"
   tags: icommands-setup
 
 - name: Install iCommands for CentOS 6 and 7
   yum:
-    name: /tmp/irods-icommands-4.1.9-centos{{ ansible_distribution_major_version }}-x86_64.rpm
+    name: /tmp/icommands-pkg.rpm
     state: present
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
   tags: icommands-setup
