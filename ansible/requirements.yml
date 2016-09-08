@@ -1,0 +1,5 @@
+---
+
+# from Galaxy
+- src: CyVerse-Ansible.irods-icommands
+  name: irods-icommands

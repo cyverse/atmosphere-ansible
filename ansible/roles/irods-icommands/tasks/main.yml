@@ -1,0 +1,126 @@
+---
+
+- name: Gather OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - vars
+    - icommands-setup
+
+- name: Enable EPEL for CentOS 5
+  yum:
+    name: epel-release
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Install Python 2.6 for CentOS 5
+  yum:
+    name: python26
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Install FUSE dependencies for CentOS
+  yum: name={{ item }}
+  with_items:
+    - fuse
+    - fuse-libs
+  when: (ansible_distribution == "CentOS")
+  tags: icommands-setup
+
+- name: Set Python 2.6 for CentOS 5
+  set_fact: ansible_python_interpreter=/usr/bin/python2.6
+  changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Download iCommands archive for CentOS 5
+  get_url:
+    url: "{{ ICOMMANDS_URL }}"
+    dest: /tmp/{{ ICOMMANDS_TAR }}
+    validate_certs: false
+  changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Extract iCommands for CentOS 5
+  command: "tar -xvf /tmp/{{ ICOMMANDS_TAR }} -C {{ ICOMMANDS_DESTINATION }}"
+  changed_when: false
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags: icommands-setup
+
+- name: Download irodsFs for CentOS 5
+  get_url:
+    url: "{{ IRODSFS_URL }}"
+    dest: "{{ IRODSFS_DESTINATION }}"
+    validate_certs: false
+    mode: a+x
+  changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Set distro default Python interpreter for CentOS 5
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Add iCommands to path for all users except root, for CentOS 5
+  lineinfile: dest=/etc/profile line='export PATH=$PATH:/opt/icommands'
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags: icommands-setup
+
+- name: Add iCommands to path for root user, for CentOS 5
+  lineinfile: dest=/root/.bash_profile line='export PATH=$PATH:/opt/icommands'
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+  tags: icommands-setup
+
+- name: Delete old irodsFs and iCommands executables for non-CentOS 5
+  file: path={{ item }} state=absent
+  with_items:
+    - "{{ IRODSFS_DESTINATION }}"
+    - "{{ IRODSFS_LINK }}"
+    - "{{ ICOMMANDS_DESTINATION }}/icommands"
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Delete any broken soft links in /usr/local/bin
+  command: find -L {{ BIN_PATH }} -type l -delete
+  changed_when: false
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Register list of home directories for removing old path from .bashrc
+  command: "ls /home"
+  register: home_dirs
+  changed_when: false
+  tags: icommands-setup
+
+- name: Remove old iCommands path from all users' .bashrc for non-CentOS 5
+  lineinfile: dest=/home/{{ item }}/.bashrc line='export PATH=$PATH:/opt/icommands' state=absent
+  with_items: "{{ home_dirs.stdout_lines }}"
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Download installation package for non-CentOS 5
+  get_url:
+    url: "{{ ICOMMANDS_URL }}"
+    dest: /tmp/icommands-pkg.rpm
+  changed_when: false
+  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: Install iCommands for Ubuntu
+  apt:
+    deb: /tmp/icommands-pkg.rpm
+  when: ansible_distribution == "Ubuntu"
+  tags: icommands-setup
+
+- name: Install iCommands for CentOS 6 and 7
+  yum:
+    name: /tmp/icommands-pkg.rpm
+    state: present
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
+  tags: icommands-setup

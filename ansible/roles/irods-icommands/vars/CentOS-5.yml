@@ -1,0 +1,10 @@
+IRODSFS_EXECUTABLE: irodsFs_v32.rhel5.x86_64
+IRODSFS_DESTINATION: /usr/local/bin/irodsFs
+IRODSFS_LINK: /usr/local/bin/irodsFs
+
+ICOMMANDS_TAR: icommands_v331.centos.x86_64.tar.bz2
+ICOMMANDS_DESTINATION: /opt
+BIN_PATH: /usr/local/bin
+
+ICOMMANDS_URL: https://s3-us-west-1.amazonaws.com/atmosphere-ansible-files/icommands_v331.centos.x86_64.tar.bz2
+IRODSFS_URL: https://s3-us-west-1.amazonaws.com/atmosphere-ansible-files/irodsFs_v32.rhel5.x86_64
