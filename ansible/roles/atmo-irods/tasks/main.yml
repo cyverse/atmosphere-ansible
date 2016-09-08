@@ -1,9 +1,4 @@
 ---
-- name: set python for centos-5
-  set_fact: ansible_python_interpreter=/usr/bin/python
-  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
-  tags: icommands-setup
-
 # tasks to install irods
 - name: gather os specific variables
   include_vars: "{{ item }}"
@@ -21,6 +16,11 @@
     - fuse
     - fuse-libs
   when: (ansible_distribution == "CentOS")
+  tags: icommands-setup
+
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python2.6
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
 - name: Download iCommands archive for CentOS 5
@@ -45,6 +45,11 @@
     validate_certs: false
     mode: a+x
   changed_when: false
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
+  tags: icommands-setup
+
+- name: set python for centos-5
+  set_fact: ansible_python_interpreter=/usr/bin/python
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
