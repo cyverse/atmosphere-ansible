@@ -5,6 +5,5 @@
   roles:
     - atmo-fail2ban
     - atmo-irods
-    - atmo-idrop
     - atmo-realvncserver
     - atmo-cleanup
