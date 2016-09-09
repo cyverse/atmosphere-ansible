@@ -68,12 +68,18 @@
   tags: icommands-setup
 
 - name: Add iCommands to path for all users except root, for CentOS 5
-  lineinfile: dest=/etc/profile line='export PATH=$PATH:/opt/icommands'
+  lineinfile:
+    dest: /etc/profile
+    line: 'export PATH=$PATH:/opt/icommands'
+    create: yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
   tags: icommands-setup
 
 - name: Add iCommands to path for root user, for CentOS 5
-  lineinfile: dest=/root/.bash_profile line='export PATH=$PATH:/opt/icommands'
+  lineinfile:
+    dest: /root/.bash_profile
+    line: 'export PATH=$PATH:/opt/icommands'
+    create: yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
   tags: icommands-setup
 
