@@ -48,6 +48,10 @@ ansible/util_playbooks/
 ## Troubleshooting Instances
 See this troubleshooting page: [Troubleshooting Atmosphere Ansible](docs/troubleshooting_atmo_ansible.md)
 
+## Contributing to atmosphere-ansible
+Generally, new roles should use Ansible Galaxy and Travis CI as detailed [here](https://pods.iplantcollaborative.org/wiki/display/csmgmt/Ansible+at+CyVerse#AnsibleatCyVerse-AnsibleGalaxyRoles) (only visible to CyVerse staff), and created using [ansible-role-template](https://github.com/cyverse-ansible/ansible-role-template).
+
+
 # License
 
 See [LICENSE](LICENSE) file.
