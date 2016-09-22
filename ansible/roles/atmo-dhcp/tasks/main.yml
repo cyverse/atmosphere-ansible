@@ -30,4 +30,5 @@
 
 - name: atmo-dhcp - manually execute hostname update script
   shell: "{{ DHCP_DESTINATION }}"
+  when: (ansible_distribution != "Ubuntu") or (ansible_distribution_major_version != "16")
   tags: set-hostname
