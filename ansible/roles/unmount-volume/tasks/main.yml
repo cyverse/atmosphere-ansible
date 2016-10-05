@@ -1,12 +1,19 @@
 ---
-# ansible-playbook playbooks/utils/unmount_volume.yml -i hosts --limit "vm0" -e "{'unmount_list': [{ 'name':'/vol1', 'src':'/dev/vdc', 'fstype': 'ext3' }]}"
+# ansible-playbook playbooks/utils/unmount_volume.yml -i hosts --limit "vm0" -e "{ 'src':'/dev/vdc' }"
 
 
 - set_fact: ansible_python_interpreter=/usr/bin/python2.6
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '5')
 
-- debug: var=unmount_list
+- name: register mount point
+  shell: mount | grep {{ src }} | awk '{print $3}'
+  register: name
 
-- name: Looping through a list of mounts, unmount each one
-  mount: name="{{ item.name }}" src="{{ item.src }}" fstype="{{ item.fstype }}" state=unmounted
-  with_items: '{{unmount_list}}'
+- name: register fstype
+  shell: mount | grep {{ src }} | awk '{print $5}'
+  register: fstype
+
+- debug: msg="{{ name.stdout }} {{ src }} {{ fstype.stdout }}"
+
+- name: Unmount mount 
+  mount: name="{{ name.stdout }}" src="{{ src }}" fstype="{{ fstype.stdout }}" state=unmounted
