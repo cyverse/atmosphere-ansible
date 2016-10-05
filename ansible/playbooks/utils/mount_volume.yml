@@ -1,0 +1,5 @@
+---
+- name: Playbook to mount a volume 
+  hosts: atmosphere
+  roles:
+    - mount-volume

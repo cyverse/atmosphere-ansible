@@ -1,0 +1,5 @@
+---
+- name: Playbook to unmount a volume
+  hosts: atmosphere
+  roles:
+    - unmount-volume
