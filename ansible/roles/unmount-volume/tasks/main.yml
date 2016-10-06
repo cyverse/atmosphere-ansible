@@ -14,7 +14,7 @@
   with_items:
     - "{{ result.stdout_lines }}"
 
-- name: Unmount mount 
+- name: Loop through list and unmount
   mount: name="{{ (item |from_json )[0] }}" src="{{ src }}" fstype="{{ (item |from_json )[1] }}" state=unmounted
   with_items:
     - "{{ result.stdout_lines }}"
