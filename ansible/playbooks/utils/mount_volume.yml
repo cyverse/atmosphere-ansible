@@ -1,0 +1,24 @@
+---
+
+- name: Checking for necessary --extra_vars
+  hosts: all
+  vars:
+    example:
+      - "-e \"{'name':'/vol1', 'src':'/dev/vdc', 'fstype': 'ext3'}\""
+
+  tasks:
+
+    - fail: msg="Must set name. Pass a value in via `-e` as JSON {{example[0]}}"
+      when: "{{ name is undefined }}"
+
+    - fail: msg="Must set src. Pass a value in via `-e` as JSON {{example[0]}}"
+      when: "{{ src is undefined }}"
+
+    - fail: msg="Must set fstype. Pass a value in via `-e` as JSON {{example[0]}}"
+      when: "{{ fstype is undefined }}"
+
+
+- name: Playbook to mount a volume 
+  hosts: atmosphere
+  roles:
+    - mount-volume
