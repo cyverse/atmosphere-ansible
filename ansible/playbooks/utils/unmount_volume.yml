@@ -1,4 +1,15 @@
 ---
+- name: Checking for necessary --extra_vars
+  hosts: all
+  vars:
+    example:
+      - "-e \"{src: '/dev/vdc'}\""
+
+  tasks:
+
+    - fail: msg=" Must set pg_version. Pass a value in via `-e` as JSON {{example[0]}}"
+      when: "{{ src is undefined }}"
+
 - name: Playbook to unmount a volume
   hosts: atmosphere
   roles:
