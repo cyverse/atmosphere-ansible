@@ -6,11 +6,11 @@
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '5')
 
 - name: register mountpoint and fstype
-  shell: grep "^/dev/vdc " /proc/mounts | cut -d ' ' -f 2,3 | awk '{ printf "[\"%s\",\"%s\"]\n", $1, $2 }' 
+  shell: grep "^{{ src }} " /proc/mounts | cut -d ' ' -f 2,3 | awk '{ printf "[\"%s\",\"%s\"]\n", $1, $2 }' 
   register: result
 
-- debug: Print out mountpoints for the device {{ src }}
-  msg="{{ (item |from_json )[0] }} {{ src }} {{ (item |from_json )[1] }}" 
+- name: Print out mountpoints for the device {{ src }}
+  debug: msg="{{ (item |from_json )[0] }} {{ src }} {{ (item |from_json )[1] }}" 
   with_items:
     - "{{ result.stdout_lines }}"
 
