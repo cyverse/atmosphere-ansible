@@ -1,2 +1,2 @@
 MOUNTNAME: "/vol"
-MOUNTTYPE: "ext3"
+MOUNTTYPE: "ext4"
