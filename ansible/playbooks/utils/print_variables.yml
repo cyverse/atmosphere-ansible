@@ -1,0 +1,9 @@
+---
+- name: Print out variables based on the IP given
+  hosts: all
+  pre_tasks:
+  -  set_fact: VERBOSE=True
+  roles:
+    - { role: print-all-variables,
+        tags: ['print-vars'] }
+
