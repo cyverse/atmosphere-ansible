@@ -14,21 +14,19 @@
 - name: install required dependencies
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: PKG_DEPENDENCIES.to_install
+  with_items: "{{ PKG_DEPENDENCIES.to_install }}"
   tags: install-dig
 
 - name: atmo-dhcp - create atmo dhcp log file
-  shell: mkdir -p /var/log/atmo && touch /var/log/atmo/dhcp_hostname.log
+  shell: mkdir -p {{ LOG_PATH }} && touch {{ LOG_PATH }}/{{ LOG_NAME }}
 
 - name: atmo-dhcp - change atmo dhcp log file permissions
-  file: path=/var/log/atmo/dhcp_hostname.log state=touch mode=0744
+  file: path={{ LOG_PATH }}/{{ LOG_NAME }} state=touch mode=0744
 
 - name: atmo-dhcp - move over dhcp script
-  copy: src=hostname-exit-hook.sh dest={{ DHCP_DESTINATION }} mode=0755
-  when: (ansible_distribution != "Ubuntu") or (ansible_distribution_major_version != "16")
+  template: src=hostname-exit-hook.sh.j2 dest={{ DHCP_DESTINATION }} mode=0755
   tags: copy-dhcp 
 
 - name: atmo-dhcp - manually execute hostname update script
   shell: "{{ DHCP_DESTINATION }}"
-  when: (ansible_distribution != "Ubuntu") or (ansible_distribution_major_version != "16")
   tags: set-hostname

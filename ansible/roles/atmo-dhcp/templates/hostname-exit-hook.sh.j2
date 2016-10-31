@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PREFIX="js-"
+PREFIX="{{ PREFIX }}"
 
-LOG=/var/log/atmo/dhcp_hostname.log
+LOG={{ LOG_PATH }}/{{ LOG_NAME }}
 
 # Sync OS time using the host's hardware time
 echo $(date +"%m%d%y %H:%M:%S") "Syncing system time with hardware time" >> $LOG
@@ -41,7 +41,7 @@ reverse_lookup ()  {
   fi
 }
 
-MAX_ATTEMPTS=5
+MAX_ATTEMPTS={{ MAX_ATTEMPTS }}
 
 retry=0
 hostname_value=""
@@ -56,6 +56,8 @@ while [ $retry -lt $MAX_ATTEMPTS -a -z "$hostname_value" ]; do
     sleep 1
 done
 
+{% if ADD_EXTERNAL_IP_RESOLUTION_ATTEMPTS %}
+
 # attempt external ip resolution through dyndns
 if [[ -z $hostname_value ]]; then
   myip=$(timeout -s SIGTERM 10 curl -s 'http://checkip.dyndns.org' | sed 's/.*Current IP Address: \([0-9\.]*\).*/\1/g')
@@ -68,7 +70,6 @@ if [[ -z $hostname_value ]]; then
   fi
 fi
 
-
 # attempt external ip resolution through ipify
 if [[ -z $hostname_value ]]; then
   myip=$(curl https://api.ipify.org)
@@ -80,6 +81,8 @@ if [[ -z $hostname_value ]]; then
     fi
   fi
 fi
+
+{% endif %}
 
 # retest hostname value
 if [[ -z $hostname_value ]]; then
