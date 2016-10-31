@@ -32,9 +32,16 @@
 
   # tasks file for exit-code
 - name: see if user is already located in /etc/group
-  command: grep "users:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
+  command: grep "{{ ADD_TO_GROUP.GROUP }}:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
   register: user_not_present
   failed_when: False
+  tags: debug-ssh
+
+- name: add user to /etc/group if user does not exist
+  lineinfile: dest=/etc/group regexp='^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)' line="\1{{ item }},\2" state=present backrefs=yes
+  with_items:
+    - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
+  when: user_not_present.rc == 1
   tags: debug-ssh
 
 - name: add user to /etc/group if user does not exist

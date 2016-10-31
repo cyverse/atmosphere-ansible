@@ -82,3 +82,7 @@ clank
 *-extras/*
 secrets*
 scratch
+
+# testing files we often create
+all-the-pbs.yml
+deploy_vars.yml

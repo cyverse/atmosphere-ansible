@@ -8,9 +8,8 @@
 
 - name: remove mount /home
   mount: name=/home src={{ item }} fstype={{ MOUNTTYPE }} state=absent
-  with_items:
-    - /dev/sda2
-    - /dev/xvda2
+  with_items: '{{ MOUNTPOINTS }}'
+
   failed_when: False
   when: home_mounted is not defined
   tags: mount_home

@@ -61,14 +61,15 @@
 #  shell: hwclock --systohc
 #  when: ntp_installed.stat.exists == False
 
-- name: configure ntp
-  template: src={{ item }} dest={{ NTP_CONFIG }}
-  with_first_found:
-    - "../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.ntp.conf.j2"
-    - "../templates/{{ ansible_distribution }}.ntp.conf.j2"
-    - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
-  tags:
-    - template
+# Skip this task at the request of jetstream
+#- name: configure ntp
+#  template: src={{ item }} dest={{ NTP_CONFIG }}
+#  with_first_found:
+#    - "../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.ntp.conf.j2"
+#    - "../templates/{{ ansible_distribution }}.ntp.conf.j2"
+#    - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
+#  tags:
+#    - template
 
 - name: start ntp service
   action: >

@@ -1,3 +1,7 @@
 MOUNTSOURCE: "vdb"
 MOUNTNAME: "/home"
 MOUNTTYPE: "ext3"
+
+MOUNTPOINTS:
+  - /dev/sda2
+  - /dev/xvda2
