@@ -51,11 +51,11 @@ REQUIRED:
 
 VNC_COMMANDS:
   - "/usr/bin/pkill gnome-screensaver"
-  - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd {{ NOVNC.passwd_file }}"
+  #- /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd {{ NOVNC.passwd_file }}"
   - "/usr/bin/pkill websockify"
-  - /usr/bin/vnclicense -add {{ VNCLICENSE }}
-  - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1 -vncconfigfile /home/{{ ATMOUSERNAME }}/.vnc/config.custom
   - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
-  - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -vncconfigfile {{ NOVNC.config_file }}'"
+  - /usr/bin/vnclicense -add {{ VNCLICENSE }}
+  - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1 
+  #- "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -vncconfigfile {{ NOVNC.config_file }}'"
   # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
-  - "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen {{ NOVNC.socket_port }} --vnc localhost:{{ NOVNC.vnc_port }} &"
+  #- "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen {{ NOVNC.socket_port }} --vnc localhost:{{ NOVNC.vnc_port }} &"

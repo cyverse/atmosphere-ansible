@@ -88,3 +88,14 @@
   tags:
     - novnc
     - check-novnc
+
+# disabled until further notice
+#- name: fail if shell can't talk to vm
+#  wait_for: >
+#    search_regex=OpenSSH
+#    port={{ ansible_port }}
+#    host={{ ansible_host }}
+#    delay=1
+#    timeout={{ SSH_PORT_TIMEOUT }}
+#  tags: gateone_networking_check
+#  delegate_to: shell
