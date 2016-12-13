@@ -1,13 +1,8 @@
 ---
 
-- name: APT update cache as separate step
+- name: APT
   apt:
     update_cache: yes
-  when: ansible_pkg_mgr == "apt"
-  failed_when: false
-
-- name: APT upgrade packages
-  apt:
     upgrade: dist
   when: ansible_pkg_mgr == "apt"
 
