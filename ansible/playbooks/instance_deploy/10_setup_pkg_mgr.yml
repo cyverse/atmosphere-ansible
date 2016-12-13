@@ -1,9 +1,8 @@
 ---
-- name: Playbook updates package manager, performs an update of installed packages, and installs atmosphere dependencies
+- name: Playbook updates package manager and installs atmosphere dependencies
   hosts: atmosphere
   roles:
     - atmo-pre-setup
-    - distro-update
     - atmo-ntp
     - atmo-dhcp
     - ldap
