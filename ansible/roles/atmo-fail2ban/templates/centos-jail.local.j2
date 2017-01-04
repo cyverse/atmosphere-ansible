@@ -501,7 +501,7 @@ filter   = sshd
 action   = ipfw[localhost=192.168.0.1]
            sendmail-whois[name="SSH,IPFW", dest=you@example.com]
 logpath  = /var/log/auth.log
-ignoreip = 168.192.0.1
+#ignoreip = 168.192.0.1
 
 
 # !!! WARNING !!!
@@ -532,7 +532,7 @@ filter   = named-refused
 action   = iptables-multiport[name=Named, port="domain,953", protocol=tcp]
            sendmail-whois[name=Named, dest=you@example.com]
 logpath  = /var/log/named/security.log
-ignoreip = 168.192.0.1
+#ignoreip = 168.192.0.1
 
 
 [nsd]

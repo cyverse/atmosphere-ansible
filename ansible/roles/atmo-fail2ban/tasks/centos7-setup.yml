@@ -42,3 +42,9 @@
 - name: restart fail2ban service
   service: name=fail2ban state=restarted enabled=yes
   tags: restart-fail2ban
+
+- name: configure iptables
+  action: template src=centos7-iptables.j2 dest=/etc/sysconfig/iptables mode=0600
+  tags: configure-iptables
+  notify: restart iptables centos7
+

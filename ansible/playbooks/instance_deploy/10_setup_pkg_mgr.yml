@@ -5,6 +5,4 @@
     - atmo-pre-setup
     - atmo-ntp
     - atmo-dhcp
-    - ldap
     - atmo-fail2ban
-
