@@ -1,3 +1,5 @@
+# This file was created from https://github.com/cyverse-ansible/ansible-role-template
+
 galaxy_info:
   author: Chris Martin, Andre Mercer
   description: Installs iRODS iCommands 4.1.9, including irodsFs
