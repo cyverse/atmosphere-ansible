@@ -4,6 +4,6 @@
   hosts: atmosphere
   roles:
     - atmo-fail2ban
-    - atmo-irods
+    - irods-icommands
     - atmo-realvncserver
     - atmo-cleanup
