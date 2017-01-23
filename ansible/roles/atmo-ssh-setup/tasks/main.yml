@@ -35,7 +35,7 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'" 
+  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'"
   register: centos_remote_user
   ignore_errors: yes
   failed_when: False
@@ -102,22 +102,32 @@
 ###
 # OTHER SSH CONFIG CHANGES
 ##
+
+- name: manual OS detection
+  stat: path=/etc/redhat-release
+  register: os_ver
+  tags:
+    - debug
+    - ssh-restart
+
 - name: /etc/ssh/sshd_config changes
   lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
   with_items:
     - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
     - { regexp: '^UseDNS', line: 'UseDNS no'}
-  
+
   #if port line is commented or not commented out it is removed
 - name: ensure that the ports are correct in sshd_config
   lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="^Port" state=absent
 - lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="^#Port" state=absent
-  
+
   #add 'Port 22' entry
-- lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# What ports, IPs and protocols we listen for" line="# What ports, IPs and protocols we listen for\nPort {{ SSH_PORT }}"
-  when: ansible_distribution == "Ubuntu"
-- lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# default value." line="# default value.\nPort {{ SSH_PORT }}"
-  when: ansible_distribution == "CentOS"
+- name: Add port entry - Ubuntu
+  lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# What ports, IPs and protocols we listen for" line="# What ports, IPs and protocols we listen for\nPort {{ SSH_PORT }}"
+  when: not os_ver.stat.exists
+- name: Add port entry - CentOS
+  lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# default value." line="# default value.\nPort {{ SSH_PORT }}"
+  when: os_ver.stat.exists
 
 - name: Remove all AllowUsers lines to /etc/sshd_config
   lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
@@ -127,7 +137,7 @@
   tags:
     - debug
     - delete
-    
+
 - name: /etc/ssh/sshd_config changes
   lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
   with_items:
@@ -135,17 +145,10 @@
     - { regexp: '^UseDNS', line: 'UseDNS no'}
     - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication yes'}
 
-- name: Append AllowGroups Line to /etc/ssh/sshd_config 
+- name: Append AllowGroups Line to /etc/ssh/sshd_config
   lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
   tags:
     - debug
-
-- name: manual OS detection
-  stat: path=/etc/redhat-release
-  register: os_ver
-  tags:
-    - debug
-    - ssh-restart
 
 - name: restart ssh if ubuntu
   service: name=ssh state=restarted
