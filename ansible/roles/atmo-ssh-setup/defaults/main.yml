@@ -1,7 +1,5 @@
 ---
 
-SSH_OPTIONS_TO_PASS_IN: "-o PreferredAuthentications=publickey"
-
 SSH_ALLOW_GROUPS: "root users"
 
 SSH_PORT: 22
