@@ -4,4 +4,4 @@ SSH_ALLOW_GROUPS: "root users"
 
 SSH_PORT: 22
 
-SSH_OPTIONS: -T -o PreferredAuthentications=publickey -o ConnectTimeout=5
+SSH_OPTIONS: -t -t -o PreferredAuthentications=publickey -o ConnectTimeout=5
