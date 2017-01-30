@@ -19,12 +19,16 @@
   ignore_errors: yes
   when: root_connection.rc != 0
 
+- debug: msg={{root_connection}}
+
 # If root and CentOS connection failed, check for Ubuntu
 - name: Test Ubuntu connection and register ubuntu_connection
   local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }}"
   register: ubuntu_connection
   ignore_errors: yes
   when: root_connection.rc != 0 and centos_connection.rc != 0
+
+- debug: msg={{root_connection}}
 
 # If centos_connection variable exists and CentOS connection succeeded, determine CentOS version
 # and set use_remote_user before continuing to setup-root.yml
