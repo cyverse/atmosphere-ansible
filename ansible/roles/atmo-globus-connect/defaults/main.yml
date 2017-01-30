@@ -1,0 +1,6 @@
+---
+# defaults file for atmo-globus-connect
+
+GLOBUS_ENDPOINT: "{{ ansible_hostname }}"
+
+# GLOBUS_SETUP_KEY: 

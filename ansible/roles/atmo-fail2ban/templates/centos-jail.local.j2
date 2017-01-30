@@ -42,7 +42,7 @@ bantime  = {{ BANTIME }}
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
-findtime  = 600
+findtime  = {{ FINDTIME }} 
 
 # "maxretry" is the number of failures before a host get banned.
 maxretry = {{ MAX_RETRY }}
@@ -501,7 +501,8 @@ filter   = sshd
 action   = ipfw[localhost=192.168.0.1]
            sendmail-whois[name="SSH,IPFW", dest=you@example.com]
 logpath  = /var/log/auth.log
-ignoreip = 168.192.0.1
+#NOTE: This was commented out in jetstream, included in cyverse -- variable already defined as F2B_IGNOREIP -- ask for help!
+#ignoreip = 168.192.0.1
 
 
 # !!! WARNING !!!
@@ -532,7 +533,8 @@ filter   = named-refused
 action   = iptables-multiport[name=Named, port="domain,953", protocol=tcp]
            sendmail-whois[name=Named, dest=you@example.com]
 logpath  = /var/log/named/security.log
-ignoreip = 168.192.0.1
+#NOTE: This was commented out in jetstream, included in cyverse -- variable already defined as F2B_IGNOREIP -- ask for help!
+#ignoreip = 168.192.0.1
 
 
 [nsd]

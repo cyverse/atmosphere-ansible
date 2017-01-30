@@ -5,6 +5,5 @@
     - atmo-pre-setup
     - atmo-ntp
     - atmo-dhcp
-    - ldap
+    - ldap  #TODO: Jetstream: --skip-tags ldap
     - atmo-fail2ban
-

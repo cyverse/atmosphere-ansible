@@ -54,6 +54,7 @@
   shell: ntpdate 1.us.pool.ntp.org
   when: ntp_installed.stat.exists == False
   tags:
+    - ntp
     - time
 
 # Only run if on a hardware system. i.e. non-vm
@@ -68,6 +69,7 @@
     - "../templates/{{ ansible_distribution }}.ntp.conf.j2"
     - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
   tags:
+    - ntp
     - template
 
 - name: start ntp service

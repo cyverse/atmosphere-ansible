@@ -63,7 +63,7 @@
 # MOTD #
 ########
 - name: install motd
-  copy: src=motd dest=/etc/motd
+  template: src=motd dest=/etc/motd
 
 - name: remove motd help text file, if present
   file: path=/etc/update-motd.d/10-help-text state=absent
@@ -109,7 +109,6 @@
 ###########
 # General #
 ###########
-
 - name: remove references to rc.local.atmo in rc.local
   lineinfile: dest=/etc/rc.d/rc.local state=absent line="\n# this is for atmosphere\nif [ -x /etc/rc.d/rc.local.atmo ]; then\n\t/etc/rc.d/rc.local.atmo\nfi" 
   when: ansible_distribution == "CentOS"

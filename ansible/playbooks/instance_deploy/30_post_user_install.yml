@@ -4,6 +4,6 @@
   hosts: atmosphere
   roles:
     - atmo-fail2ban
-    - irods-icommands
-    - atmo-realvncserver
+    - irods-icommands  #TODO: jetstream --skip-tags icommands-setup
+    - atmo-realvncserver  #TODO: jetstream --skip-tags vnc
     - atmo-cleanup

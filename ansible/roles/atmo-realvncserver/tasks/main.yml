@@ -105,7 +105,9 @@
     - 7
     - 8
   failed_when: False
-  tags: kill-vnc
+  tags:
+    - vnc
+    - kill-vnc
 
 - name: install license and start vncserver
   shell: "{{ item }}"
@@ -115,7 +117,6 @@
   when: xsession.stat.exists and xterm.stat.exists
   failed_when: False
   tags: vnc
-
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26

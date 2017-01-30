@@ -10,6 +10,10 @@
   with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}"
   tags: sudoers
 
+- name: remove all instances of atmosphere username in sudoers
+  lineinfile: "dest=/etc/sudoers state=absent regexp='^{{ ATMOUSERNAME }}'"
+  failed_when: false
+
 - name: add users and groups to sudoers
   lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=present
   with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
@@ -17,24 +21,58 @@
 
 - name: start setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
+  tags:
+    - cyverse-user-setup
 
 - name: add irods home dir
   lineinfile: dest=/etc/skel/.bashrc line='export IDS_HOME="/irods/data.iplantc.org/iplant/home/{{ATMOUSERNAME}}"'
+  tags:
+    - cyverse-user-setup
 
 - name: add ids_home varaible to skel .bashrc
   lineinfile: dest=/etc/skel/.bashrc line="alias ids_home='cd $IDS_HOME'"
+  tags:
+    - cyverse-user-setup
 
 - name: close setting up /etc/skel/.bashrc
   lineinfile: dest=/etc/skel/.bashrc line='## End System'
+  tags:
+    - cyverse-user-setup
 
   # tasks file for exit-code
 - name: see if user is already located in /etc/group
   command: grep "users:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
+  tags:
+    - cyverse-user-setup
+
+- name: add atmousername and %users to sudoers
+  lineinfile:
+    dest=/etc/sudoers
+    backup=yes
+    line="{{ item }}"
+  with_items: 
+    - '%users ALL=(ALL) NOPASSWD: ALL'
+    - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
+  tags:
+    - jetstream-user-setup
+
+  # tasks file for exit-code
+- name: see if user is already located in /etc/group
+  command: grep "{{ ADD_TO_GROUP.GROUP }}:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
+  tags:
+    - jetstream-user-setup
   register: user_not_present
   failed_when: False
   tags: debug-ssh
 
-- name: add user to /etc/group if user does not exist
+- name: add ADD_TO_GROUP.GROUP to /etc/group if not present
+  lineinfile: dest=/etc/group regexp='^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)' line="\1{{ item }},\2" state=present backrefs=yes
+  with_items:
+    - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
+  when: user_not_present.rc == 1
+  tags: debug-ssh
+
+- name: add ATMOUSERNAME to /etc/group if user does not exist
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
   when: user_not_present.rc == 1
   tags: debug-ssh

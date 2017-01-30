@@ -1,6 +1,9 @@
 SSH_PORT: '22'
 BANTIME: '1800'
-MAX_RETRY: '3'
+MAX_RETRY: '3'  # Cyverse_master
+FINDTIME: '600'  # Cyverse_master
+#FINDTIME: '30'  #Jetstream
+#MAX_RETRY: '5'  #Jetstream
 DESTEMAIL: 'root@localhost'
 SENDERNAME: 'Fail2Ban'
 F2B_ACTION: 'action_'

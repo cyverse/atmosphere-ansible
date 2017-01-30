@@ -19,3 +19,9 @@ SUDOERS_USERS_AND_GROUPS:
     atmouser_nopass:
       line: "{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
       reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*NOPASSWD:ALL"
+# CYVERSE ONLY
+ADD_TO_GROUP:
+  GROUP:
+    - users
+  LIST_OF_USERS:
+    - iplant-everyone

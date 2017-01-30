@@ -6,3 +6,6 @@
 
 - name: restart fail2ban centos7
   action: service name=fail2ban state=restarted
+
+- name: restart iptables centos7
+  action: service name=iptables state=restarted
