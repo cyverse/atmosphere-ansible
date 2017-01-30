@@ -1,43 +1,46 @@
 ---
 
-- name: get atmo vm ip address
+# We need to set this fact because on the following local_actions, ansible_host is localhost
+- name: Get VM IP address
   set_fact: vm_ip="{{ ansible_host }}"
 
 # Try to connect as root. If this fails, root setup is required
 - name: Test default ansible connection and register root_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} root@{{ vm_ip }} 'echo success' | grep 'success'"
+  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }}"
   register: root_connection
   ignore_errors: yes
 
+- debug: msg={{root_connection}}
+
 # If root connection failed, check for CentOS
 - name: Test CentOS connection and register centos_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} centos@{{ vm_ip }} 'echo success' | grep 'success'"
+  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }}"
   register: centos_connection
   ignore_errors: yes
-  when: root_connection.stdout != "success"
+  when: root_connection.rc != 0
 
 # If root and CentOS connection failed, check for Ubuntu
 - name: Test Ubuntu connection and register ubuntu_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo success' | grep 'success'"
+  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }}"
   register: ubuntu_connection
   ignore_errors: yes
-  when: root_connection.stdout != "success" and centos_connection.stdout != "success"
+  when: root_connection.rc != 0 and centos_connection.rc != 0
 
 # If centos_connection variable exists and CentOS connection succeeded, determine CentOS version
 # and set use_remote_user before continuing to setup-root.yml
 - name: Set use_remote_user variable to "centos"
   set_fact: use_remote_user=centos
-  when: not centos_connection|skipped and centos_connection.stdout == "success"
+  when: not centos_connection|skipped and centos_connection.rc == 0
 
 # If ubuntu_connection variable exists and Ubuntu connection succeeded, do some Ubuntu specific
 # preparation and set use_remote_user before running setup-root.yml
 - name: Set use_remote_user variable to "ubuntu"
   set_fact: use_remote_user=ubuntu
-  when: not ubuntu_connection|skipped and ubuntu_connection.stdout == "success"
+  when: not ubuntu_connection|skipped and ubuntu_connection.rc == 0
 
 - name: Set use_remote_user variable to "root"
   set_fact: use_remote_user=root
-  when: root_connection.stdout == "success"
+  when: root_connection.rc == 0
 
 # First non-local action (need to use remote_user and become)
 # Install Python2.7 for Ubuntu 16.04

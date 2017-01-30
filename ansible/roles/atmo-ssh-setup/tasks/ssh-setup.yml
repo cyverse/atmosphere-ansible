@@ -1,7 +1,5 @@
 ---
 
-# BEYOND THIS POINT, ROOT SSH IS AVAILABLE
-
 - name: Directly check linux distribution
   stat: path=/etc/redhat-release
   register: linux_distro
