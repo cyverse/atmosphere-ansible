@@ -54,9 +54,17 @@
   remote_user: "{{ use_remote_user }}"
   when: use_remote_user == "ubuntu"
 
-- name: Manual CentOS version detection
-  raw: cat /etc/redhat-release | awk '{print $3}'
-  register: centos_version
+# Another non-local action to setup CentOS 5
+- block:
+  - name: Manual CentOS version detection
+    raw: cat /etc/redhat-release | awk '{print $3}' | cut -c1
+    register: centos_version
+
+  - name: Install python-simplejson.x86_64 on CentOS 5
+    raw: yum install -y python-simplejson.x86_64
+    become: yes
+    when: centos_version.stdout_lines == ["5"]
+  remote_user: "{{ use_remote_user }}"
   when: use_remote_user == "centos"
 
 # The previous tasks will have prepared either CentOS or Ubuntu for the setup-root.yml
@@ -64,65 +72,5 @@
   include: setup-root.yml
   when: use_remote_user is defined
 
-# BEYOND THIS POINT, ROOT SSH IS AVAILABLE
-
-- name: Directly check linux distribution
-  stat: path=/etc/redhat-release
-  register: linux_distro
-
-- name: make sure ssh directory exists
-  file: path=/root/.ssh/ state=directory mode="0700"
-
-- name: add ssh keys to authorized_keys
-  authorized_key: user=root key="{{ item }}" state=present
-  with_items: '{{ SSHKEYS }}'
-  when: SSHKEYS is defined
-
-- name: remove ssh keys from authorized_keys
-  authorized_key: user=root key="{{ item }}" state=absent
-  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
-  when: SSH_KEYS_TO_REMOVE is defined
-
-- name: /etc/ssh/sshd_config changes
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
-  with_items:
-    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
-    - { regexp: '^UseDNS', line: 'UseDNS no'}
-
-  # If port line is commented or not commented out it is removed
-- name: ensure that the ports are correct in sshd_config
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="^Port" state=absent
-- lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="^#Port" state=absent
-
-  # Add 'Port 22' entry
-- name: Add port entry - Ubuntu
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# What ports, IPs and protocols we listen for" line="# What ports, IPs and protocols we listen for\nPort {{ SSH_PORT }}"
-  when: use_remote_user == "ubuntu" or not linux_distro.stat.exists
-
-- name: Add port entry - CentOS
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes backrefs=yes regexp="^# default value." line="# default value.\nPort {{ SSH_PORT }}"
-  when: use_remote_user == "centos" or linux_distro.stat.exists
-
-- name: Remove all AllowUsers lines to /etc/sshd_config
-  lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
-  with_items:
-    - AllowUsers
-    - AllowGroups
-
-- name: /etc/ssh/sshd_config changes
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
-  with_items:
-    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
-    - { regexp: '^UseDNS', line: 'UseDNS no'}
-    - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication yes'}
-
-- name: Append AllowGroups Line to /etc/ssh/sshd_config
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
-
-- name: restart ssh - Ubuntu
-  service: name=ssh state=restarted
-  when: use_remote_user == "ubuntu" or not linux_distro.stat.exists
-
-- name: restart sshd - CentOS
-  service: name=sshd state=restarted
-  when: use_remote_user == "centos" or linux_distro.stat.exists
+- name: Now that root access is available, include ssh-setup.yml
+  include: ssh-setup.yml
