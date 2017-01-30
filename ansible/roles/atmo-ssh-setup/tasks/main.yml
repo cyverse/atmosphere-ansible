@@ -1,21 +1,24 @@
 ---
 
+- name: get atmo vm ip address
+  set_fact: vm_ip="{{ ansible_host }}"
+
 # Try to connect as root. If this fails, root setup is required
 - name: Test default ansible connection and register root_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} root@{{ ansible_host }} 'echo success' | grep 'success'"
+  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} root@{{ vm_ip }} 'echo success' | grep 'success'"
   register: root_connection
   ignore_errors: yes
 
 # If root connection failed, check for CentOS
 - name: Test CentOS connection and register centos_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} centos@{{ ansible_host }} 'echo success' | grep 'success'"
+  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} centos@{{ vm_ip }} 'echo success' | grep 'success'"
   register: centos_connection
   ignore_errors: yes
   when: root_connection.stdout != "success"
 
 # If root and CentOS connection failed, check for Ubuntu
 - name: Test Ubuntu connection and register ubuntu_connection
-  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} ubuntu@{{ ansible_host }} 'echo success' | grep 'success'"
+  local_action: "shell ssh -o PreferredAuthentications=publickey -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo success' | grep 'success'"
   register: ubuntu_connection
   ignore_errors: yes
   when: root_connection.stdout != "success" and centos_connection.stdout != "success"
