@@ -6,29 +6,23 @@
 
 # Try to connect as root. If this fails, root setup is required
 - name: Test default ansible connection and register root_connection
-  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit"
+  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit"
   register: root_connection
   ignore_errors: yes
 
-- debug: msg={{root_connection}}
-
 # If root connection failed, check for CentOS
 - name: Test CentOS connection and register centos_connection
-  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit"
+  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit"
   register: centos_connection
   ignore_errors: yes
   when: root_connection.rc != 0
 
-- debug: msg={{root_connection}}
-
 # If root and CentOS connection failed, check for Ubuntu
 - name: Test Ubuntu connection and register ubuntu_connection
-  local_action: "shell ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit"
+  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit"
   register: ubuntu_connection
   ignore_errors: yes
   when: root_connection.rc != 0 and centos_connection.rc != 0
-
-- debug: msg={{root_connection}}
 
 # If centos_connection variable exists and CentOS connection succeeded, determine CentOS version
 # and set use_remote_user before continuing to setup-root.yml
