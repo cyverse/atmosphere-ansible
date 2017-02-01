@@ -28,13 +28,13 @@
   with_items:
     - "{{ SSHD_CHANGES }}"
     - { regexp: "{{ PORT_ENTRY_REGEXP }}", line: "{{ PORT_ENTRY_LINE }}", state: 'present' }
-  tags: sshd_configuration
+  tags: sshd-config
 
 - name: Append AllowGroups Line to /etc/ssh/sshd_config
   lineinfile:
     dest: /etc/ssh/sshd_config
     line: "AllowGroups {{ SSH_ALLOW_GROUPS }}"
-  tags: sshd_configuration
+  tags: sshd-config
 
 - name: Restart SSH service
   service:
