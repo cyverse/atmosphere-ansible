@@ -3,53 +3,55 @@
 # We need to set this fact because on the following local_actions, ansible_host is localhost
 - name: Get VM IP address
   set_fact: vm_ip="{{ ansible_host }}"
+  tags: set_facts
 
-# Try to connect as root. If this fails, root setup is required
-- name: Test default ansible connection and register root_connection
-  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit"
-  register: root_connection
-  ignore_errors: yes
+# SSH as different users to determine which can connect (and determine linux distro)
+- block:
+  - name: Test default ansible connection and register root_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit
+    register: root_connection
 
-# If root connection failed, check for CentOS
-- name: Test CentOS connection and register centos_connection
-  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit"
-  register: centos_connection
-  ignore_errors: yes
-  when: root_connection.rc != 0
+  - name: Test CentOS connection and register centos_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit
+    register: centos_connection
+    when: root_connection.rc != 0
 
-# If root and CentOS connection failed, check for Ubuntu
-- name: Test Ubuntu connection and register ubuntu_connection
-  local_action: "command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit"
-  register: ubuntu_connection
-  ignore_errors: yes
-  when: root_connection.rc != 0 and centos_connection.rc != 0
+  - name: Test Ubuntu connection and register ubuntu_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit
+    register: ubuntu_connection
+    when: root_connection.rc != 0 and centos_connection.rc != 0
+  ignore_errors: true
+  tags: ssh
 
-# If centos_connection variable exists and CentOS connection succeeded, determine CentOS version
-# and set use_remote_user before continuing to setup-root.yml
-- name: Set use_remote_user variable to "centos"
-  set_fact: use_remote_user=centos
-  when: not centos_connection|skipped and centos_connection.rc == 0
+# Set use_remote_user depending on which SSH task succeeded
+- block:
+  - name: Set use_remote_user variable to "centos"
+    set_fact: use_remote_user=centos
+    when: not centos_connection|skipped and centos_connection.rc == 0
 
-# If ubuntu_connection variable exists and Ubuntu connection succeeded, do some Ubuntu specific
-# preparation and set use_remote_user before running setup-root.yml
-- name: Set use_remote_user variable to "ubuntu"
-  set_fact: use_remote_user=ubuntu
-  when: not ubuntu_connection|skipped and ubuntu_connection.rc == 0
+  - name: Set use_remote_user variable to "ubuntu"
+    set_fact: use_remote_user=ubuntu
+    when: not ubuntu_connection|skipped and ubuntu_connection.rc == 0
 
-- name: Set use_remote_user variable to "root"
-  set_fact: use_remote_user=root
-  when: root_connection.rc == 0
+  - name: Set use_remote_user variable to "root"
+    set_fact: use_remote_user=root
+    when: root_connection.rc == 0
+  tags: set_facts
 
-# First non-local action (need to use remote_user and become)
 # Install Python2.7 for Ubuntu 16.04
 - block:
   - name: Manual Ubuntu version detection
-    raw: cat /etc/lsb-release | grep DISTRIB_RELEASE=
+    raw: >
+      cat /etc/lsb-release | grep DISTRIB_RELEASE=
     register: ubuntu_version
 
   - name: Install Python2 on Ubuntu 16.04
-    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-    become: True
+    raw: >
+      test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    become: true
     when: ubuntu_version.stdout.find("DISTRIB_RELEASE=16.04") != -1
 
   - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
@@ -57,25 +59,29 @@
     when: ubuntu_version.stdout.find("DISTRIB_RELEASE=16.04") != -1
   remote_user: "{{ use_remote_user }}"
   when: use_remote_user == "ubuntu"
+  tags: ubuntu16
 
-# Another non-local action to setup CentOS 5
-# There is no "when" condition on the block becuase CentOS 5 will connect as the
-# root user (not as centos user)
+# Setup CentOS 5
+# There is no "when" condition on the block becuase CentOS 5 will connect as the root user (not as centos user)
 - block:
   - name: Manual CentOS version detection
-    raw: cat /etc/redhat-release | awk '{print $3}' | cut -c1
+    raw: >
+      cat /etc/redhat-release | awk '{print $3}' | cut -c1
     register: centos_version
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Install python-simplejson.x86_64 on CentOS 5
-    raw: yum install -y python-simplejson.x86_64
-    become: yes
+    raw: >
+      yum install -y python-simplejson.x86_64
+    become: true
     when: not centos_version|failed and centos_version.stdout_lines == ["5"]
   remote_user: "{{ use_remote_user }}"
+  tags: centos5
 
-# The previous tasks will have prepared either CentOS or Ubuntu for the setup-root.yml
-- name: Include setup-root.yml, use_remote_user will be either 'ubuntu' or 'centos'
+- name: Include setup-root.yml, use_remote_user will be ubuntu, centos, or root
   include: setup-root.yml
+  become: true
+  remote_user: "{{ use_remote_user }}"
   when: use_remote_user is defined
 
 - name: Now that root access is available, include ssh-setup.yml

@@ -1,0 +1,7 @@
+---
+
+SSH_SERVICE: ssh
+
+PORT_ENTRY_REGEXP: "^# What ports, IPs and protocols we listen for"
+
+PORT_ENTRY_LINE: "# What ports, IPs and protocols we listen for\nPort {{ SSH_PORT }}"

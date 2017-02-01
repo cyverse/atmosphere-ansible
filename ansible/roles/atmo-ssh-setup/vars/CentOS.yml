@@ -1,0 +1,7 @@
+---
+
+SSH_SERVICE: sshd
+
+PORT_ENTRY_REGEXP: "^# default value."
+
+PORT_ENTRY_LINE: "# default value.\nPort {{ SSH_PORT }}"
