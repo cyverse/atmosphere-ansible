@@ -61,11 +61,13 @@
   when: use_remote_user == "ubuntu"
   tags: ubuntu16
 
-- name: Include setup-root.yml, use_remote_user will be ubuntu, centos, or root
-  include: setup-root.yml
+- name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
+  include: root-setup.yml
   become: true
   remote_user: "{{ use_remote_user }}"
   when: use_remote_user is defined
+  tags: root-setup
 
 - name: Now that root access is available, include ssh-setup.yml
   include: ssh-setup.yml
+  tags: ssh-setup
