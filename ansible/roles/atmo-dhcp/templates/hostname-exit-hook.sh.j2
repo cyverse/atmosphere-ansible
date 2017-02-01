@@ -2,7 +2,7 @@
 
 PREFIX="{{ PREFIX }}"
 
-LOG={{ LOG_PATH }}/{{ LOG_NAME }}
+LOG={{ LOG_PATH }}/{{ LOG_FILE_NAME }}
 
 # Sync OS time using the host's hardware time
 echo $(date +"%m%d%y %H:%M:%S") "Syncing system time with hardware time" >> $LOG
@@ -29,7 +29,7 @@ get_hostname() {
    fi
 }
 
-# This function will lookup the ip address 
+# This function will lookup the ip address
 reverse_lookup ()  {
   if [ -n "$1" ]; then
     local ip=$1

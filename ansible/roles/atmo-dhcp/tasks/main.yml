@@ -1,46 +1,47 @@
-# tasks file for dhcp
-- name: set python for centos-5
-  set_fact: ansible_python_interpreter=/usr/bin/python
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
+- name: 'Python interpreter set for CentOS 5'
+  set_fact:
+    ansible_python_interpreter: '/usr/bin/python'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"'
   tags:
-    - atmo-dhcp
-    - python
+    - 'python'
 
-- name: atmo-dhcp - gather os specific variables
-  include_vars: "{{ item }}"
+- name: 'OS-specific variables gathered'
+  include_vars: '{{ item }}'
   with_first_found:
-    - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-    - "../vars/{{ ansible_distribution }}.yml"
-    - "../vars/{{ ansible_os_family }}.yml"
-  tags:
-    - atmo-dhcp
+    - '../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml'
+    - '../vars/{{ ansible_distribution }}.yml'
+    - '../vars/{{ ansible_os_family }}.yml'
 
-- name: install required dependencies
+- name: 'atmo-dhcp - dependencies installed'
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: "{{ PKG_DEPENDENCIES.to_install }}"
+  with_items: '{{ PKG_DEPENDENCIES.to_install }}'
   tags:
-    - atmo-dhcp
-    - install-dig
+    - 'install-dig'
 
-- name: atmo-dhcp - create atmo dhcp log file
-  shell: mkdir -p {{ LOG_PATH }} && touch {{ LOG_PATH }}/{{ LOG_NAME }}
-  tags:
-    - atmo-dhcp
+- name: 'atmo-dhcp - DHCP log directory created'
+  file:
+    path: '{{ LOG_PATH }}'
+    state: 'directory'
 
-- name: atmo-dhcp - change atmo dhcp log file permissions
-  file: path={{ LOG_PATH }}/{{ LOG_NAME }} state=touch mode=0744
-  tags:
-    - atmo-dhcp
+- name: 'atmo-dhcp - DHCP log file created'
+  file:
+    path: '{{ LOG_PATH }}/{{ LOG_FILE_NAME }}'
+    state: 'touch'
+    mode: 0744
+  # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
+  register: 'touch_log'
+  changed_when: 'touch_log.diff.before.state != "file"'
 
-- name: atmo-dhcp - move over dhcp script
-  template: src=hostname-exit-hook.sh.j2 dest={{ DHCP_DESTINATION }} mode=0755
+- name: 'atmo-dhcp - DHCP script templated to target'
+  template:
+    src: 'hostname-exit-hook.sh.j2'
+    dest: '{{ DHCP_DESTINATION }}'
+    mode: 0755
   tags:
-    - atmo-dhcp
-    - copy-dhcp
+    - 'copy-dhcp'
 
-- name: atmo-dhcp - manually execute hostname update script
-  shell: "{{ DHCP_DESTINATION }}"
+- name: 'atmo-dhcp - hostname update script manually executed'
+  shell: '{{ DHCP_DESTINATION }}'
   tags:
-    - atmo-dhcp
-    - set-hostname
+    - 'set-hostname'
