@@ -5,12 +5,12 @@ XGUI:
   xterm_path: /usr/bin/xinit
   vnc_dependencies:
     - libfam0
-    - libxext-dev 
-    - libx11-dev 
-    - libc6-dev 
-    - libthunar-vfs-1-2 
+    - libxext-dev
+    - libx11-dev
+    - libc6-dev
+    - libthunar-vfs-1-2
     - libc6
- 
+
   packages:
     - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
   type: deb
@@ -19,8 +19,6 @@ XGUI:
     - { FROM: VNC-Server-5.2.3-Linux-x64.deb, TO: /tmp/VNC-Server-5.2.3-Linux-x64.deb }
     - { FROM: vncserver.custom, TO: /etc/pam.d/vncserver.custom }
     - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
-    - { FROM: config.custom, TO: /etc/vnc/config.custom }
-    #- { FROM: , TO:  }
   files_to_remove:
     - { PATH: /tmp/.X1-lock, STATE: absent }
     - { PATH: /tmp/.X11-unix, STATE: absent }

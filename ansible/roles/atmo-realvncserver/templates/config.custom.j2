@@ -1,8 +1,6 @@
 # vncserver common.custom configuration.
 SecurityTypes=RA2
-#TODO: Line below CyVerse ONLY
-#Permissions=root:f,%core-services:f,:f
-Permissions=root:f,:f
+Permissions={{ REALVNC_SERVER_PERMISSIONS }}
 EnableAutoUpdateChecks=1
 
 # Atmosphere port configuration.
