@@ -1,66 +1,62 @@
 ---
 
-- name: set python for centos-5
-  set_fact: ansible_python_interpreter=/usr/bin/python
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '5'
-  tags: python
+- name: 'Python interpreter set for centos-5'
+  set_fact:
+    ansible_python_interpreter: '/usr/bin/python'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"'
+  tags: 'python'
 
-- name: remove conflicting users and groups to sudoers
-  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=absent
-  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}"
-  tags: sudoers
+- name: 'conflicting users and groups removed from sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: 'yes'
+    regexp: '{{ item.value.reg }}'
+    line: '{{ item.value.line }}'
+    state: 'absent'
+  with_dict: '{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}'
+  tags: 'sudoers'
 
-- name: remove all instances of atmosphere username in sudoers
-  lineinfile: "dest=/etc/sudoers state=absent regexp='^{{ ATMOUSERNAME }}'"
+- name: 'all instances of atmosphere username removed from sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    state: 'absent'
+    regexp: '^{{ ATMOUSERNAME }}'
   failed_when: false
 
-- name: add users and groups to sudoers
-  lineinfile: dest=/etc/sudoers backup=yes regexp={{ item.value.reg }} line={{ item.value.line }} state=present
+- name: 'users and groups added to sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: true
+    regexp: '{{ item.value.reg }}'
+    line: '{{ item.value.line }}'
+    state: 'present'
   with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
-  tags: sudoers
+  tags: 'sudoers'
 
-- name: start setting up /etc/skel/.bashrc
-  lineinfile: dest=/etc/skel/.bashrc line='## Atmosphere System'
-  tags:
-    - cyverse-user-setup
+- name: '/etc/skel/.bashrc populated'
+  lineinfile:
+    dest: '/etc/skel/.bashrc'
+    line: '{{ item }}'
+  with_items: SETUP_USER_BASHRC_LINES
 
-- name: add irods home dir
-  lineinfile: dest=/etc/skel/.bashrc line='export IDS_HOME="/irods/data.iplantc.org/iplant/home/{{ATMOUSERNAME}}"'
-  tags:
-    - cyverse-user-setup
-
-- name: add ids_home varaible to skel .bashrc
-  lineinfile: dest=/etc/skel/.bashrc line="alias ids_home='cd $IDS_HOME'"
-  tags:
-    - cyverse-user-setup
-
-- name: close setting up /etc/skel/.bashrc
-  lineinfile: dest=/etc/skel/.bashrc line='## End System'
-  tags:
-    - cyverse-user-setup
-
-  # tasks file for exit-code
+# TODO does this actually do anything?
 - name: see if user is already located in /etc/group
   command: grep "users:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
-  tags:
-    - cyverse-user-setup
 
-- name: add atmousername and %users to sudoers
+# TODO this sets up passwordless sudo but should we do this earlier
+# as part of "add users and groups to sudoers" with group_vars defined by the deployer?
+- name: 'atmousername and %users added to sudoers'
   lineinfile:
-    dest=/etc/sudoers
-    backup=yes
-    line="{{ item }}"
-  with_items: 
+    dest: '/etc/sudoers'
+    backup: 'yes'
+    line: '{{ item }}'
+  with_items:
     - '%users ALL=(ALL) NOPASSWD: ALL'
     - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
-  tags:
-    - jetstream-user-setup
 
-  # tasks file for exit-code
+# TODOs: 1. logic to only run the following two tasks if deployer defines ADD_TO_GROUP
 - name: see if user is already located in /etc/group
   command: grep "{{ ADD_TO_GROUP.GROUP }}:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
-  tags:
-    - jetstream-user-setup
   register: user_not_present
   failed_when: False
   tags: debug-ssh
@@ -69,12 +65,12 @@
   lineinfile: dest=/etc/group regexp='^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)' line="\1{{ item }},\2" state=present backrefs=yes
   with_items:
     - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
-  when: user_not_present.rc == 1
+  when: 'user_not_present.rc == 1'
   tags: debug-ssh
 
 - name: add ATMOUSERNAME to /etc/group if user does not exist
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
-  when: user_not_present.rc == 1
+  when: 'user_not_present.rc == 1'
   tags: debug-ssh
 
 # add user to docker group
@@ -91,6 +87,7 @@
   stat: path="/home/{{ ATMOUSERNAME }}"
   register: atmouser_home
 
+# TODO why don't we just use the user module to add a user? `useradd` also does this http://www.linfo.org/etc_skel.html
 - name: copy skel files into home directory
   shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
   when: not atmouser_home.stat.exists
