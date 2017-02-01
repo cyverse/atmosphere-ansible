@@ -61,23 +61,6 @@
   when: use_remote_user == "ubuntu"
   tags: ubuntu16
 
-# Setup CentOS 5
-# There is no "when" condition on the block becuase CentOS 5 will connect as the root user (not as centos user)
-- block:
-  - name: Manual CentOS version detection
-    raw: >
-      cat /etc/redhat-release | awk '{print $3}' | cut -c1
-    register: centos_version
-    ignore_errors: true
-
-  - name: Install python-simplejson.x86_64 on CentOS 5
-    raw: >
-      yum install -y python-simplejson.x86_64
-    become: true
-    when: not centos_version|failed and centos_version.stdout_lines == ["5"]
-  remote_user: "{{ use_remote_user }}"
-  tags: centos5
-
 - name: Include setup-root.yml, use_remote_user will be ubuntu, centos, or root
   include: setup-root.yml
   become: true
