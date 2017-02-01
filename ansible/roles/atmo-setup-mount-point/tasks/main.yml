@@ -1,28 +1,40 @@
 ---
-- set_fact: ansible_python_interpreter=/usr/bin/python
-  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '5')
 
-- set_fact: home_mounted=True
-  when: item.mount == '/home'
+# Centos 4!?
+- set_fact:
+    ansible_python_interpreter: '/usr/bin/python'
+  when: '(ansible_distribution == "CentOS" and ansible_distribution_major_version < "5")'
+
+- set_fact:
+    home_mounted: true
+  when: 'item.mount == "/home"'
   with_items: ansible_mounts
 
-- name: remove mount /home
-  mount: name=/home src={{ item }} fstype={{ MOUNTTYPE }} state=absent
-  with_items: '{{ MOUNTPOINTS }}'
+- name: '"/home" unmounted'
+  mount:
+    name: '/home'
+    src: '{{ item }}'
+    fstype: '{{ MOUNT_TYPE }}'
+    state: 'absent'
+  with_items: '{{ MOUNT_POINTS }}'
+  failed_when: false
+  when: 'home_mounted is not defined'
+  tags: 'mount_home'
 
-  failed_when: False
-  when: home_mounted is not defined
-  tags: mount_home
+- name: 'additional mounts removed'
+  mount:
+    name: '{{ item.name }}'
+    src: '{{ item.source }}'
+    fstype: '{{ item.fstype }}'
+    state: 'unmounted'
+  with_items: ADDITIONAL_UNMOUNTS
+  when: 'ADDITIONAL_UNMOUNTS is defined'
 
-# if variable exists, then attempt unmount to these items first
-- name: if exists, remove additional mounts
-  mount: name="{{ item.name }}" src="{{ item.source }}" fstype="{{ item.fstype }}" state=unmounted
-  with_items:
-    ADDITIONAL_UNMOUNTS
-  when: ADDITIONAL_UNMOUNTS is defined
-
-- name: mount /home
-  mount: name={{ MOUNTNAME }} src=/dev/{{ MOUNTSOURCE }} fstype={{ MOUNTTYPE }} state=mounted
-  when: (ansible_devices.{{ MOUNTSOURCE }} is defined) and (home_mounted is not defined)
-  tags: mount_home
-
+- name: '/home mounted'
+  mount:
+    name: '{{ MOUNT_NAME }}'
+    src: '/dev/{{ MOUNT_SOURCE }}'
+    fstype: '{{ MOUNT_TYPE }}'
+    state: 'mounted'
+  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (home_mounted is not defined)'
+  tags: 'mount_home'

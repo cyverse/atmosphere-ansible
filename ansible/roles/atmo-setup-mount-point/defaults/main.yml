@@ -1,7 +1,9 @@
-MOUNTSOURCE: "vdb"
-MOUNTNAME: "/home"
-MOUNTTYPE: "ext3"
+---
 
-MOUNTPOINTS:
-  - /dev/sda2
-  - /dev/xvda2
+MOUNT_SOURCE: 'vdb'
+MOUNT_NAME: '/home'
+MOUNT_TYPE: 'ext4'
+
+MOUNT_POINTS:
+  - '/dev/sda2'
+  - '/dev/xvda2'
