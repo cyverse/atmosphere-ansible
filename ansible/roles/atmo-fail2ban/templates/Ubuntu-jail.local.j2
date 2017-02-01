@@ -26,7 +26,7 @@ bantime  = {{ BANTIME }}
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
 # TODO: Before merge, ensure that jetstream findtime set properly
-findtime = {{ FINDTIME }}
+findtime = {{ FAIL2BAN_FINDTIME }}
 maxretry = {{ MAX_RETRY }}
 
 # "backend" specifies the backend used to get files modification.
@@ -144,8 +144,6 @@ filter   = pam-generic
 # port actually must be irrelevant but lets leave it all for some possible uses
 port     = all
 banaction = iptables-allports
-#TODO: One configuration had `port` disabled and one had this enabled. consider a flag if this is the case.
-port     = anyport
 logpath  = /var/log/auth.log
 maxretry = 6
 
