@@ -1,15 +1,14 @@
 ---
 
-- name: Directly check linux distribution
-  stat: path=/etc/redhat-release
-  register: linux_distro
+- name: It is now possible to gather facts
+  setup:
 
 - name: Gather OS-specific variables
   include_vars: "{{ item.var }}"
   when: "{{ item.condition }}"
   with_items:
-    - { var: 'Ubuntu.yml', condition: "use_remote_user == 'ubuntu' or not linux_distro.stat.exists" }
-    - { var: 'CentOS.yml', condition: "use_remote_user == 'centos' or linux_distro.stat.exists" }
+    - { var: 'Ubuntu.yml', condition: ansible_distribution == "Ubuntu" }
+    - { var: 'CentOS.yml', condition: ansible_distribution == "CentOS" }
   tags: vars
 
 - name: Make sure ssh directory exists with correct permissions
@@ -28,12 +27,7 @@
   with_items:
     - "{{ SSHD_CHANGES }}"
     - { regexp: "{{ PORT_ENTRY_REGEXP }}", line: "{{ PORT_ENTRY_LINE }}", state: 'present' }
-  tags: sshd-config
-
-- name: Append AllowGroups Line to /etc/ssh/sshd_config
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    line: "AllowGroups {{ SSH_ALLOW_GROUPS }}"
+    - { regexp: "", line: "AllowGroups {{ SSH_ALLOW_GROUPS }}", state: 'present' }
   tags: sshd-config
 
 - name: Restart SSH service

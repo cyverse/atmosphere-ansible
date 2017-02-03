@@ -1,7 +1,8 @@
 ---
 
-- name: Clear the tty from suoers
+- name: Clear the tty from sudoers
   raw: sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
+  when: use_remote_user != "root"
 
 - name: Remove the standard cloud disable command
   lineinfile:
