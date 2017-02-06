@@ -20,10 +20,4 @@ SUDOERS_USERS_AND_GROUPS:
       line: "{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
       reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*NOPASSWD:ALL"
 
-# TODO CYVERSE ONLY
-ADD_TO_GROUP:
-  GROUP: users
-  LIST_OF_USERS:
-    - iplant-everyone
-
 SETUP_USER_BASHRC_LINES: []

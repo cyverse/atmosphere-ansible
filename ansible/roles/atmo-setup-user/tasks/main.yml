@@ -39,12 +39,6 @@
     line: '{{ item }}'
   with_items: SETUP_USER_BASHRC_LINES
 
-# TODO does this actually do anything?
-- name: see if user is already located in /etc/group
-  command: grep "users:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
-
-# TODO this sets up passwordless sudo but should we do this earlier
-# as part of "add users and groups to sudoers" with group_vars defined by the deployer?
 - name: 'atmousername and %users added to sudoers'
   lineinfile:
     dest: '/etc/sudoers'
@@ -53,13 +47,15 @@
   with_items:
     - '%users ALL=(ALL) NOPASSWD: ALL'
     - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
+  # We want password-required sudo when we have an LDAP password to authenticate with
+  when: 'SETUP_LDAP is not defined or SETUP_LDAP != true'
 
-# TODOs: 1. logic to only run the following two tasks if deployer defines ADD_TO_GROUP
 - name: see if user is already located in /etc/group
   command: grep "{{ ADD_TO_GROUP.GROUP }}:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
   register: user_not_present
   failed_when: False
   tags: debug-ssh
+  when: ADD_TO_GROUP is defined
 
 - name: add ADD_TO_GROUP.GROUP to /etc/group if not present
   lineinfile: dest=/etc/group regexp='^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)' line="\1{{ item }},\2" state=present backrefs=yes
@@ -67,19 +63,19 @@
     - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
   when: 'user_not_present.rc == 1'
   tags: debug-ssh
+  when: ADD_TO_GROUP is defined
 
-- name: add ATMOUSERNAME to /etc/group if user does not exist
+- name: add ATMOUSERNAME to users group
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
   when: 'user_not_present.rc == 1'
   tags: debug-ssh
 
-# add user to docker group
-- name: see if user is already located in /etc/group
+- name: see if user is already located in docker group
   command: grep docker /etc/group
   register: docker_user_present
   failed_when: False
 
-- name: add user to docker group in /etc/group if docker group exist
+- name: add user to docker group in /etc/group if docker group exists
   lineinfile: dest=/etc/group regexp='^(docker:x:999:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
   when: docker_user_present.rc == 0
 
@@ -87,7 +83,6 @@
   stat: path="/home/{{ ATMOUSERNAME }}"
   register: atmouser_home
 
-# TODO why don't we just use the user module to add a user? `useradd` also does this http://www.linfo.org/etc_skel.html
 - name: copy skel files into home directory
   shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
   when: not atmouser_home.stat.exists
