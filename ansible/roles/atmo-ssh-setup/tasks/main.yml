@@ -59,7 +59,7 @@
   - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
     set_fact: ansible_python_interpreter=/usr/bin/python2.7
   remote_user: "{{ use_remote_user }}"
-  when: use_remote_user == "ubuntu" && ubuntu16.rc == 0
+  when: use_remote_user == "ubuntu" and ubuntu16.rc == 0
 
 - name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
   include: root-setup.yml
