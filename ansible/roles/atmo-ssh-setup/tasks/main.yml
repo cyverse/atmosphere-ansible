@@ -23,10 +23,6 @@
     register: ubuntu_connection
     when: root_connection.rc != 0 and centos_connection.rc != 0
   ignore_errors: true
-- always:
-  - fail:
-      msg: "No remote connection established, atmo-ssh-setup can not continue."
-      when: use_remote_user is not defined
 
 # Set use_remote_user depending on which SSH task succeeded
 - block:
@@ -41,6 +37,10 @@
   - name: Set use_remote_user variable to "root"
     set_fact: use_remote_user=root
     when: root_connection.rc == 0
+- always:
+  - fail:
+      msg: "No remote connection established, atmo-ssh-setup can not continue."
+    when: use_remote_user is not defined
 
 # Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
 # requires Python2.7. Ansible 2.2 includes experimental support for Python3

@@ -10,18 +10,23 @@ SSHD_CHANGES:
   - regexp: '^PermitRootLogin'
     line: 'PermitRootLogin without-password'
     state: 'present'
+
   - regexp: '^UseDNS'
     line: 'UseDNS no'
     state: 'present'
+
   - regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication yes'
     state: 'present'
+
   - regexp: '^Port'
     line: 'Port {{ SSH_PORT }}'
     state: 'present'
+
   - regexp: '^AllowGroups'
     line: 'AllowGroups {{ SSH_ALLOW_GROUPS }}'
     state: 'present'
+    
   - regexp: 'AllowUsers'
     line: ''
     state: 'absent'
