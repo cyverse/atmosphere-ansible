@@ -5,7 +5,6 @@
   set_fact: ansible_python_interpreter=/usr/bin/python
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
   tags:
-    - vnc
     - x
 
 - name: gather os specific variables
@@ -14,7 +13,6 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
   tags:
-    - vnc
     - x
 
 # Only install RealVNC Server if VM is NOT headless
@@ -22,76 +20,72 @@
   stat: path={{ XGUI.xsession_path }}
   register: xsession
   tags:
-    - vnc
     - x
 
 - name: verify that xterm session exists
   stat: path={{ XGUI.xterm_path }}
-  register: xterm 
+  register: xterm
   tags:
-    - vnc
     - x
 
 - name: set flag for GUI systems
   set_fact: has_gui={{ xsession.stat.exists and xterm.stat.exists }}
   tags:
-    - vnc
     - x
     - shell_cmd
     - tar
 
 # Perform install/config if NOT headless
 - name: create needed directories
+  # This is broken, `{{ item }}` is never used, only one directory is created
   file: path=/etc/vnc/config.d state=directory mode=0755
   with_items: XGUI.dirs_to_make
   when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
 
 - name: install the dependencies for vncserver
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
   with_items: '{{ XGUI.vnc_dependencies }}'
   when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
 
 - name: copy required files to remote host
   copy: src={{ item.FROM }} dest={{ item.TO }}
   with_items: '{{ XGUI.files_to_add }}'
   when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
+
+- name: 'custom configuration templated out'
+  template:
+    src: 'config.custom.j2'
+    dest: '/etc/vnc/config.custom'
+  when: has_gui
 
 - name: install the package for vncserver if CentOS 5
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present disable_gpg_check=yes
   with_items: '{{ XGUI.packages }}'
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
-  tags: vnc
 
 - name: install the package for vncserver if CentOS
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present {{ XGUI.extra_args }}
   with_items: '{{ XGUI.packages }}'
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version > '5')
-  tags: vnc
 
 - name: install the package for vncserver if Ubuntu
   action: >
     {{ ansible_pkg_mgr }} deb={{ item }} state=present {{ XGUI.extra_args }}
   with_items: '{{ XGUI.packages }}'
   when: xsession.stat.exists and xterm.stat.exists and ansible_distribution == "Ubuntu"
-  tags: vnc
 
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
   with_items: XGUI.files_to_remove
   when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
 
 - name: create needed directories
   file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
   with_items: XGUI.dirs_to_make
   when: xsession.stat.exists and xterm.stat.exists
-  tags: vnc
 
 - name: kill all running vncserver sessions
   shell: /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -kill :'{{ item }}'"
@@ -106,7 +100,6 @@
     - 8
   failed_when: False
   tags:
-    - vnc
     - kill-vnc
 
 - name: install license and start vncserver
@@ -116,11 +109,9 @@
     - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1
   when: xsession.stat.exists and xterm.stat.exists
   failed_when: False
-  tags: vnc
 
 - name: set environment variables for legacy systems
   set_fact: ansible_python_interpreter=/usr/bin/python26
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
   tags:
-    - vnc
     - x

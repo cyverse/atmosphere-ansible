@@ -2,7 +2,5 @@
 - name: Playbook to add globus connect to the instance
   hosts: atmosphere
   roles:
-      # GLOBUS_ENDPOINT variable required 
-      # TODO: don't uncomment without tagging the role 'globus-connect'
-      # TODO: Cyverse: skip-tags 'globus-connect'
-      # - atmo-globus-connect
+    # GLOBUS_ENDPOINT variable required
+    - { role: atmo-globus-connect, when: SETUP_GLOBUS_CONNECT is defined and SETUP_GLOBUS_CONNECT == true }

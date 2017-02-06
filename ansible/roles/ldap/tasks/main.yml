@@ -5,7 +5,6 @@
   set_fact: ansible_python_interpreter=/usr/bin/python
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
   tags:
-    - ldap
     - python
 
 # tasks to install LDAP
@@ -17,7 +16,6 @@
     - "{{ ansible_os_family }}.yml"
     - "defaults.yml"
   tags:
-    - ldap
     - vars
 
 - name: install ldap packages
@@ -25,7 +23,6 @@
     {{ ansible_pkg_mgr }} name={{ item }} state={{ LDAP_PACKAGES.state }}
   with_items: LDAP_PACKAGES.packages
   tags:
-    - ldap
     - install
 
 ###########################
@@ -36,13 +33,11 @@
   with_items:
     - sssd
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
-  tags: ldap
 
 - name: run ldap authentication command
   shell: "{{ LDAP_AUTHCONFIG }}"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
   tags:
-    - ldap
     - authconfig
 
 - name: template ldap.conf
@@ -52,8 +47,6 @@
     - "{{ ansible_distribution }}.ldap.conf.j2"
     - "{{ ansible_os_family }}.ldap.conf.j2"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
-  tags:
-    - ldap
 
 - name: template system-auth
   template: src={{ item }} dest=/etc/pam.d/system-auth
@@ -66,14 +59,12 @@
       skip: true
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
   tags:
-    - ldap
     - system-auth
 
 - name: template nsswitch.conf
   template: src=CentOS-5.nsswitch.conf.j2 dest=/etc/nsswitch.conf backup=yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
   tags:
-    - ldap
     - nsswitch-conf
 
 ###########################
@@ -86,14 +77,11 @@
     - nslcd
     - nscd
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
-  tags:
-    - ldap
 
 - name: run ldap authentication command
   shell: "{{ LDAP_AUTHCONFIG }}"
   when: ansible_distribution == "CentOS"
   tags:
-    - ldap
     - authconfig
 
 - name: template sssd.conf
@@ -107,7 +95,6 @@
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
   failed_when: False # Don't fail if template can't be created (Because no dir exists)
   tags:
-    - ldap
     - sssd
 
 - name: template ldap.conf
@@ -117,8 +104,6 @@
     - "{{ ansible_distribution }}.ldap.conf.j2"
     - "{{ ansible_os_family }}.ldap.conf.j2"
   when: ansible_distribution == "CentOS"
-  tags:
-    - ldap
 
 - name: template authconfig
   template: src={{ item }} dest=/etc/sysconfig/authconfig backup=yes
@@ -130,7 +115,6 @@
       skip: true
   when: ansible_distribution == "CentOS"
   tags:
-    - ldap
     - authconfig
 
 - name: template password-auth
@@ -143,7 +127,6 @@
       skip: true
   when: ansible_distribution == "CentOS"
   tags:
-    - ldap
     - password-auth
 
 - name: template system-auth
@@ -157,28 +140,24 @@
       skip: true
   when: ansible_distribution == "CentOS"
   tags:
-    - ldap
     - system-auth
 
 - name: restart sssd
   service: name={{ LDAP_SERVICE }} state=restarted enabled=yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
   tags:
-    - ldap
     - restart-sssd
 
 - name: restart messagebus
   service: name=messagebus state=restarted enabled=yes
   when: ansible_distribution == "CentOS"
   tags:
-    - ldap
     - restart-messagebus
 
 - name: restart oddjobd
   service: name=oddjobd state=restarted enabled=yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
   tags:
-    - ldap
     - restart-oddjobd
 
 - name: restart services again just to be safe for CentOS 6
@@ -188,7 +167,6 @@
     - messagebus
     - oddjobd
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
-  tags: ldap
 
 - name: restart services again just to be safe for CentOS 7
   shell: systemctl restart {{ item }}
@@ -197,7 +175,6 @@
     - messagebus
     - oddjobd
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
-  tags: ldap
 
 ###########################
 # Ubuntu OS related tasks
@@ -206,42 +183,36 @@
   template: src=Ubuntu.common-session.j2 dest=/etc/pam.d/common-session backup=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - common-session
 
 - name: template nsswitch.conf
   template: src=Ubuntu.nsswitch.conf.j2 dest=/etc/nsswitch.conf backup=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - nsswitch-conf
 
 - name: template ldap.conf
   template: src=Ubuntu.ldap.conf.j2 dest={{ LDAP_CONF_PATH }} backup=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - ldap-conf
 
 - name: template nslcd.conf
   template: src=Ubuntu.nslcd.conf.j2 dest=/etc/nslcd.conf backup=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - nslcd-conf
 
 - name: restart nslcd
   service: name=nslcd state=restarted enabled=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - restart-nslcd
 
 - name: restart dbus
   service: name=dbus state=restarted enabled=yes
   when: ansible_distribution == "Ubuntu"
   tags:
-    - ldap
     - restart-dbus
 
 - name: restart services again just to be safe
@@ -251,14 +222,12 @@
     - nslcd
     - dbus
   when: ansible_distribution == "Ubuntu"
-  tags: ldap
 
 - name: loop until ldap connection is made, fails if it can't
   command: id {{ TEST_LDAP_USER }}
   register: result
-  until: result.rc == 0 
+  until: result.rc == 0
   retries: 6
   delay: 10
   tags:
-    - ldap
     - verify-ldap
