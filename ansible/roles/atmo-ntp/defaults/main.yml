@@ -1,5 +1,7 @@
 ---
 
+SET_NTP_SERVERS: true
+
 NTP_SERVERS:
     - server 0.us.pool.ntp.org
     - server 1.us.pool.ntp.org
