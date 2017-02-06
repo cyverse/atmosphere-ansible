@@ -9,7 +9,6 @@
   with_items:
     - { var: 'Ubuntu.yml', condition: ansible_distribution == "Ubuntu" }
     - { var: 'CentOS.yml', condition: ansible_distribution == "CentOS" }
-  tags: vars
 
 - name: Make sure ssh directory exists with correct permissions
   file:
@@ -26,9 +25,6 @@
     state: "{{ item.state }}"
   with_items:
     - "{{ SSHD_CHANGES }}"
-    - { regexp: "{{ PORT_ENTRY_REGEXP }}", line: "{{ PORT_ENTRY_LINE }}", state: 'present' }
-    - { regexp: "", line: "AllowGroups {{ SSH_ALLOW_GROUPS }}", state: 'present' }
-  tags: sshd-config
 
 - name: Restart SSH service
   service:

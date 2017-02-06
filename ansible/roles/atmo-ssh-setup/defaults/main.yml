@@ -7,31 +7,21 @@ SSH_PORT: 22
 SSH_OPTIONS: -o PreferredAuthentications=publickey -o ConnectTimeout=2
 
 SSHD_CHANGES:
-  - 1:
-    regexp: '^PermitRootLogin'
+  - regexp: '^PermitRootLogin'
     line: 'PermitRootLogin without-password'
     state: 'present'
-  - 2:
-    regexp: '^UseDNS'
+  - regexp: '^UseDNS'
     line: 'UseDNS no'
     state: 'present'
-  - 3:
-    regexp: '^PasswordAuthentication'
+  - regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication yes'
     state: 'present'
-  - 4:
-    regexp: '^Port'
-    line: ''
-    state: 'absent'
-  - 5:
-    regexp: '#Port'
-    line: ''
-    state: 'absent'
-  - 6:
-    regexp: 'AllowUsers'
-    line: ''
-    state: 'absent'
-  - 7:
-    regexp: 'AllowGroups'
+  - regexp: '^Port'
+    line: 'Port {{ SSH_PORT }}'
+    state: 'present'
+  - regexp: '^AllowGroups'
+    line: 'AllowGroups {{ SSH_ALLOW_GROUPS }}'
+    state: 'present'
+  - regexp: 'AllowUsers'
     line: ''
     state: 'absent'

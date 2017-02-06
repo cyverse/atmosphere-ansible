@@ -3,7 +3,6 @@
 # We need to set this fact because on the following local_actions, ansible_host is localhost
 - name: Get VM IP address
   set_fact: vm_ip="{{ ansible_host }}"
-  tags: set_facts
 
 # SSH as different users to determine which can connect (and determine linux distro)
 - block:
@@ -24,7 +23,6 @@
     register: ubuntu_connection
     when: root_connection.rc != 0 and centos_connection.rc != 0
   ignore_errors: true
-  tags: ssh
 
 # Set use_remote_user depending on which SSH task succeeded
 - block:
@@ -39,35 +37,32 @@
   - name: Set use_remote_user variable to "root"
     set_fact: use_remote_user=root
     when: root_connection.rc == 0
-  tags: set_facts
 
-# Install Python2.7 for Ubuntu 16.04
+# Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
+# requires Python2.7. Ansible 2.2 includes experimental support for Python3
 - block:
   - name: Manual Ubuntu version detection
     raw: >
-      cat /etc/lsb-release | grep DISTRIB_RELEASE=
-    register: ubuntu_version
+      grep -q 'DISTRIB_RELEASE=' /etc/lsb-release
+    register: ubuntu16
 
   - name: Install Python2 on Ubuntu 16.04
     raw: >
       test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
     become: true
-    when: ubuntu_version.stdout.find("DISTRIB_RELEASE=16.04") != -1
+    when: ubuntu16.rc == 0
 
   - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
     set_fact: ansible_python_interpreter=/usr/bin/python2.7
-    when: ubuntu_version.stdout.find("DISTRIB_RELEASE=16.04") != -1
+    when: ubuntu16.rc == 0
   remote_user: "{{ use_remote_user }}"
   when: use_remote_user == "ubuntu"
-  tags: ubuntu16
 
 - name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
   include: root-setup.yml
   become: true
   remote_user: "{{ use_remote_user }}"
   when: use_remote_user is defined
-  tags: root-setup
 
 - name: Now that root access is available, include ssh-setup.yml
   include: ssh-setup.yml
-  tags: ssh-setup
