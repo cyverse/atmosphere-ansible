@@ -46,7 +46,7 @@
   raw: >
     grep -q 'DISTRIB_RELEASE=16\.04' /etc/lsb-release
   register: ubuntu16
-  # when: use_remote_user == "ubuntu"
+  when: use_remote_user == "ubuntu"
 
 # Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
 # requires Python2.7. Ansible 2.2 includes experimental support for Python3
