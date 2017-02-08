@@ -19,11 +19,11 @@ SSHD_CHANGES:
     line: 'PasswordAuthentication yes'
     state: 'present'
 
-  - regexp: '^Port'
+  - regexp: '^#Port'
     line: 'Port {{ SSH_PORT }}'
     state: 'present'
 
-  - regexp: '^#Port'
+  - regexp: '^Port'
     line: 'Port {{ SSH_PORT }}'
     state: 'present'
 
