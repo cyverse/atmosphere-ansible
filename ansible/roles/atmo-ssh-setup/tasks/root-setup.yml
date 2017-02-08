@@ -1,0 +1,27 @@
+---
+
+- name: Clear the tty from sudoers
+  raw: sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
+  when: use_remote_user != "root"
+
+- name: Remove the standard cloud disable command
+  lineinfile:
+    dest: /root/.ssh/authorized_keys
+    state: absent
+    regexp: command\=
+
+- name: Add ssh keys to authorized_keys
+  authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: present
+  with_items: '{{ SSHKEYS }}'
+  when: SSHKEYS is defined
+
+- name: Remove ssh keys from authorized_keys
+  authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: absent
+  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
+  when: SSH_KEYS_TO_REMOVE is defined

@@ -1,6 +1,32 @@
 ---
 
-SSH_OPTIONS_TO_PASS_IN: "-o PreferredAuthentications=publickey"
-
 SSH_ALLOW_GROUPS: "root users"
 
+SSH_PORT: 22
+
+SSH_OPTIONS: -o PreferredAuthentications=publickey -o ConnectTimeout=2
+
+SSHD_CHANGES:
+  - regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin without-password'
+    state: 'present'
+
+  - regexp: '^UseDNS'
+    line: 'UseDNS no'
+    state: 'present'
+
+  - regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication yes'
+    state: 'present'
+
+  - regexp: '^Port'
+    line: 'Port {{ SSH_PORT }}'
+    state: 'present'
+
+  - regexp: '^AllowGroups'
+    line: 'AllowGroups {{ SSH_ALLOW_GROUPS }}'
+    state: 'present'
+
+  - regexp: 'AllowUsers'
+    line: ''
+    state: 'absent'

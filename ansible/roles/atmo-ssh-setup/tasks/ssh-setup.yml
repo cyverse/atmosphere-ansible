@@ -1,0 +1,32 @@
+---
+
+- name: It is now possible to gather facts
+  setup:
+
+- name: Gather OS-specific variables
+  include_vars: "{{ item.var }}"
+  when: "{{ item.condition }}"
+  with_items:
+    - { var: 'Ubuntu.yml', condition: ansible_distribution == "Ubuntu" }
+    - { var: 'CentOS.yml', condition: ansible_distribution == "CentOS" }
+
+- name: Make sure ssh directory exists with correct permissions
+  file:
+    path: /root/.ssh/
+    state: directory
+    mode: "0700"
+
+- name: Make changes to /etc/ssh/sshd_config
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    backup: true
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ SSHD_CHANGES }}"
+
+- name: Restart SSH service
+  service:
+    name: "{{ SSH_SERVICE }}"
+    state: restarted
