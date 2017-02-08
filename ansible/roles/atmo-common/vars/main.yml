@@ -1,0 +1,14 @@
+---
+
+ORG_NAME: CyVerse
+
+#TODO: Verify syntax here is accurate
+#TODO: these are the jetstream variables
+# ORG_NAME: Jetstream
+# EXTRA_MOTD: For assistance, contact help@xsede.org
+EXTRA_MOTD: |
+    The user manual is located here: http://goo.gl/2pT72
+    
+    To backup user data or volumes on a instance: https://goo.gl/hEcS59
+    
+    For assistance, contact support@iplantcollaborative.org.
