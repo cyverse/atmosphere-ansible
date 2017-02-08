@@ -23,6 +23,10 @@ SSHD_CHANGES:
     line: 'Port {{ SSH_PORT }}'
     state: 'present'
 
+  - regexp: '^#Port'
+    line: 'Port {{ SSH_PORT }}'
+    state: 'present'
+
     # This regexp matches all 'Port ' entries that are not {{SSH_PORT}} and removes them
   - regexp: '^Port (?!{{ SSH_PORT }}$)\d'
     line: ''
