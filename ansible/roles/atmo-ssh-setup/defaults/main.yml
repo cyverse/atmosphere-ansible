@@ -23,6 +23,11 @@ SSHD_CHANGES:
     line: 'Port {{ SSH_PORT }}'
     state: 'present'
 
+    # This regexp matches all 'Port ' entries that are not {{SSH_PORT}} and removes them
+  - regexp: '^Port (?!{{ SSH_PORT }}$)\d'
+    line: ''
+    state: 'absent'
+
   - regexp: '^AllowGroups'
     line: 'AllowGroups {{ SSH_ALLOW_GROUPS }}'
     state: 'present'
