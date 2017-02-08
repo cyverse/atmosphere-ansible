@@ -65,6 +65,7 @@
     - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
   tags:
     - template
+  when: SET_NTP_SERVERS == true
 
 - name: start ntp service
   action: >
