@@ -1,9 +1,9 @@
 Atmosphere's Ansible Instance Deployment Setup
 ==============================================
 
-This is an extension point for [Atmosphere](https://github.com/iPlantCollaborativeOpenSource/atmosphere). It defines (with Ansible) how Atmosphere's instances deploy within the targeted cloud provider.
+This is an extension point for [Atmosphere](https://github.com/cyverse/atmosphere). It defines (with Ansible) how Atmosphere's instances deploy within the targeted cloud provider.
 
-To look at how Atmosphere utilizes this module, look at the [`service.deploy.py`](https://github.com/iPlantCollaborativeOpenSource/atmosphere/blob/master/service/deploy.py) and our [subspace](https://github.com/iPlantCollaborativeOpenSource/subspace) module.
+To look at how Atmosphere utilizes this module, look at the [`service.deploy.py`](https://github.com/cyverse/atmosphere/blob/master/service/deploy.py) and our [subspace](https://github.com/cyverse/subspace) module.
 
 Extension Point?
 ----------------
