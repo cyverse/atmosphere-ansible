@@ -1,145 +1,70 @@
 ---
 
-#- name: set flag for CentOS boxes
-#  set_fact: is_cent=True
-#  when: ansible_distribution == "CentOS"
-#  tags:
-#    - centos5
-
-#- name: set flag for CentOS 5 boxes
-#  set_fact: is_cent5=True
-#  when: ansible_distribution_major_version == "5"
-#  tags:
-#    - centos5
-
-- name: set python for centos-5
-  set_fact: ansible_python_interpreter=/usr/bin/python
-  tags: python
- # when: is_cent and is_cent5
-
-- name: get atmo vm ip address
+# We need to set this fact because on the following local_actions, ansible_host is localhost
+- name: Get VM IP address
   set_fact: vm_ip="{{ ansible_host }}"
 
-- debug: msg="Atmo VM IP is {{ vm_ip }}"
+# SSH as different users to determine which can connect (and determine linux distro)
+- block:
+  - name: Test default ansible connection and register root_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit
+    register: root_connection
 
-- name: test default ansible connection
-  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello world test' | grep 'hello'"
-  register: default_remote_user
-  ignore_errors: yes
-  failed_when: False
+  - name: Test CentOS connection and register centos_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit
+    register: centos_connection
+    when: root_connection.rc != 0
 
-- name: print debug message
-  debug: msg="default remote user is {{ default_remote_user }}"
+  - name: Test Ubuntu connection and register ubuntu_connection
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit
+    register: ubuntu_connection
+    when: root_connection.rc != 0 and centos_connection.rc != 0
+  ignore_errors: true
 
-###
-# CENTOS SETUP
-###
-- name: test centos connection
-  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'" 
-  register: centos_remote_user
-  ignore_errors: yes
-  failed_when: False
-  when: default_remote_user.stdout_lines != ["hello"]
+# Set use_remote_user depending on which SSH task succeeded
+- block:
+  - name: Set use_remote_user variable to "centos"
+    set_fact: use_remote_user=centos
+    when: not centos_connection|skipped and centos_connection.rc == 0
 
-- name: print debug message
-  debug: msg="centos remote user is {{ centos_remote_user }}"
-  when: default_remote_user.stdout_lines != ["hello"]
+  - name: Set use_remote_user variable to "ubuntu"
+    set_fact: use_remote_user=ubuntu
+    when: not ubuntu_connection|skipped and ubuntu_connection.rc == 0
 
-# note: success is apparently not a complete condition, must also check for skipped state
-- name: register use_remote_user = centos
-  set_fact: use_remote_user=centos
-  when: not centos_remote_user|skipped and centos_remote_user.stdout_lines == ["hello"]
+  - name: Set use_remote_user variable to "root"
+    set_fact: use_remote_user=root
+    when: root_connection.rc == 0
+- always:
+  - fail:
+      msg: "No remote connection established, atmo-ssh-setup can not continue."
+    when: use_remote_user is not defined
 
-- include: setup-root.yml
-  when: not centos_remote_user|skipped and centos_remote_user.stdout_lines == ["hello"]
+- name: Manual Ubuntu version detection
+  raw: >
+    grep -q 'DISTRIB_RELEASE=16\.04' /etc/lsb-release
+  register: ubuntu16
+  when: use_remote_user == "ubuntu"
 
-###
-# UBUNTU SETUP
-###
-- name: test ubuntu connection
-  local_action: "shell ssh {{ SSH_OPTIONS_TO_PASS_IN }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello' | grep 'hello'"
-  register: ubuntu_remote_user
-  ignore_errors: yes
-  failed_when: False
-  when: default_remote_user.stdout_lines != ["hello"] and centos_remote_user.stdout_lines != ["hello"]
+# Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
+# requires Python2.7. Ansible 2.2 includes experimental support for Python3
+- block:
+  - name: Install Python2 on Ubuntu 16.04
+    raw: >
+      test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    become: true
 
-- name: print debug message
-  debug: msg="Ubuntu remote user is {{ ubuntu_remote_user }}"
-  when: default_remote_user.stdout_lines != ["hello"] and centos_remote_user.stdout_lines != ["hello"]
+  - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
+    set_fact: ansible_python_interpreter=/usr/bin/python2.7
+  remote_user: "{{ use_remote_user }}"
+  when: use_remote_user == "ubuntu" and ubuntu16.rc == 0
 
-# note: success is apparently not a complete condition, must also check for skipped state
-- name: register use_remote_user = ubuntu
-  set_fact: use_remote_user=ubuntu
-  when: not ubuntu_remote_user|skipped and ubuntu_remote_user.stdout_lines == ["hello"]
+- name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
+  include: root-setup.yml
+  become: true
+  remote_user: "{{ use_remote_user }}"
 
-- include: setup-root.yml
-  when: not ubuntu_remote_user|skipped and ubuntu_remote_user.stdout_lines == ["hello"]
-
-###
-# WRAP-UP CLOUD USER FIX
-###
-- name: root should be able to access at this point. perform a simple ping
-  ping:
-
-# this may be needed when default_remote_user succeeded
-- name: make sure ssh directory exists
-  file: path=/root/.ssh/ state=directory mode="0700"
-  when: default_remote_user|success
-
-# this is duplicated code from that of the setup-root, but this needs to be run if root succeeded initially
-- name: add ssh keys to authorized_keys
-  authorized_key: user=root key="{{ item }}" state=present
-  with_items: '{{ SSHKEYS }}'
-  when: default_remote_user|success and SSHKEYS is defined
-
-- name: remove ssh keys from authorized_keys
-  authorized_key: user=root key="{{ item }}" state=absent
-  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
-  when: default_remote_user|success and SSH_KEYS_TO_REMOVE is defined
-
-# at this point, we could disable cloud user, but for now, let's leave in.
-
-###
-# OTHER SSH CONFIG CHANGES
-##
-- name: Remove all AllowUsers lines to /etc/sshd_config
-  lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item }}" state=absent
-  with_items:
-    - AllowUsers
-    - AllowGroups
-  tags:
-    - debug
-    - delete
-    
-- name: /etc/ssh/sshd_config changes
-  lineinfile: dest=/etc/ssh/sshd_config backup=yes regexp="{{ item.regexp }}" line="{{ item.line }}"
-  with_items:
-    - { regexp: '^PermitRootLogin', line: 'PermitRootLogin without-password'}
-    - { regexp: '^UseDNS', line: 'UseDNS no'}
-    - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication yes'}
-
-- name: Append AllowGroups Line to /etc/ssh/sshd_config 
-  lineinfile: dest=/etc/ssh/sshd_config line="AllowGroups {{ SSH_ALLOW_GROUPS }}"
-  tags:
-    - debug
-
-- name: manual OS detection
-  stat: path=/etc/redhat-release
-  register: os_ver
-  tags:
-    - debug
-    - ssh-restart
-
-- name: restart ssh if ubuntu
-  service: name=ssh state=restarted
-  when: not os_ver.stat.exists
-  tags:
-    - debug
-    - ssh-restart
-
-- name: restart sshd if centos
-  service: name=sshd state=restarted
-  when: os_ver.stat.exists
-  tags:
-    - debug
-    - ssh-restart
+- name: Now that root access is available, include ssh-setup.yml
+  include: ssh-setup.yml

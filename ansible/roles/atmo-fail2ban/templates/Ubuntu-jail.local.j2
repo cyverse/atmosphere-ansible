@@ -27,7 +27,7 @@ bantime  = {{ BANTIME }}
 # seconds.
 # TODO: Before merge, ensure that jetstream findtime set properly
 findtime = {{ FAIL2BAN_FINDTIME }}
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 # "backend" specifies the backend used to get files modification.
 # Available options are "pyinotify", "gamin", "polling" and "auto".
@@ -124,7 +124,7 @@ enabled  = true
 port     = {{ SSH_PORT }}
 filter   = sshd
 logpath  = /var/log/auth.log
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 [dropbear]
 
@@ -132,7 +132,7 @@ enabled  = false
 port     = {{ SSH_PORT }}
 filter   = dropbear
 logpath  = /var/log/auth.log
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 # Generic filter for pam. Has to be used with action which bans all ports
 # such as iptables-allports, shorewall
