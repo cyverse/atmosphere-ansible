@@ -63,7 +63,7 @@
 # MOTD #
 ########
 - name: 'install motd file'
-  template:
+  copy:
     content: '{{ MOTD }}'
     dest: '/etc/motd'
 
