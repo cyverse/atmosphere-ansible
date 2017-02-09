@@ -1,0 +1,9 @@
+PREFIX: "js-"  #NOTE: we may want to change this
+
+
+LOG_PATH: /var/log/atmo
+LOG_FILE_NAME: dhcp_hostname.log
+
+MAX_ATTEMPTS: 5
+
+ADD_EXTERNAL_IP_RESOLUTION_ATTEMPTS: false

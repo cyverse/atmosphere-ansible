@@ -19,3 +19,5 @@ SUDOERS_USERS_AND_GROUPS:
     atmouser_nopass:
       line: "{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL"
       reg: "^{{ ATMOUSERNAME }}\\s+ALL=\\(ALL\\)\\s*NOPASSWD:ALL"
+
+SETUP_USER_BASHRC_LINES: []

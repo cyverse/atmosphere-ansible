@@ -41,14 +41,10 @@
 - name: stop ntp service
   action: >
     service name={{ NTP_SERVICE }} state=stopped
-  tags:
-    - ntp
 
 - name: verify that ntp is installed
   stat: path=/etc/ntp.conf
   register: ntp_installed
-  tags:
-    - ntp
 
 - name: update system date manually
   shell: ntpdate 1.us.pool.ntp.org
@@ -69,9 +65,8 @@
     - "../templates/{{ ansible_os_family }}.ntp.conf.j2"
   tags:
     - template
+  when: SET_NTP_SERVERS == true
 
 - name: start ntp service
   action: >
     service name={{ NTP_SERVICE }} state=restarted enabled=yes
-  tags:
-    - ntp

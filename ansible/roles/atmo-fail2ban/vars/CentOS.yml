@@ -1,0 +1,6 @@
+---
+
+fail2ban_dependencies:
+  - 'epel-release'
+
+fail2ban_package_name: 'fail2ban.noarch'

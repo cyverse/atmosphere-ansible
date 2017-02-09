@@ -1,0 +1,10 @@
+---
+#Playbook: 'play_role' will execute a single role (useful for debugging)
+#Example usage:
+#   ansible-playbook playbooks/utils/play_role.yml -e "role_name=atmo-common" -l
+# NOTE: the role_name listed must be included in your 'ansible roles path' as set in ansible.cfg
+- name: Run the role given to you in role_name
+  hosts: all
+  roles:
+    - { role: "{{ role_name }}",}
+

@@ -4,6 +4,6 @@
   hosts: atmosphere
   roles:
     - atmo-fail2ban
-    - irods-icommands
-    - atmo-realvncserver
+    - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
+    - { role: atmo-realvncserver, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
     - atmo-cleanup

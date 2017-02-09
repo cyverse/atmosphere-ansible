@@ -1,0 +1,3 @@
+---
+
+REALVNC_SERVER_PERMISSIONS: 'root:f,:f'

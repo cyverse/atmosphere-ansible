@@ -1,0 +1,10 @@
+---
+
+fail2ban_dependencies:
+  - 'epel-release'
+  - 'iptables'
+  - 'iptables-services'
+  - 'iptables-utils'
+  - 'policycoreutils-python'
+
+fail2ban_package_name: 'fail2ban'

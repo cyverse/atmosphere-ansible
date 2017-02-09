@@ -1,13 +1,108 @@
 ---
 
-- include: centos5-setup.yml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+- set_fact:
+    ansible_python_interpreter: '/usr/bin/python'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version < "6"'
 
-- include: centos-setup.yml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '7'
+- name: 'OS-specific variables gathered'
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '../vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml'
+    - '../vars/{{ ansible_distribution }}.yml'
+    - '../vars/{{ ansible_os_family }}.yml'
 
-- include: centos7-setup.yml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
+- name: 'denyhosts stopped and disabled'
+  service:
+    name: 'denyhosts'
+    state: 'stopped'
+    enabled: false
+  ignore_errors: true
+  failed_when: false
 
-- include: ubuntu-setup.yml
-  when: ansible_distribution == "Ubuntu"
+- name: 'denyhosts uninstalled'
+  package:
+    name: 'denyhosts.noarch'
+    state: 'absent'
+  tags: 'denyhosts-uninstalled'
+
+- name: 'dependencies installed'
+  yum:
+    name: '{{ item }}'
+    state: 'present'
+  with_items: fail2ban_dependencies
+  tags: 'dependencies-installed'
+
+- name: 'fail2ban installed'
+  package:
+    name: '{{ fail2ban_package_name }}'
+    state: present
+  tags: 'fail2ban-installed'
+
+- name: 'fail2ban local jails configured'
+  template:
+    src: '{{ item }}'
+    dest: '/etc/fail2ban/jail.local'
+    mode: 0644
+  notify: 'fail2ban restarted'
+  tags: 'fail2ban-configured'
+  with_first_found:
+    - '../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}-jail.local.j2'
+    - '../templates/{{ ansible_distribution }}-jail.local.j2'
+    - '../templates/{{ ansible_os_family }}-jail.local.j2'
+
+# CentOS 7-specific tasks
+- block:
+
+  - name: 'firewalld stopped and disabled for CentOS 7'
+    service:
+      name: 'firewalld'
+      state: 'stopped'
+      enabled: false
+    tags: 'firewalld-stopped'
+
+  - name: 'iptables configured for CentOS 7'
+    template:
+      src: '{{ ansible_distribution }}-{{ ansible_distribution_major_version}}-iptables.j2'
+      dest: '/etc/sysconfig/iptables'
+      mode: 0600
+    tags: 'iptables-configured'
+    notify: 'iptables restarted'
+
+  - name: 'iptables started and enabled for CentOS 7'
+    service:
+      name: 'iptables'
+      state: 'started'
+      enabled: true
+    tags: 'iptables-enabled'
+
+  - name: 'sshd restarted for CentOS 7'
+    service:
+      name: 'sshd'
+      state: 'restarted'
+    tags: 'sshd-restarted'
+
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"'
+
+- name: 'sshd.log created'
+  file:
+    path: '/var/log/sshd.log'
+    state: 'touch'
+    mode: 0644
+  tags: 'touch-sshd-log'
+  when: 'ansible_distribution == "CentOS"'
+  # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
+  register: touch_log
+  changed_when: touch_log.diff.before.state != "file"
+
+- name: 'all rules flushed from iptables chain'
+  shell: 'iptables --flush'
+  tags: 'firewall-flush'
+  failed_when: false
+  # I am unsure why we are only doing this for certain distros, carried over from before refactor
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version < "7"'
+
+- name: 'fail2ban service enabled'
+  service:
+    name: 'fail2ban'
+    enabled: true
+  tags: 'fail2ban-enabled'

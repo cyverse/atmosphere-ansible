@@ -4,7 +4,6 @@
   roles:
     - atmo-pre-setup
     - atmo-ntp
-    - atmo-dhcp
-    - ldap
+    - { role: atmo-dhcp, when: SETUP_DHCP_CLIENT is defined and SETUP_DHCP_CLIENT == true }
+    - { role: ldap, when: SETUP_LDAP is defined and SETUP_LDAP == true }
     - atmo-fail2ban
-

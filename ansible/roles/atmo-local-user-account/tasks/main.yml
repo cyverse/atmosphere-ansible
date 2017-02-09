@@ -1,0 +1,17 @@
+---
+
+- name: 'local user account created'
+  user:
+    name: '{{ ATMOUSERNAME }}'
+    state: 'present'
+    shell: '/bin/bash'
+  tags:
+    - 'local-user-account'
+
+- name: 'home directory created for user'
+  file:
+    path: '/home/{{ ATMOUSERNAME }}'
+    state: 'directory'
+    mode: 0700
+  tags:
+    - 'home-dir'

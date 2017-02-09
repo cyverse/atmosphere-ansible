@@ -1,8 +1,11 @@
-- name: restart fail2ban ubuntu
-  action: service name=fail2ban state=restarted
+---
 
-- name: restart fail2ban centos
-  action: service name=fail2ban state=restarted
+- name: 'iptables restarted'
+  service:
+    name: iptables
+    state: restarted
 
-- name: restart fail2ban centos7
-  action: service name=fail2ban state=restarted
+- name: 'fail2ban restarted'
+  service:
+    name: fail2ban
+    state: restarted

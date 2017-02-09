@@ -1,13 +1,13 @@
 Atmosphere's Ansible Instance Deployment Setup
 ==============================================
 
-This is an extension point for [Atmosphere](https://github.com/iPlantCollaborativeOpenSource/atmosphere). It defines (with Ansible) how Atmosphere's instances deploy within the targeted cloud provider. 
+This is an extension point for [Atmosphere](https://github.com/cyverse/atmosphere). It defines (with Ansible) how Atmosphere's instances deploy within the targeted cloud provider.
 
-To look at how Atmosphere utilizes this module, look at the [`service.deploy.py`](https://github.com/iPlantCollaborativeOpenSource/atmosphere/blob/master/service/deploy.py) and our [subspace](https://github.com/iPlantCollaborativeOpenSource/subspace) module.
+To look at how Atmosphere utilizes this module, look at the [`service.deploy.py`](https://github.com/cyverse/atmosphere/blob/master/service/deploy.py) and our [subspace](https://github.com/cyverse/subspace) module.
 
 Extension Point?
 ----------------
-We use this term to denote that an installation of Atmosphere could customize / modify the actions performed when deploying virtual machine instances to a cloud provider by alter the [playbooks](ansible/playbooks) defined here. 
+We use this term to denote that an installation of Atmosphere could customize / modify the actions performed when deploying virtual machine instances to a cloud provider by alter the [playbooks](ansible/playbooks) defined here.
 
 Execution Order
 ---------------
@@ -35,6 +35,21 @@ ansible/playbooks/
 └── 66_atmo_user_ssh_keys.yml
 ```
 
+## Configuring atmosphere-ansible
+
+Atmosphere-ansible provides optional functionality that is used in some, but not all deployments.
+
+Enable these optional configurations by setting the corresponding variable to `true` (e.g. in your Ansible group_vars).
+
+| **Variable**             | **Purpose**                                               |
+|--------------------------+-----------------------------------------------------------|
+| SETUP_DHCP_CLIENT        | DHCP client                                               |
+| SETUP_LDAP               | LDAP client for user authentication                       |
+| SETUP_LOCAL_USER_ACCOUNT | Local user account (always runs when SETUP_LDAP not true) |
+| SETUP_IRODS_ICOMMANDS    | iRODS iCommands and iRODS FUSE client                     |
+| SETUP_REALVNC_SERVER     | RealVNC server for Atmosphere Web Desktop feature         |
+| SETUP_GLOBUS_CONNECT     | [Globus Connect](https://www.globus.org/globus-connect)   |
+
 ## Utility Playbooks
 
 These playbooks are called separately via `subspace` to verify things such as network connectivity and VNC status for Atmosphere deployments.
@@ -49,7 +64,7 @@ ansible/util_playbooks/
 See this troubleshooting page: [Troubleshooting Atmosphere Ansible](docs/troubleshooting_atmo_ansible.md)
 
 ## Contributing to atmosphere-ansible
-Generally, new roles should be created using [ansible-role-template](https://github.com/cyverse-ansible/ansible-role-template), using Ansible Galaxy and Travis CI as detailed [here](https://pods.iplantcollaborative.org/wiki/display/csmgmt/Ansible+at+CyVerse#AnsibleatCyVerse-AnsibleGalaxyRoles) (only visible to CyVerse staff).
+Generally, new roles should be created using [ansible-role-template](https://github.com/cyverse-ansible/ansible-role-template) using Ansible Galaxy. Optionally, test roles using Travis CI as detailed [here](https://github.com/c-mart/atmosphere-guides/blob/91106b7422fb24ccc87280519147d0c7bcbe629a/src/contribution_guide/contribution_guide.md#ansible-galaxy-roles).
 
 # License
 
