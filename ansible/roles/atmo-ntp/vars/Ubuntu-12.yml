@@ -1,0 +1,9 @@
+NTP_PACKAGE:
+  name: libssl1.0.0
+  state: installed
+  name: ntp
+  state: installed
+
+NTP_SERVICE: ntp
+
+NTP_CONFIG: /etc/ntp.conf
