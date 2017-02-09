@@ -63,7 +63,7 @@ bantime  = {{ BANTIME }}
 findtime  = {{ FAIL2BAN_FINDTIME }}
 
 # "maxretry" is the number of failures before a host get banned.
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 # "backend" specifies the backend used to get files modification.
 # Available options are "pyinotify", "gamin", "polling", "systemd" and "auto".
@@ -171,7 +171,7 @@ action_xarf = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(po
 
 
 # Report block via blocklist.de fail2ban reporting service API
-# 
+#
 # See the IMPORTANT note in action.d/blocklist_de.conf for when to
 # use this action. Create a file jail.d/blocklist_de.local containing
 # [Init]
@@ -209,7 +209,7 @@ filter   = sshd
 action   = iptables[name=SSH, port={{ SSH_PORT }}, protocol=tcp]
            sendmail-whois[name=SSH, dest={{ DESTEMAIL }}, sender={{ SENDERNAME }}, sendername="{{ SENDERNAME }}"]
 logpath  = /var/log/secure
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 [sshd]
 

@@ -89,7 +89,7 @@
     state: 'touch'
     mode: 0644
   tags: 'touch-sshd-log'
-  when: 'ansible_distribution == "CentOS"
+  when: 'ansible_distribution == "CentOS"'
   # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
   register: touch_log
   changed_when: touch_log.diff.before.state != "file"

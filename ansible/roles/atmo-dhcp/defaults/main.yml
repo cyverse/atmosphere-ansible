@@ -1,4 +1,4 @@
-PREFIX: "js-"
+PREFIX: "js-"  #NOTE: we may want to change this
 
 
 LOG_PATH: /var/log/atmo

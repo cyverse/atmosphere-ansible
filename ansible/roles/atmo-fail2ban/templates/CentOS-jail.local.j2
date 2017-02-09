@@ -45,7 +45,7 @@ bantime  = {{ BANTIME }}
 findtime  = {{ FAIL2BAN_FINDTIME }}
 
 # "maxretry" is the number of failures before a host get banned.
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 # "backend" specifies the backend used to get files modification.
 # Available options are "pyinotify", "gamin", "polling" and "auto".
@@ -98,7 +98,7 @@ filter   = sshd
 action   = iptables[name=SSH, port={{ SSH_PORT }}, protocol=tcp]
            sendmail-whois[name=SSH, dest={{ DESTEMAIL }}, sender={{ SENDERNAME }}, sendername="{{ SENDERNAME }}"]
 logpath  = /var/log/secure
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 
 [ssh-ddos]
@@ -107,7 +107,7 @@ enabled  = false
 filter   = sshd-ddos
 action   = iptables[name=SSHDDOS, port={{ SSH_PORT }}, protocol=tcp]
 logpath  = /var/log/sshd.log
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 
 [dropbear]
@@ -116,7 +116,7 @@ enabled  = false
 filter   = dropbear
 action   = iptables[name=dropbear, port={{ SSH_PORT }}, protocol=tcp]
 logpath  = /var/log/messages
-maxretry = {{ MAX_RETRY }}
+maxretry = {{ FAIL2BAN_MAX_RETRY }}
 
 
 [proftpd-iptables]
