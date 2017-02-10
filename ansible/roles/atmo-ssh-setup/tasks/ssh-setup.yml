@@ -26,14 +26,6 @@
   with_items:
     - "{{ SSHD_CHANGES }}"
 
-- name: Uncomment Port line if it is commented
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    regexp: "^#Port"
-    line: "Port {{ SSH_PORT }}"
-    state: present
-    backrefs: true
-
 - name: Restart SSH service
   service:
     name: "{{ SSH_SERVICE }}"

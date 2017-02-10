@@ -19,10 +19,14 @@ SSHD_CHANGES:
     line: 'PasswordAuthentication yes'
     state: 'present'
 
-    # This regexp matches all 'Port ' entries that are not {{SSH_PORT}} and removes them
-  - regexp: '^Port (?!{{ SSH_PORT }}$)\d'
+    # This regexp matches any line containing 'Port' or 'port'
+  - regexp: '^[\s#]*[Pp]ort.*$'
     line: ''
     state: 'absent'
+
+  - regexp: '\Z'
+    line: 'Port {{ SSH_PORT }}'
+    state: 'present'
 
   - regexp: '^AllowGroups'
     line: 'AllowGroups {{ SSH_ALLOW_GROUPS }}'
