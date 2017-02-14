@@ -48,10 +48,10 @@
     - novnc
 
 - name: check to see if websockify is running
-  shell: /bin/ps aux | grep "/usr/bin/websockify" | grep -v grep
+  shell: /bin/ps aux | grep "websockify" | grep -v grep
   ignore_errors: yes
   failed_when: False
-  register: websocketify_state
+  register: websockify_state
   tags:
     - novnc
 
@@ -82,9 +82,9 @@
     - novnc
     - check-novnc
 
-- name: fail when websocketify is not running
-  fail: msg="Websocketify is not running for user '{{ ATMOUSERNAME }}'"
-  when: websocketify_state.stdout == ""
+- name: fail when websockify is not running
+  fail: msg="Websockify is not running for user '{{ ATMOUSERNAME }}'"
+  when: websockify_state.stdout == ""
   tags:
     - novnc
     - check-novnc
