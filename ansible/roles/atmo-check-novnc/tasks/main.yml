@@ -57,7 +57,7 @@
 
 - name: Fail if novnc is not installed
   action: >
-    {{ ansible_pkg_mgr }} name={{ NOVNC_PACAKGE }} state=present
+    {{ ansible_pkg_mgr }} name={{ NOVNC_PACKAGE }} state=present
   tags:
      - novnc  
 

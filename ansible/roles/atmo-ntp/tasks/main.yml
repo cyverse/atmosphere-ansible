@@ -32,6 +32,13 @@
   tags:
     - time
 
+- name: install ntp prep package(s)
+  action: >
+    {{ ansible_pkg_mgr }} name={{ NTP_PREP_PACKAGE.name }} state={{ NTP_PREP_PACKAGE.state }}
+  when: "{{ NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE != "" }}"
+  tags:
+    - install
+
 - name: install ntp package
   action: >
     {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}

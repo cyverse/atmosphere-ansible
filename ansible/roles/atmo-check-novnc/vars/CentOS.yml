@@ -4,6 +4,6 @@ XGUI:
   xsession_path: /usr/bin/xinit
   xterm_path: /usr/bin/Xorg
 
-NOVNC_PACAKGE: novnc
+NOVNC_PACKAGE: novnc
 
 CHECK_IF_PACKAGE_INSTALLED: rpm -qa | grep novnc
