@@ -190,7 +190,7 @@ fact_caching_timeout = {{ ANSIBLE_FACT_CACHE_TIMEOUT }}
 # ssh arguments to use
 # Leaving off ControlPersist will result in poor performance, so use 
 # paramiko on older platforms rather than removing it
-ssh_args = -o ForwardAgent=yes -o ControlMaster=auto -o StrictHostKeyChecking=no
+ssh_args = -o ForwardAgent=yes -o ControlMaster=auto -o StrictHostKeyChecking=no -o ControlPersist=60s
 
 # The path to use for the ControlPath sockets. This defaults to
 # "%(directory)s/ansible-ssh-%%h-%%p-%%r", however on some systems with
