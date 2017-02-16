@@ -42,7 +42,7 @@ Atmosphere-ansible provides optional functionality that is used in some, but not
 Enable these optional configurations by setting the corresponding variable to `true` (e.g. in your Ansible group_vars).
 
 | **Variable**             | **Purpose**                                               |
-|--------------------------+-----------------------------------------------------------|
+|--------------------------|-----------------------------------------------------------|
 | SETUP_DHCP_CLIENT        | DHCP client                                               |
 | SETUP_LDAP               | LDAP client for user authentication                       |
 | SETUP_LOCAL_USER_ACCOUNT | Local user account (always runs when SETUP_LDAP not true) |
