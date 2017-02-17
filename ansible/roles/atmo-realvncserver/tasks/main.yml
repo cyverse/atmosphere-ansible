@@ -97,7 +97,6 @@
         remote_src: True
       when: ansible_distribution == "Ubuntu"
   when: has_gui
-  tags: my-tests
 
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
