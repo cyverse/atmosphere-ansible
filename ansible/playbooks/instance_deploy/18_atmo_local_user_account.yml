@@ -2,5 +2,4 @@
 - name: Playbook to set up local user accounts
   hosts: atmosphere
   roles:
-    - role: atmo-local-user-account
-      when: (SETUP_LDAP is not defined or SETUP_LDAP != true) or (SETUP_LOCAL_USER_ACCOUNT is defined and SETUP_LOCAL_USER_ACCOUNT == true)
+    - { role: 'atmo-local-user-account', when: '(SETUP_LDAP is not defined) or (SETUP_LDAP|bool != true) or (SETUP_LOCAL_USER_ACCOUNT is defined and SETUP_LOCAL_USER_ACCOUNT|bool == true)' }

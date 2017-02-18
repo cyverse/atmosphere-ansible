@@ -7,5 +7,5 @@
   when: USERSSHKEYS is defined
 
 - name: Add users ssh keys to authorized_keys to home directory of user
-  authorized_key: user={{ ATMOUSERNAME }} key='{{ USERSSHKEYS|join("\n") }}' state=present exclusive=no
-  when: USERSSHKEYS is defined
+  authorized_key: 'user={{ ATMOUSERNAME }} key={{ USERSSHKEYS|join("\n") }} state=present exclusive=no'
+  when: USERSSHKEYS is defined and USERSSHKEYS != ""
