@@ -80,19 +80,19 @@
 - block:
     - name: Copy desktop background to instance
       copy:
-        src: files/atmosphere_wallpaper_v1.jpg
-        dest: /usr/share/backgrounds/
+        src: "{{ background_img }}"
+        dest: /usr/share/backgrounds/cloud_background.jpg
 
     - name: Change desktop background on CentOS
       become: yes
       become_user: "{{ ATMOUSERNAME }}"
       command: >
-        gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/atmosphere_wallpaper_v1.jpg"
+        gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
       when: ansible_distribution == "CentOS"
 
     - name: Change desktop background on Ubuntu
       copy:
-        src: /usr/share/backgrounds/atmosphere_wallpaper_v1.jpg
+        src: /usr/share/backgrounds/cloud_background.jpg
         dest: /usr/share/backgrounds/default.jpg
         remote_src: True
       when: ansible_distribution == "Ubuntu"
