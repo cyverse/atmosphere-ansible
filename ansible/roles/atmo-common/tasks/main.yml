@@ -59,6 +59,11 @@
   tags:
     - timezone
 
+- name: Restart rsyslog so that logs are written with correct timezone
+  service:
+    name: rsyslog
+    state: restarted
+
 ########
 # MOTD #
 ########
