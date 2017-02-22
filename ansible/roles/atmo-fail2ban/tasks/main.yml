@@ -43,6 +43,7 @@
     src: '{{ item }}'
     dest: '/etc/fail2ban/jail.local'
     mode: 0644
+  notify: 'fail2ban restarted'
   tags: 'fail2ban-configured'
   with_first_found:
     - '../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}-jail.local.j2'
