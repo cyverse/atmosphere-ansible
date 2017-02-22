@@ -43,7 +43,6 @@
     src: '{{ item }}'
     dest: '/etc/fail2ban/jail.local'
     mode: 0644
-  notify: 'fail2ban restarted'
   tags: 'fail2ban-configured'
   with_first_found:
     - '../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}-jail.local.j2'
@@ -101,8 +100,9 @@
   # I am unsure why we are only doing this for certain distros, carried over from before refactor
   when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version < "7"'
 
-- name: 'fail2ban service enabled'
+- name: 'fail2ban service started and enabled'
   service:
     name: 'fail2ban'
+    state: started
     enabled: true
   tags: 'fail2ban-enabled'
