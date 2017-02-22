@@ -1,5 +1,8 @@
 ---
 
-# from Galaxy
+# Required roles from Ansible Galaxy
+# Install latest version of required Ansible roles by running the following:
+# ansible-galaxy install -f -r requirements.yml -p roles/
+
 - src: CyVerse-Ansible.irods-icommands
   name: irods-icommands
