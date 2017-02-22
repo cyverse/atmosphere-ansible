@@ -10,6 +10,7 @@ PROCESSES:
 
 SERVICES:
   enabled:
+    - fail2ban
     - ssh
     - ufw
     - ntp
@@ -21,4 +22,3 @@ SERVICES:
     - hidd
     - isdn
     - avahi-daemon
-    
