@@ -101,8 +101,9 @@
   # I am unsure why we are only doing this for certain distros, carried over from before refactor
   when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version < "7"'
 
-- name: 'fail2ban service enabled'
+- name: 'fail2ban service started and enabled'
   service:
     name: 'fail2ban'
+    state: started
     enabled: true
   tags: 'fail2ban-enabled'
