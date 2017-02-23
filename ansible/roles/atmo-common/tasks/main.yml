@@ -61,7 +61,7 @@
 
 - name: Restart rsyslog so that logs are written with correct timezone
   service:
-    name: rsyslog
+    name: '{{ SYSLOG_SERVICE_NAME }}'
     state: restarted
 
 ########

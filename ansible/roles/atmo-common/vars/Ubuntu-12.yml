@@ -25,3 +25,5 @@ PACKAGES:
 
 MODULES_TO_LOAD:
   - acpiphp
+
+SYSLOG_SERVICE_NAME: rsyslog
