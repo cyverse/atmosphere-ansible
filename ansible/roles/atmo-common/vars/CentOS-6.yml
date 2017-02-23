@@ -24,6 +24,8 @@ PACKAGES:
   - python-ldap
   - qemu-guest-agent
 
+SYSLOG_SERVICE_NAME: rsyslog
+
 # Add modules to be loaded here
 #MODULES_TO_LOAD:
-#  - 
+#  -

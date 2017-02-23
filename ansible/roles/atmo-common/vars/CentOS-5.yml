@@ -21,7 +21,8 @@ PACKAGES:
   - python
   - python-ldap
 
+SYSLOG_SERVICE_NAME: syslog
 
 # Add modules to be loaded here
 #MODULES_TO_LOAD:
-#  - 
+#  -
