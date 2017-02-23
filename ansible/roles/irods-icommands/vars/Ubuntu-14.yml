@@ -6,4 +6,4 @@ ICOMMANDS_TAR: icommands_v331.ubuntu.x86_64.tar.bz2
 ICOMMANDS_DESTINATION: /opt
 BIN_PATH: /usr/local/bin
 
-ICOMMANDS_URL: https://s3-us-west-1.amazonaws.com/atmosphere-ansible-files/irods-icommands-4.1.9-ubuntu14-x86_64.deb
+ICOMMANDS_URL: https://s3-us-west-1.amazonaws.com/atmosphere-ansible-files/irods-icommands-4.1.9-cv-64bit-ubuntu-14.deb
