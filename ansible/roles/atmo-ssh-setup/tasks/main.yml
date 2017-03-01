@@ -8,35 +8,35 @@
 - block:
   - name: Test default ansible connection and register root_connection
     local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} exit
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} echo "Atmoshphere is cool!"
     register: root_connection
 
   - name: Test CentOS connection and register centos_connection
     local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} exit
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} echo "Atmoshphere is cool!"
     register: centos_connection
-    when: root_connection.rc != 0
+    when: "'Atmoshphere is cool!' not in root_connection.stdout"
 
   - name: Test Ubuntu connection and register ubuntu_connection
     local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} exit
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} echo "Atmoshphere is cool!"
     register: ubuntu_connection
-    when: root_connection.rc != 0 and centos_connection.rc != 0
-  ignore_errors: true
+    when: "('Atmoshphere is cool!' not in root_connection.stdout) and ('Atmoshphere is cool!' not in centos_connection.stdout)"
+  ignore_errors: True
 
 # Set use_remote_user depending on which SSH task succeeded
 - block:
   - name: Set use_remote_user variable to "centos"
     set_fact: use_remote_user=centos
-    when: not centos_connection|skipped and centos_connection.rc == 0
+    when: "(not centos_connection|skipped) and ('Atmoshphere is cool!' in centos_connection.stdout)"
 
   - name: Set use_remote_user variable to "ubuntu"
     set_fact: use_remote_user=ubuntu
-    when: not ubuntu_connection|skipped and ubuntu_connection.rc == 0
+    when: "(not ubuntu_connection|skipped) and ('Atmoshphere is cool!' in ubuntu_connection.stdout)"
 
   - name: Set use_remote_user variable to "root"
     set_fact: use_remote_user=root
-    when: root_connection.rc == 0
+    when: "'Atmoshphere is cool!' in root_connection.stdout"
 - always:
   - fail:
       msg: "No remote connection established, atmo-ssh-setup can not continue."
@@ -46,6 +46,8 @@
   raw: >
     grep -q 'DISTRIB_RELEASE=16\.04' /etc/lsb-release
   register: ubuntu16
+  remote_user: "{{ use_remote_user }}"
+  ignore_errors: True
   when: use_remote_user == "ubuntu"
 
 # Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
@@ -54,7 +56,7 @@
   - name: Install Python2 on Ubuntu 16.04
     raw: >
       test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-    become: true
+    become: True
 
   - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
     set_fact: ansible_python_interpreter=/usr/bin/python2.7
@@ -63,7 +65,7 @@
 
 - name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
   include: root-setup.yml
-  become: true
+  become: True
   remote_user: "{{ use_remote_user }}"
 
 - name: Now that root access is available, include ssh-setup.yml
