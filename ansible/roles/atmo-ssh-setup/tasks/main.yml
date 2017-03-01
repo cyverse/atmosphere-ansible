@@ -15,28 +15,28 @@
     local_action: >
       command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} echo "Atmoshphere is cool!"
     register: centos_connection
-    when: "Atmoshphere is cool!" not in root_connection.stdout
+    when: "'Atmoshphere is cool!' not in root_connection.stdout"
 
   - name: Test Ubuntu connection and register ubuntu_connection
     local_action: >
       command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} echo "Atmoshphere is cool!"
     register: ubuntu_connection
-    when: ("Atmoshphere is cool!" not in root_connection.stdout) and ("Atmoshphere is cool!" not in centos_connection.stdout)
+    when: "('Atmoshphere is cool!' not in root_connection.stdout) and ('Atmoshphere is cool!' not in centos_connection.stdout)"
   ignore_errors: true
 
 # Set use_remote_user depending on which SSH task succeeded
 - block:
   - name: Set use_remote_user variable to "centos"
     set_fact: use_remote_user=centos
-    when: (not centos_connection|skipped) and ("Atmoshphere is cool!" in centos_connection.stdout)
+    when: "(not centos_connection|skipped) and ('Atmoshphere is cool!' in centos_connection.stdout)"
 
   - name: Set use_remote_user variable to "ubuntu"
     set_fact: use_remote_user=ubuntu
-    when: (not ubuntu_connection|skipped) and ("Atmoshphere is cool!" in ubuntu_connection.stdout)
+    when: "(not ubuntu_connection|skipped) and ('Atmoshphere is cool!' in ubuntu_connection.stdout)"
 
   - name: Set use_remote_user variable to "root"
     set_fact: use_remote_user=root
-    when: "Atmoshphere is cool!" in root_connection.stdout
+    when: "'Atmoshphere is cool!' in root_connection.stdout"
 - always:
   - fail:
       msg: "No remote connection established, atmo-ssh-setup can not continue."
