@@ -37,7 +37,7 @@
   lineinfile:
     dest: '/etc/skel/.bashrc'
     line: '{{ item }}'
-  with_items: SETUP_USER_BASHRC_LINES
+  with_items: '{{ SETUP_USER_BASHRC_LINES }}'
 
 - name: 'atmousername and %users added to sudoers'
   lineinfile:

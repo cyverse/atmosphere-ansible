@@ -2,7 +2,7 @@
 
 - name: Add users ssh keys to authorized_keys
   authorized_key: user=root key="{{ item }}" state=present
-  with_items: USERSSHKEYS
+  with_items: '{{ USERSSHKEYS }}'
   become: yes
   when: USERSSHKEYS is defined
 

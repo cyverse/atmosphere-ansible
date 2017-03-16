@@ -32,7 +32,7 @@
 - name: install dependencies
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: PACKAGES
+  with_items: '{{ PACKAGES }}'
   tags: install
 
 ############

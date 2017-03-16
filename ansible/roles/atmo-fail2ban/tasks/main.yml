@@ -29,7 +29,8 @@
   yum:
     name: '{{ item }}'
     state: 'present'
-  with_items: fail2ban_dependencies
+  with_items: '{{ fail2ban_dependencies }}'
+  when: 'ansible_distribution == "CentOS"'
   tags: 'dependencies-installed'
 
 - name: 'fail2ban installed'

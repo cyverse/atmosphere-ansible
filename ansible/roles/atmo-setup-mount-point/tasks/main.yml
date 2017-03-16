@@ -8,7 +8,7 @@
 - set_fact:
     home_mounted: true
   when: 'item.mount == "/home"'
-  with_items: ansible_mounts
+  with_items: '{{ ansible_mounts }}'
 
 - name: '"/home" unmounted'
   mount:
@@ -27,7 +27,7 @@
     src: '{{ item.source }}'
     fstype: '{{ item.fstype }}'
     state: 'unmounted'
-  with_items: ADDITIONAL_UNMOUNTS
+  with_items: '{{ ADDITIONAL_UNMOUNTS }}'
   when: 'ADDITIONAL_UNMOUNTS is defined'
 
 - name: '/home mounted'
