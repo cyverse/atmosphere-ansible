@@ -1,11 +1,26 @@
 ---
 
 - name: Add users ssh keys to authorized_keys
-  authorized_key: user=root key="{{ item }}" state=present
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ item }}"
   with_items: '{{ USERSSHKEYS }}'
   become: yes
   when: USERSSHKEYS is defined
 
+# See https://github.com/ansible/ansible/issues/11257 , https://github.com/ansible/ansible-modules-core/issues/1515
+- name: verify that home directory of user exists (to avoid ansible error)
+  stat:
+    path: "/home/{{ ATMOUSERNAME }}"
+  register: user_home_dir
+  when: ATMOUSERNAME is defined
+
+
 - name: Add users ssh keys to authorized_keys to home directory of user
-  authorized_key: 'user={{ ATMOUSERNAME }} key={{ USERSSHKEYS|join("\n") }} state=present exclusive=no'
-  when: USERSSHKEYS is defined and USERSSHKEYS != ""
+  authorized_key:
+    user: "{{ ATMOUSERNAME }}"
+    state: present
+    exclusive: no
+    key: '{{ USERSSHKEYS|join("\n") }}'
+  when: ATMOUSERNAME is defined and USERSSHKEYS is defined and user_home_dir.stat.exists
