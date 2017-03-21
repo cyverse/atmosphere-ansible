@@ -1,3 +1,5 @@
 ---
 
 REALVNC_SERVER_PERMISSIONS: 'root:f,:f'
+
+background_img: 'files/atmosphere_wallpaper_v1.jpg'

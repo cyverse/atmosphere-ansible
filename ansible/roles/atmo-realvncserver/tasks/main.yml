@@ -77,6 +77,27 @@
   with_items: '{{ XGUI.packages }}'
   when: xsession.stat.exists and xterm.stat.exists and ansible_distribution == "Ubuntu"
 
+- block:
+    - name: Copy desktop background to instance
+      copy:
+        src: "{{ background_img }}"
+        dest: /usr/share/backgrounds/cloud_background.jpg
+
+    - name: Change desktop background on CentOS
+      become: yes
+      become_user: "{{ ATMOUSERNAME }}"
+      command: >
+        gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
+      when: ansible_distribution == "CentOS"
+
+    - name: Change desktop background on Ubuntu
+      copy:
+        src: /usr/share/backgrounds/cloud_background.jpg
+        dest: /usr/share/backgrounds/default.jpg
+        remote_src: True
+      when: ansible_distribution == "Ubuntu"
+  when: has_gui
+
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
   with_items: '{{ XGUI.files_to_remove }}'
