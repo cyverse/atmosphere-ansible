@@ -21,7 +21,7 @@
 - name: install ldap packages
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state={{ LDAP_PACKAGES.state }}
-  with_items: LDAP_PACKAGES.packages
+  with_items: '{{ LDAP_PACKAGES.packages }}'
   tags:
     - install
 

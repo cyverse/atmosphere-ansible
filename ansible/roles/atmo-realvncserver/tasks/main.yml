@@ -39,7 +39,7 @@
 - name: create needed directories
   # This is broken, `{{ item }}` is never used, only one directory is created
   file: path=/etc/vnc/config.d state=directory mode=0755
-  with_items: XGUI.dirs_to_make
+  with_items: '{{ XGUI.dirs_to_make }}'
   when: xsession.stat.exists and xterm.stat.exists
 
 - name: install the dependencies for vncserver
@@ -77,14 +77,35 @@
   with_items: '{{ XGUI.packages }}'
   when: xsession.stat.exists and xterm.stat.exists and ansible_distribution == "Ubuntu"
 
+- block:
+    - name: Copy desktop background to instance
+      copy:
+        src: "{{ background_img }}"
+        dest: /usr/share/backgrounds/cloud_background.jpg
+
+    - name: Change desktop background on CentOS
+      become: yes
+      become_user: "{{ ATMOUSERNAME }}"
+      command: >
+        gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
+      when: ansible_distribution == "CentOS"
+
+    - name: Change desktop background on Ubuntu
+      copy:
+        src: /usr/share/backgrounds/cloud_background.jpg
+        dest: /usr/share/backgrounds/default.jpg
+        remote_src: True
+      when: ansible_distribution == "Ubuntu"
+  when: has_gui
+
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
-  with_items: XGUI.files_to_remove
+  with_items: '{{ XGUI.files_to_remove }}'
   when: xsession.stat.exists and xterm.stat.exists
 
 - name: create needed directories
   file: path={{ item.PATH }} state={{ item.STATE }} mode={{ item.MODE }}
-  with_items: XGUI.dirs_to_make
+  with_items: '{{ XGUI.dirs_to_make }}'
   when: xsession.stat.exists and xterm.stat.exists
 
 - name: kill all running vncserver sessions
@@ -105,8 +126,8 @@
 - name: install license and start vncserver
   shell: "{{ item }}"
   with_items:
-    - /usr/bin/vnclicense -add {{ VNCLICENSE }}
-    - /bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1
+    - '/usr/bin/vnclicense -add {{ VNCLICENSE }}'
+    - '/bin/su {{ ATMOUSERNAME }} -c /usr/bin/vncserver :1'
   when: xsession.stat.exists and xterm.stat.exists
   failed_when: False
 
