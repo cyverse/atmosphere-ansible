@@ -6,22 +6,11 @@ Atmosphere has a semi-complex Instance Deployment process, in that it requires a
 
 The latest code (usually `master`) for Atmosphere Ansible.
 
-### CyVerse Atmosphere
-
-* Site: <https://github.com/iPlantCollaborativeOpenSource/atmosphere-ansible>
+* Site: <https://github.com/cyverse/atmosphere-ansible>
 * Repository:
 
 	```
-	git clone https://github.com/iPlantCollaborativeOpenSource/atmosphere-ansible.git repo-clone
-	```
-
-### Jetstream Atmosphere
-
-* Site: <https://github.com/jetstream-cloud/atmosphere-ansible>
-* Repository:
-
-	```
-	git clone https://github.com/jetstream-cloud/atmosphere-ansible.git repo-clone
+	git clone https://github.com/cyverse/atmosphere-ansible.git repo-clone
 	```
 
 ## Set up Environment
@@ -64,7 +53,7 @@ The latest code (usually `master`) for Atmosphere Ansible.
 
 	OR
 
-	- Clone group_vars/ and hosts from: <https://github.com/iPlantCollaborativeOpenSource/clank/tree/master/dist_files> into `<path-to-repo-clone>/ansible/`
+	- Clone group_vars/ and hosts from: <https://github.com/cyverse/clank/tree/master/dist_files> into `<path-to-repo-clone>/ansible/`
 	- Rename `hosts.dist` to `hosts`
 
 1. Basic testing structure for Ansible hosts files and vars

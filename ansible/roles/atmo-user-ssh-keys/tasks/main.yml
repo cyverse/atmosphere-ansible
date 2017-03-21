@@ -5,7 +5,7 @@
     user: root
     state: present
     key: "{{ item }}"
-  with_items: USERSSHKEYS
+  with_items: '{{ USERSSHKEYS }}'
   become: yes
   when: USERSSHKEYS is defined
 

@@ -185,10 +185,9 @@
   when: has_gui
   tags: vnc
 
-# NOTE: `template xstartup... for centos 7` was in jetstream *ONLY* and should be evaluated
-# EJS - this is a quick, horrible fix. This whole playbook needs to be rewritten.
+# NOTE template xstartup for centos 7 was in jetstream ONLY and should be evaluated
 - name: template xstartup for vncserver for centos 7
-  template: src=xstartup-cent7.j2 dest="/home/{{ ATMOUSERNAME }}/.vnc/xstartup" mode=0755 owner={{ ATMOUSERNAME }} #group={{ ATMOUSERNAME }}
+  template: src=xstartup-cent7.j2 dest="/home/{{ ATMOUSERNAME }}/.vnc/xstartup" mode=0755 owner="{{ ATMOUSERNAME }}"
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
   tags: vnc
 

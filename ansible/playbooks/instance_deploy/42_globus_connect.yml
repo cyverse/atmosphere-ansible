@@ -3,4 +3,4 @@
   hosts: atmosphere
   roles:
     # GLOBUS_ENDPOINT variable required
-    - { role: atmo-globus-connect, when: SETUP_GLOBUS_CONNECT is defined and SETUP_GLOBUS_CONNECT == true }
+    # - { role: atmo-globus-connect, when: SETUP_GLOBUS_CONNECT is defined and SETUP_GLOBUS_CONNECT == true }

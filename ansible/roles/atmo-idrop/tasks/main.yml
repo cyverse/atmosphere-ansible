@@ -31,11 +31,11 @@
 
 - name: copy idrop.desktop to each Desktop folder in the /home/users/
   copy: src=idrop.desktop dest=/home/{{ item }}/Desktop/idrop.desktop
-  with_items: contents.stdout_lines
+  with_items: '{{ contents.stdout_lines }}'
 
 - name: chown idrop.desktop file in users home
   file: path=/home/{{ item }}/Desktop/idrop.desktop owner="{{ item }}" group=iplant-everyone mode=0744
-  with_items: contents.stdout_lines
+  with_items: '{{ contents.stdout_lines }}'
 
 - name: delete some files
   file: path=/opt/irodsidrop state=absent

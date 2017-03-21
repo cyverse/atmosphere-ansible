@@ -1,0 +1,56 @@
+---
+language: python
+python: "2.7"
+
+sudo: required
+dist: trusty
+services:
+  - docker
+
+env:
+  - distribution: centos
+    version: 7
+  - distribution: centos
+    version: 6
+# No supported/sane way to run Ansible inside a CentOS 5 Docker container;
+#   - distribution: centos
+#     version: 5
+#     pkg_cmd: yum
+  - distribution: ubuntu
+    version: 16.04
+  - distribution: ubuntu
+    version: 14.04
+  - distribution: ubuntu
+    version: 12.04
+
+before_install:
+  - 'sudo docker run -it --name=test_dummy --privileged --detach --volume="${PWD}":/etc/ansible/roles/role_under_test:rw cyverse/ansible-test:latest-${distribution}-${version} bash'
+
+script:
+  # Syntax check
+  - sudo docker exec test_dummy ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -i tests/inventory --syntax-check
+
+  # Run playbook to install iCommands and irodsFs
+  - "sudo docker exec test_dummy ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -i tests/inventory --connection=local"
+
+  # Smoke test that commands run
+  - >
+    sudo docker exec test_dummy irodsFs 2>&1 | grep -iq "fuse"
+    && (echo 'Test for irodsFs command: pass' && exit 0)
+    || (echo 'Test for irodsFs command: fail' && exit 1)
+
+  - >
+    sudo docker exec test_dummy ils 2>&1 | grep -q "USER_RODS_HOST_EMPTY"
+    && (echo 'Test for ils command: pass' && exit 0)
+    || (echo 'Test for ils command: fail' && exit 1)
+
+  # Idempotence test
+  - >
+    sudo docker exec test_dummy ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -i tests/inventory --connection=local
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+
+
+notifications:
+    webhooks: https://galaxy.ansible.com/api/v1/notifications/

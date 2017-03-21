@@ -27,6 +27,8 @@ PACKAGES:
   - vim
   - qemu-guest-agent
 
-# Add modules to be loaded here 
+SYSLOG_SERVICE_NAME: rsyslog
+
+# Add modules to be loaded here
 #MODULES_TO_LOAD:
 #  - acpiphp

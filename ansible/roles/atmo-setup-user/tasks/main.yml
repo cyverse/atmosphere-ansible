@@ -37,7 +37,7 @@
   lineinfile:
     dest: '/etc/skel/.bashrc'
     line: '{{ item }}'
-  with_items: SETUP_USER_BASHRC_LINES
+  with_items: '{{ SETUP_USER_BASHRC_LINES }}'
 
 - name: 'atmousername and %users added to sudoers'
   lineinfile:
@@ -67,7 +67,8 @@
 
 - name: add ATMOUSERNAME to users group
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
-  when: 'user_not_present.rc == 1'
+  when:
+    - 'ADD_TO_GROUP is not defined'
   tags: debug-ssh
 
 - name: see if user is already located in docker group
