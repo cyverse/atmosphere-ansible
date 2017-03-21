@@ -118,6 +118,21 @@
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
+- name: Uninstall existing iCommands for Ubuntu
+  apt:
+    name: irods-icommands
+    state: absent
+    purge: yes
+  when: ansible_distribution == "Ubuntu"
+  tags: icommands-setup
+
+- name: Uninstall existing iCommands for CentOS 6 and 7
+  yum:
+    name: irods-icommands
+    state: absent
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
+  tags: icommands-setup
+
 - name: Install iCommands for Ubuntu
   apt:
     deb: /tmp/icommands-pkg.rpm
@@ -130,3 +145,8 @@
     state: present
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
   tags: icommands-setup
+
+- name: fix permissions on /etc/fuse.conf
+  file:
+    path: /etc/fuse.conf
+    mode: 0755
