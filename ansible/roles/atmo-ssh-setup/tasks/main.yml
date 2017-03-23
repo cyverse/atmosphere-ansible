@@ -39,11 +39,11 @@
 
   - name: Set use_remote_user variable to "root"
     set_fact: use_remote_user=root
-    when: "'Atmoshphere is cool!' in root_connection.stdout"
-- always:
-  - fail:
-      msg: "No remote connection established, atmo-ssh-setup can not continue."
-    when: use_remote_user is not defined
+    when: "'Atmosphere is cool!' in root_connection.stdout"
+
+- fail:
+    msg: "No remote connection established, atmo-ssh-setup can not continue."
+  when: use_remote_user is not defined
 
 - name: Manual Ubuntu version detection
   raw: >
