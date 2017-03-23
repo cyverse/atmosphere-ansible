@@ -34,7 +34,7 @@
 
 - name: install ntp prep package(s) -- Ubuntu only
   shell: >
-    apt-get install {{ NTP_PREP_PACKAGE.name }}
+    apt-get -qy install {{ NTP_PREP_PACKAGE.name }}
   tags:
     - install
   when: ansible_distribution == "Ubuntu" and NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
