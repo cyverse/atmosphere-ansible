@@ -123,6 +123,14 @@
   tags:
     - kill-vnc
 
+- name: Enable unencrypted connections to RealVNC
+  lineinfile:
+    dest: /etc/vnc/config.custom
+    state: present
+    backrefs: yes
+    regexp: "^SecurityTypes=RA2"
+    line: "SecurityTypes=RA2,VncAuth"
+
 - name: install license and start vncserver
   shell: "{{ item }}"
   with_items:
