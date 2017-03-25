@@ -18,8 +18,21 @@
   failed_when: False
   tags: update
 
-- name: yum check-update
-  shell: yum check-update 
+# block for centos tasks
+- block:
+
+  - name: disable an old sensu repo if present
+    yum_repository:
+      name: sensu
+      state: absent
+    notify: yum clean metadata
+
+  # this will cause the handler to execute at this point, if pending rather than at the end of playbook
+  - meta: flush_handlers
+
+  - name: yum check-update
+    shell: yum check-update 
+    failed_when: False
+    tags: update
+
   when: ansible_distribution == "CentOS"
-  failed_when: False
-  tags: update
