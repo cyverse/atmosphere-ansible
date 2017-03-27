@@ -1,0 +1,24 @@
+---
+# ansible-playbook playbooks/utils/mount_volume.yml -i hosts --limit "vm0" -e "{'VOLUME_DEVICE':'/dev/sdb', 'VOLUME_MOUNT_LOCATION':'/vol1', 'VOLUME_DEVICE_TYPE': 'ext4'}"
+
+- name: Debug ansible devices
+  debug:
+    var: item
+  with_items: '{{ ansible_devices }}'
+
+- name: Debug ansible mounts
+  debug:
+    var: item
+  with_items: '{{ ansible_mounts }}'
+
+- name: 'Mount volume using ansible module'
+  mount:
+    fstype: '{{ VOLUME_DEVICE_TYPE }}'
+    src: '{{ VOLUME_DEVICE }}'
+    state: 'mounted'
+    name: '{{ VOLUME_MOUNT_LOCATION }}'
+  register: mount_result
+
+- name: Debug mount result
+  debug:
+    var: mount_result
