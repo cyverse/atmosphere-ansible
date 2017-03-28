@@ -4,12 +4,9 @@
   hosts: all
   vars:
     example:
-        - "-e \"{'VOLUME_DEVICE':'/dev/sdb', 'VOLUME_MOUNT_LOCATION':'/vol-b', 'VOLUME_DEVICE_TYPE': 'ext4'}\""
+      - "-e \"{'VOLUME_DEVICE':'/dev/sdb', 'VOLUME_DEVICE_TYPE': 'ext4'}\""
 
   tasks:
-
-    - fail: msg="Variable VOLUME_MOUNT_LOCATION is not set."
-      when: VOLUME_MOUNT_LOCATION is not defined
 
     - fail: msg="Variable VOLUME_DEVICE is not set."
       when: VOLUME_DEVICE is not defined
@@ -18,7 +15,7 @@
       when: VOLUME_DEVICE_TYPE is not defined
 
 
-- name: Play to mount a volume
+- name: Play to ensure filesystem is present before mounting
   hosts: atmosphere
   roles:
-    - atmo-mount-volume
+    - atmo-mkfs-volume

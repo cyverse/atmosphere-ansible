@@ -8,7 +8,7 @@
   tasks:
 
     - fail: msg=" Must set pg_version. Pass a value in via `-e` as JSON {{example[0]}}"
-      when: "{{ src is undefined }}"
+      when: "{{ src is not defined }}"
 
 - name: Playbook to unmount a volume
   hosts: atmosphere

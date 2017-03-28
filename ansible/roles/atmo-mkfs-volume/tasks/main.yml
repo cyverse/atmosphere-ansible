@@ -1,0 +1,14 @@
+---
+# ansible-playbook playbooks/utils/check_volume.yml -i hosts --limit "vm0" -e "{'VOLUME_DEVICE':'/dev/sdb', 'VOLUME_DEVICE_TYPE': 'ext4'}"
+
+- name: Print ansible devices
+  debug:
+    var: item
+  with_items: '{{ ansible_devices }}'
+
+- name: Ensure a file system is on VOLUME_DEVICE --  if not, create VOLUME_DEVICE_TYPE.
+  filesystem:
+    fstype: '{{ VOLUME_DEVICE_TYPE }}'
+    dev: '{{ VOLUME_DEVICE }}'
+  register: fs_result
+  failed_when: "fs_result.msg is defined and 'is already used' not in fs_result.msg"

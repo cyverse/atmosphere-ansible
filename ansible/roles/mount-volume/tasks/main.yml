@@ -21,7 +21,7 @@
 - name: Fail when device src given does not exists
   fail:
     msg: 'device src given does not exist'
-  when: 'ansible_devices.{{ src | basename }} is undefined'
+  when: 'ansible_devices.{{ src | basename }} is not defined'
 
 - name: 'mount volume to {{ name }}'
   mount:
