@@ -9,10 +9,10 @@
   tasks:
 
     - fail: msg="Variable VOLUME_DEVICE is not set."
-      when: "{{ VOLUME_DEVICE is not defined }}"
+      when: VOLUME_DEVICE is not defined
 
     - fail: msg="Variable VOLUME_DEVICE_TYPE is not set."
-      when: "{{ VOLUME_DEVICE_TYPE is not defined }}"
+      when: VOLUME_DEVICE_TYPE is not defined
 
 
 - name: Play to ensure filesystem is present before mounting
