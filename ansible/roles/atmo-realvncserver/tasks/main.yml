@@ -138,7 +138,7 @@
 
 - name: Add regular VNC configuration file
   template:
-    src: 'config.novnc.j2'
+    src: 'config.reg.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.reg'
   when: has_gui
 
