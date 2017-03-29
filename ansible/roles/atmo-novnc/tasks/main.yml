@@ -191,7 +191,6 @@
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
   tags: vnc
 
-
 - name: Get Guacamole server IP address
   shell: >
     nslookup alom.iplantcollaborative.org | awk -F': ' 'NR==6 { print $2 }'
