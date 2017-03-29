@@ -36,7 +36,7 @@
 
 - name: verify that xterm session exists
   stat: path={{ XGUI.xterm_path }}
-  register: xterm 
+  register: xterm
   tags:
     - vnc
     - x
@@ -80,7 +80,7 @@
 # - name: copy vnc password file
 #   copy: src=passwd dest="/home/{{ ATMOUSERNAME }}/.vnc/passwd" mode=0600 owner="{{ ATMOUSERNAME }}"
 #   when: has_gui
-#   tags: vnc 
+#   tags: vnc
 
 - name: copy required files to remote host
   copy: src={{ item.FROM }} dest={{ item.TO }}
@@ -191,6 +191,18 @@
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
   tags: vnc
 
+
+- name: Get Guacamole server IP address
+  shell: >
+    nslookup alom.iplantcollaborative.org | awk -F': ' 'NR==6 { print $2 }'
+  register: guac_ip
+
+- name: Add Guacamole VNC configuration file
+  template:
+    src: 'config.guac.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+  when: has_gui
+
 - name: start vncserver and novnc
   shell: "{{ item }}"
   with_items: "{{ VNC_COMMANDS }}"
@@ -205,7 +217,7 @@
 - name: debug all shell commands
   debug: var=shell_cmds
   when: has_gui
-  tags: 
+  tags:
     - vnc
     - shell_cmd
 
