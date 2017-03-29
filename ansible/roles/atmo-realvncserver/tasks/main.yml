@@ -123,13 +123,24 @@
   tags:
     - kill-vnc
 
-- name: Enable unencrypted connections to RealVNC
-  lineinfile:
-    dest: /etc/vnc/config.custom
-    state: present
-    backrefs: yes
-    regexp: "^SecurityTypes=RA2"
-    line: "SecurityTypes=RA2,VncAuth"
+- name: Get Guacamole server IP address
+  shell: >
+    nslookup alom.iplantcollaborative.org | awk -F': ' 'NR==6 { print $2 }'
+  register: guac_ip
+
+- debug: msg="{{ guac_ip.stdout }}"
+
+- name: Add Guacamole VNC configuration file
+  template:
+    src: 'config.guac.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+  when: has_gui
+
+- name: Add regular VNC configuration file
+  template:
+    src: 'config.novnc.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.reg'
+  when: has_gui
 
 - name: install license and start vncserver
   shell: "{{ item }}"
