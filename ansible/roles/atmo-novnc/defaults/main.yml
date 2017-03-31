@@ -1,6 +1,8 @@
 ---
 # defaults file for atmo-novnc
 
+GUACAMOLE_SERVER_URL: alom.iplantcollaborative.org
+
 NOVNC:
   socket_port: 4200
   vnc_port: 5902
