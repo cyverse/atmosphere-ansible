@@ -42,7 +42,6 @@ VNC_COMMANDS:
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver :1 -SecurityTypes=RA2'"
   - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -SecurityTypes=VNCAuth,TLSVnc'"
-  - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5'"
   # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
   - "websockify -D --web /usr/share/novnc/ {{ NOVNC.socket_port }} localhost:{{ NOVNC.vnc_port }} &"
 

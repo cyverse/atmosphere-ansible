@@ -213,6 +213,13 @@
     - shell_cmd
   register: shell_cmds
 
+- name: Start VNC server for Guacamole if enabled
+  shell: >
+    /bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5'
+  when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+  failed_when: False
+  ignore_errors: yes
+
 - name: debug all shell commands
   debug: var=shell_cmds
   when: has_gui
