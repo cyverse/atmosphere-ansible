@@ -22,5 +22,6 @@
     user: "{{ ATMOUSERNAME }}"
     state: present
     exclusive: no
-    key: '{{ USERSSHKEYS|join("\n") }}'
+    key: '{{ item }}'
+  with_items: '{{ USERSSHKEYS }}'
   when: ATMOUSERNAME is defined and USERSSHKEYS is defined and user_home_dir.stat.exists
