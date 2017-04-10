@@ -60,7 +60,7 @@
 ###############
 # VNC Install #
 ###############
-#
+
 - name: Install NoVNC
   package:
     name: novnc
