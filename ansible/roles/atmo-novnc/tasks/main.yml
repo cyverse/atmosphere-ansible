@@ -69,6 +69,11 @@
     state: present
   with_items: "{{ XGUI.packages }}"
   tags: vnc
+
+- name: Start VNC Server and NoVNC
+  command: '{{ item }}'
+  with_items: '{{ VNC_COMMANDS }}'
+
 #
 # - name: remove locks and un-needed files
 #   command: /bin/rm -rf '{{ item.PATH }}'

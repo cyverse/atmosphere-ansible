@@ -90,6 +90,11 @@
   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
   tags: vnc
 
+- name: ensure correct permissions
+  file:
+    path: /etc/X11/xinit/xinitrc
+    mode: 0755
+
 - name: template xstartup for vncserver
   template:
     src: xstartup.j2
@@ -97,16 +102,6 @@
     mode: 0755
     owner: '{{ ATMOUSERNAME }}'
   tags: vnc
-
-- name: start vncserver and novnc
-  shell: "{{ item }}"
-  with_items: "{{ VNC_COMMANDS }}"
-  ignore_errors: yes
-  failed_when: False
-  tags:
-    - vnc
-    - shell_cmd
-  register: shell_cmds
 
 - name: kill all running vncserver sessions
   shell: >
