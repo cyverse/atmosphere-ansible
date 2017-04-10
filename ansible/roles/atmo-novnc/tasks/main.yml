@@ -191,18 +191,13 @@
   when: has_gui and (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
   tags: vnc
 
-- block:
-  - name: Get Guacamole server IP address
-    shell: >
-      nslookup {{ GUACAMOLE_SERVER_URL }} | awk -F': ' 'NR==6 { print $2 }'
-    register: guac_ip
-
-  - name: Add Guacamole VNC configuration file
-    template:
-      src: 'config.guac.j2'
-      dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
-    when: has_gui
-  when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+- name: Add Guacamole VNC configuration file
+  template:
+    src: 'config.guac.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+  when:
+    - has_gui
+    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
 
 - name: start vncserver and novnc
   shell: "{{ item }}"
@@ -218,7 +213,9 @@
 - name: Start VNC server for Guacamole if enabled
   shell: >
     /bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5'
-  when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+  when:
+    - has_gui
+    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
   failed_when: False
   ignore_errors: yes
 
