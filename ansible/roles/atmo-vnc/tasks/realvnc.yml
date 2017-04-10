@@ -18,7 +18,7 @@
     path: '{{ item.PATH }}'
     state: '{{ item.STATE }}'
     mode: '{{ item.MODE }}'
-  with_items: '{{ XGUI.dirs_to_make }}'
+  with_items: '{{ REQUIRED.dirs_to_make }}'
 
 - name: Create .vnc directory in user's home_dir
   file:
@@ -67,7 +67,9 @@
 - name: remove locks and un-needed files
   shell: >
     /bin/rm -rf '{{ item.PATH }}'
-  with_items: '{{ XGUI.files_to_remove }}'
+  with_items: '{{ REQUIRED.files_to_remove }}'
+  ignore_errors: yes
+  failed_when: False
 
 # NOTE template xstartup for centos 7 was in jetstream ONLY and should be evaluated
 - name: template xstartup for vncserver for centos 7
@@ -125,7 +127,7 @@
 
 - name: Run VNC commands (Add license, set password, start server)
   command: '{{ item }}'
-  with_items: '{{ VNC_COMMANDS }}'
+  with_items: '{{ VNC_COMMANDS.realvnc }}'
   failed_when: False
 
 - name: set environment variables for legacy systems

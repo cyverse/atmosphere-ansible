@@ -27,6 +27,12 @@
   set_fact:
     has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
 
-- name: Include tasks for install if has_gui
-  include: install.yml
+- block:
+    - include: realvnc.yml
+      when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true
+
+    - include: guacamole.yml
+      when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+
+    - include: novnc.yml
   when: has_gui

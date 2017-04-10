@@ -1,0 +1,33 @@
+---
+
+XGUI:
+  xsession_path: /usr/bin/X
+  xterm_path: /usr/bin/xinit
+  vnc_dependencies:
+    - libfam0
+    - libxext-dev
+    - libx11-dev
+    - libc6-dev
+    - libthunar-vfs-1-2
+    - libc6
+  packages:
+    - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
+  packages_to_remove:
+    - novnc
+  type: deb
+  extra_args: update_cache=yes
+  files_to_add:
+    - { FROM: VNC-Server-5.2.3-Linux-x64.deb, TO: /tmp/VNC-Server-5.2.3-Linux-x64.deb }
+    - { FROM: vncserver.custom, TO: /etc/pam.d/vncserver.custom }
+    - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
+  files_to_remove:
+    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.deb, STATE: absent }
+
+VNC_COMMANDS:
+  novnc:
+    - "/usr/bin/pkill gnome-screensaver"
+    - "/usr/bin/pkill websockify"
+    - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
+    - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -SecurityTypes=VNCAuth,TLSVnc'"
+    # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
+    - "/opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen {{ NOVNC.socket_port }} --vnc localhost:{{ NOVNC.vnc_port }} &"

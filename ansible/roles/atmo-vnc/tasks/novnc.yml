@@ -61,16 +61,16 @@
 # VNC Install #
 ###############
 #
-- name: install vncserver
+- name: Install NoVNC
   package:
-    name: '{{ item }}'
+    name: novnc
     state: present
-  with_items: "{{ XGUI.packages }}"
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "14") or (ansible_distribution == "CentOS" and ansible_distribution_major_version >= "6")
   tags: vnc
 
 - name: Start VNC Server and NoVNC
   shell: '{{ item }}'
-  with_items: '{{ VNC_COMMANDS }}'
+  with_items: '{{ VNC_COMMANDS.novnc }}'
   ignore_errors: yes
   failed_when: False
 

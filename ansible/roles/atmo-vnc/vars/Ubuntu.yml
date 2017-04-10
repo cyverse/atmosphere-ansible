@@ -8,22 +8,15 @@ XGUI:
     - libxext-dev
     - libx11-dev
     - libc6-dev
-    - libthunar-vfs-1-2
     - libc6
-
+    - git
   packages:
-    - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
+    - /tmp/VNC-Server-5.2.3-Linux-x64.deb
+  packages_to_remove:
+    - vnc4server
   type: deb
   extra_args: update_cache=yes
   files_to_add:
     - { FROM: VNC-Server-5.2.3-Linux-x64.deb, TO: /tmp/VNC-Server-5.2.3-Linux-x64.deb }
     - { FROM: vncserver.custom, TO: /etc/pam.d/vncserver.custom }
     - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
-  files_to_remove:
-    - { PATH: /tmp/.X1-lock, STATE: absent }
-    - { PATH: /tmp/.X11-unix, STATE: absent }
-    - { PATH: /tmp/.X11-unix, STATE: directory }
-    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.deb, STATE: absent }
-  dirs_to_make:
-    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt" }
-    - { PATH: /etc/vnc, STATE: directory, MODE: "0755" }
