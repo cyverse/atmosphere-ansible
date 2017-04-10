@@ -53,7 +53,9 @@ Enable these optional configurations by setting the corresponding variable to `t
 
 ### Guacamole Information
 
-a VNC and SSH gateway. Enabling this will enable unencrypted VNC connections between the instances and the Guacamole server
+Guacamole is a VNC and SSH gateway. If using this feature, `GUACAMOLE_SERVER_IP` must also be defined.
+
+**Security Warning**: the Guacamole remote desktop requires unencrypted VNC connections from the Guacamole server to your target instances. Ensure that your Guacamole server connects to instances via a trusted network where no unauthorized parties can listen to network traffic. If these connections transit an untrusted network, anyone listening on the wire would get everything from the unencrypted VNC sessions.
 
 ## Utility Playbooks
 
