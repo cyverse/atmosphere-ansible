@@ -11,6 +11,25 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
+# CHECK FOR GUI
+- name: Verify that X server exists
+  stat:
+    path: '{{ XGUI.xsession_path }}'
+  register: xsession
+
+- name: Verify that xterm session exists
+  stat:
+    path: '{{ XGUI.xterm_path }}'
+  register: xterm
+
+- name: Set flag for GUI systems
+  set_fact:
+    has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
+
+- fail:
+    msg: "Instance has no GUI"
+  when: has_gui == false
+
 # Perform install/config if NOT headless
 - name: create needed directories
   file:

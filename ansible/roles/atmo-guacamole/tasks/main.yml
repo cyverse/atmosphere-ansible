@@ -1,9 +1,37 @@
+---
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
 - fail:
     msg: "GUACAMOLE_SERVER_IP must be defined"
   when:
     - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
     - GUACAMOLE_SERVER_IP is undefined
 
+# CHECK FOR GUI
+- name: Verify that X server exists
+  stat:
+    path: '{{ xsession_path }}'
+  register: xsession
+
+- name: Verify that xterm session exists
+  stat:
+    path: '{{ xterm_path }}'
+  register: xterm
+
+- name: Set flag for GUI systems
+  set_fact:
+    has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
+
+- fail:
+    msg: "Instance has no GUI"
+  when: has_gui == false
+
+# REAL ACTION
 - name: Add Guacamole VNC configuration file
   template:
     src: 'config.guac.j2'

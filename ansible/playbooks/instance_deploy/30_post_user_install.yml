@@ -2,27 +2,9 @@
 # Requires ATMOUSERNAME and VNCLICENSE
 - name: Playbook lists roles that should be executed after ATMOUSERNAME has been created
   hosts: atmosphere
-  tasks:
-    - name: Verify that X server exists
-      stat:
-        path: '{{ XGUI.xsession_path }}'
-      register: xsession
-
-    - name: Verify that xterm session exists
-      stat:
-        path: '{{ XGUI.xterm_path }}'
-      register: xterm
-
-    - name: Set flag for GUI systems
-      set_fact:
-        has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
-
-    - name: Include roles
-      include: "{{ item.role }}"
-      when: "{{ item.when }}"
-      with_items:
-        - { role: atmo-fail2ban, when: true }
-        - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
-        - { role: atmo-realvncserver, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true and has_gui }
-        - { role: atmo-guacamole, when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true and has_gui }
-        - { role: atmo-cleanup, when: true }
+  roles:
+    - { role: atmo-fail2ban, when: true }
+    - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
+    - { role: atmo-realvncserver, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
+    - { role: atmo-guacamole, when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true }
+    - { role: atmo-cleanup, when: true }
