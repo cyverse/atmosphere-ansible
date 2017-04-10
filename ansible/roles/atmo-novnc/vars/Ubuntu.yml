@@ -5,14 +5,12 @@ XGUI:
   xterm_path: /usr/bin/xinit
   vnc_dependencies:
     - libfam0
-    - libxext-dev 
-    - libx11-dev 
-    - libc6-dev 
+    - libxext-dev
+    - libx11-dev
+    - libc6-dev
     - libc6
     - git
   packages_to_remove:
-    # - realvnc-vnc-server
     - vnc4server
   packages:
-    # - vnc4server
     - novnc
