@@ -1,0 +1,13 @@
+- name: Get Guacamole server IP address
+  shell: >
+    nslookup {{ GUACAMOLE_SERVER_URL }} | awk -F': ' 'NR==6 { print $2 }'
+  register: guac_ip
+
+- name: Add Guacamole VNC configuration file
+  template:
+    src: 'config.guac.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+
+- name: Start VNC Server for Guacamole
+  command: "{{ item }}"
+  with_items: "{{ VNC_COMMANDS }}"

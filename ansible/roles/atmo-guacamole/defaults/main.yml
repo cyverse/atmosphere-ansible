@@ -1,0 +1,7 @@
+GUACAMOLE_SERVER_URL: alom.iplantcollaborative.org
+
+VNC_COMMANDS:
+  - '/usr/bin/pkill gnome-screensaver'
+  - '/bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf \'%s\n%s\n\' \'display\' \'display\' | vncpasswd {{ NOVNC.passwd_file }}"'
+  - '/usr/bin/vnclicense -add {{ VNCLICENSE }}'
+  - '/bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"'
