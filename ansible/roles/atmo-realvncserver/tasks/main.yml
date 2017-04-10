@@ -38,6 +38,13 @@
     mode: '{{ item.MODE }}'
   with_items: '{{ XGUI.dirs_to_make }}'
 
+- name: Create .vnc directory in user's home_dir
+  file:
+    path: '/home/{{ ATMOUSERNAME }}/.vnc'
+    state: directory
+    mode: 0750
+    owner: '{{ ATMOUSERNAME }}'
+
 - name: install the dependencies for vncserver
   package:
     name: '{{ item }}'
