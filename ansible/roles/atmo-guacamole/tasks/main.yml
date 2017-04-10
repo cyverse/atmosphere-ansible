@@ -6,12 +6,6 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
-- fail:
-    msg: "GUACAMOLE_SERVER_IP must be defined"
-  when:
-    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
-    - GUACAMOLE_SERVER_IP is undefined
-
 # CHECK FOR GUI
 - name: Verify that X server exists
   stat:
@@ -27,24 +21,6 @@
   set_fact:
     has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
 
-- fail:
-    msg: "Instance has no GUI"
-  when: has_gui == false
-
-# REAL ACTION
-- name: Add Guacamole VNC configuration file
-  template:
-    src: 'config.guac.j2'
-    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
-  when:
-    - has_gui
-    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
-
-- name: Add Guacamole VNC configuration file
-  template:
-    src: 'config.guac.j2'
-    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
-
-- name: Start VNC Server for Guacamole
-  command: >
-    /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
+- name: Include tasks for install if has_gui
+  include: install.yml
+  when: has_gui

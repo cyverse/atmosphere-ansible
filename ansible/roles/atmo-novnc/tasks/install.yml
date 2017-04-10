@@ -1,0 +1,81 @@
+---
+
+- name: set environment variables for legacy systems
+  set_fact: ansible_python_interpreter=/usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+###################
+# Remove Packages #
+###################
+- name: remove conflicting ubuntu packages
+  apt: name={{ item }} state=absent purge=yes
+  with_items: "{{ XGUI.packages_to_remove }}"
+  when: (ansible_distribution == "Ubuntu")
+  tags:
+    - uninstall
+
+- name: remove conflicting centos packages
+  yum: name={{ item }} state=absent
+  with_items: "{{ XGUI.packages_to_remove }}"
+  when: (ansible_distribution == "CentOS")
+  tags:
+    - uninstall
+
+#####################
+# Set up Files/Dirs #
+#####################
+
+- name: copy required files to remote host
+  copy:
+    src: '{{ item.FROM }}'
+    dest: '{{ item.TO }}'
+  with_items: '{{ REQUIRED.files_to_add }}'
+  when: (REQUIRED.files_to_add is defined) and (REQUIRED.files_to_add.length >= 1)
+  tags: vnc
+
+- name: unarchive novnc code base for legacy ubuntu systems
+  unarchive:
+    src: novnc.tar
+    dest: /opt
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14")
+  tags:
+    - vnc
+    - tar
+
+- name: unarchive novnc code base for legacy centos systems
+  unarchive:
+    src: novnc.tar
+    dest: /opt
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < "6")
+  tags:
+    - vnc
+    - tar
+
+###############
+# VNC Install #
+###############
+#
+- name: install vncserver
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items: "{{ XGUI.packages }}"
+  tags: vnc
+
+- name: Start VNC Server and NoVNC
+  shell: '{{ item }}'
+  with_items: '{{ VNC_COMMANDS }}'
+  ignore_errors: yes
+  failed_when: False
+
+- name: debug all shell commands
+  debug: var=shell_cmds
+  tags:
+    - vnc
+    - shell_cmd
