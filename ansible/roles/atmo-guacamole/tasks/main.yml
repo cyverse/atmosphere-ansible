@@ -1,7 +1,16 @@
-- name: Get Guacamole server IP address
-  shell: >
-    nslookup {{ GUACAMOLE_SERVER_URL }} | awk -F': ' 'NR==6 { print $2 }'
-  register: guac_ip
+- fail:
+    msg: "GUACAMOLE_SERVER_IP must be defined"
+  when:
+    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+    - GUACAMOLE_SERVER_IP is undefined
+
+- name: Add Guacamole VNC configuration file
+  template:
+    src: 'config.guac.j2'
+    dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+  when:
+    - has_gui
+    - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
 
 - name: Add Guacamole VNC configuration file
   template:
@@ -9,5 +18,5 @@
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
 
 - name: Start VNC Server for Guacamole
-  command: "{{ item }}"
-  with_items: "{{ VNC_COMMANDS }}"
+  command: >
+    /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
