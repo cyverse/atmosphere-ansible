@@ -7,5 +7,5 @@ background_img: 'files/atmosphere_wallpaper_v1.jpg'
 VNC_COMMANDS:
   - "/usr/bin/pkill gnome-screensaver"
   - '/usr/bin/vnclicense -add {{ VNCLICENSE }}'
-  - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd {{ NOVNC.passwd_file }}"
+  - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd"
   - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver :1 -SecurityTypes=RA2'"
