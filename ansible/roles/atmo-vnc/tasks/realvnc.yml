@@ -84,10 +84,10 @@
 
 - name: template xstartup for vncserver
   template:
-  src: xstartup.j2
-  dest: "/home/{{ ATMOUSERNAME }}/.vnc/xstartup"
-  mode: 0755
-  owner: '{{ ATMOUSERNAME }}'
+    src: xstartup.j2
+    dest: "/home/{{ ATMOUSERNAME }}/.vnc/xstartup"
+    mode: 0755
+    owner: '{{ ATMOUSERNAME }}'
   tags: vnc
 
 # NOTE template xstartup for centos 7 was in jetstream ONLY and should be evaluated
