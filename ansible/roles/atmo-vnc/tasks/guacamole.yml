@@ -1,6 +1,6 @@
 ---
 
-- name: guac : gather os specific variables
+- name: guac - gather os specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
@@ -12,7 +12,7 @@
     - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
     - GUACAMOLE_SERVER_IP is undefined
 
-- name: guac : Add Guacamole VNC configuration file
+- name: guac - Add Guacamole VNC configuration file
   template:
     src: 'config.guac.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
@@ -20,11 +20,11 @@
     - has_gui
     - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
 
-- name: guac : Add Guacamole VNC configuration file
+- name: guac - Add Guacamole VNC configuration file
   template:
     src: 'config.guac.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
 
-- name: guac : Start VNC Server for Guacamole
+- name: guac - Start VNC Server for Guacamole
   command: >
     /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
