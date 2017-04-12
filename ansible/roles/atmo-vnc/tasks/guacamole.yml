@@ -16,6 +16,7 @@
   template:
     src: 'config.guac.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+    owner: '{{ ATMOUSERNAME }}'
   when:
     - has_gui
     - SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
