@@ -43,16 +43,7 @@
   unarchive:
     src: novnc.tar
     dest: /opt
-  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14")
-  tags:
-    - vnc
-    - tar
-
-- name: unarchive novnc code base for legacy centos systems
-  unarchive:
-    src: novnc.tar
-    dest: /opt
-  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < "6")
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14") or (ansible_distribution == "CentOS" and ansible_distribution_major_version < "6")
   tags:
     - vnc
     - tar
@@ -74,8 +65,12 @@
   ignore_errors: yes
   failed_when: False
 
-- name: debug all shell commands
-  debug: var=shell_cmds
-  tags:
-    - vnc
-    - shell_cmd
+- name: Start websocket for Ubuntu 12
+  shell: >
+    /opt/kanaka-noVNC-8b0a0f6/utils/launch.sh --listen {{ NOVNC.socket_port }} --vnc localhost:{{ NOVNC.vnc_port }} &
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14")
+
+- name: Start websocket for other OS
+  shell: >
+    websockify -D --web /usr/share/novnc/ {{ NOVNC.socket_port }} localhost:{{ NOVNC.vnc_port }} &
+  when: !(ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14")

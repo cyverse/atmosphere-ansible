@@ -9,13 +9,10 @@ XGUI:
     - libx11-dev
     - libc6-dev
     - libc6
-    - git
   packages:
-    - /tmp/VNC-Server-5.2.3-Linux-x64.deb
+    - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
   packages_to_remove:
     - vnc4server
-  type: deb
-  extra_args: update_cache=yes
   files_to_add:
     - { FROM: VNC-Server-5.2.3-Linux-x64.deb, TO: /tmp/VNC-Server-5.2.3-Linux-x64.deb }
     - { FROM: vncserver.custom, TO: /etc/pam.d/vncserver.custom }
