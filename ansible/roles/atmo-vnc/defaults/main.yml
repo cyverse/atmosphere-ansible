@@ -35,3 +35,4 @@ REQUIRED:
   dirs_to_make:
     - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt", OWNER: "root" }
     - { PATH: /etc/vnc, STATE: directory, MODE: "0755", OWNER: "root" }
+    - { PATH: /etc/vnc/config.d, STATE: directory, MODE: "0755", OWNER: "root" }
