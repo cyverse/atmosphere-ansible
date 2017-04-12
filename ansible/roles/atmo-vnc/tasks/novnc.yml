@@ -73,4 +73,4 @@
 - name: Start websocket for other OS
   shell: >
     websockify -D --web /usr/share/novnc/ {{ NOVNC.socket_port }} localhost:{{ NOVNC.vnc_port }} &
-  when: !(ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14")
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "14") == false
