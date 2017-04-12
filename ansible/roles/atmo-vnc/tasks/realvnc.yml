@@ -16,6 +16,7 @@
     path: '{{ item.PATH }}'
     state: '{{ item.STATE }}'
     mode: '{{ item.MODE }}'
+    owner: '{{ item.OWNER }}'
   with_items: '{{ REQUIRED.dirs_to_make }}'
 
 - name: install the dependencies for vncserver
