@@ -1,5 +1,7 @@
 ---
 
+vncserver_pkg: 'VNC-Server-5.2.3-Linux-x64.deb'
+
 XGUI:
   xsession_path: /usr/bin/X
   xterm_path: /usr/bin/xinit
@@ -9,11 +11,9 @@ XGUI:
     - libx11-dev
     - libc6-dev
     - libc6
-  packages:
-    - "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
   packages_to_remove:
     - vnc4server
   files_to_add:
-    - { FROM: VNC-Server-5.2.3-Linux-x64.deb, TO: /tmp/VNC-Server-5.2.3-Linux-x64.deb }
+    - { FROM: '{{ vncserver_pkg }}', TO: '/tmp/{{ vncserver_pkg }}' }
     - { FROM: vncserver.custom, TO: /etc/pam.d/vncserver.custom }
     - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }

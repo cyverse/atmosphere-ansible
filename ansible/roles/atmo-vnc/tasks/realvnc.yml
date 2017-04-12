@@ -57,12 +57,12 @@
     disable_gpg_check: '{{XGUI.disable_gpg_check}}'
   with_items:
     - 'xorg-x11-xauth'
-    - '/tmp/VNC-Server-5.2.3-Linux-x64.rpm'
+    - '/tmp/{{ vncserver_pkg }}'
   when: (ansible_distribution == "CentOS")
 
 - name: install the package for vncserver if Ubuntu
   apt:
-    deb: "/tmp/VNC-Server-5.2.3-Linux-x64.deb"
+    deb: "/tmp/{{ vncserver_pkg }}"
     state: present
     update_cache: yes
   when: ansible_distribution == "Ubuntu"
