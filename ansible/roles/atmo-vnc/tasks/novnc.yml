@@ -15,7 +15,6 @@
   package:
     name: "{{ item }}"
     state: absent
-    purge: yes
   with_items: "{{ XGUI.packages_to_remove }}"
 
 - name: novnc - unarchive novnc code base for legacy ubuntu systems
