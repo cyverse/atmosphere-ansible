@@ -37,7 +37,7 @@
     state: present
   when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "14") or (ansible_distribution == "CentOS" and ansible_distribution_major_version >= "6")
 
-- name: novnc : Start VNC Server and NoVNC
+- name: novnc : Start VNC Server
   shell: '{{ item }}'
   with_items: '{{ VNC_COMMANDS.novnc }}'
   ignore_errors: yes
