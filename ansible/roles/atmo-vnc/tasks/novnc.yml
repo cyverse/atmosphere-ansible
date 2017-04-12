@@ -18,13 +18,6 @@
     purge: yes
   with_items: "{{ XGUI.packages_to_remove }}"
 
-- name: novnc - copy required files to remote host
-  copy:
-    src: '{{ item.FROM }}'
-    dest: '{{ item.TO }}'
-  with_items: '{{ REQUIRED.files_to_add }}'
-  when: (REQUIRED.files_to_add is defined) and (REQUIRED.files_to_add.length >= 1)
-
 - name: novnc - unarchive novnc code base for legacy ubuntu systems
   unarchive:
     src: novnc.tar

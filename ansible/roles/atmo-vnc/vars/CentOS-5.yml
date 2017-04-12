@@ -15,8 +15,3 @@ XGUI:
     - { FROM: VNC-Server-5.2.3-Linux-x64.rpm, TO: /tmp/VNC-Server-5.2.3-Linux-x64.rpm }
     - { FROM: vncserver.custom-cent, TO: /etc/pam.d/vncserver.custom }
     - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }
-
-REQUIRED:
-  files_to_add:
-    - { FROM: "config.insecure", TO: "/home/{{ ATMOUSERNAME }}/.vnc/config.insecure", STATE: present, MODE: "700", OWNER: "{{ ATMOUSERNAME }}" }
-    - { FROM: "config.custom", TO: "/home/{{ ATMOUSERNAME }}/.vnc/config.custom", STATE: present, MODE: "700", OWNER: "root" }
