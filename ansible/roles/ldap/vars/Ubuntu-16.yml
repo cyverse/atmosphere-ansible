@@ -1,0 +1,20 @@
+LDAP_PACKAGES:
+  packages:
+    - ldap-utils
+    - libpam-ldap
+    - libnss-ldapd
+    - nss-updatedb
+    - libnss-db
+    - nslcd
+    - nscd
+  state: present
+
+LDAP_CONF_PATH: /etc/ldap.conf
+
+#SSSD_CONF_PATH: /etc/sssd/sssd.conf
+
+#LDAP_AUTHCONFIG: authconfig --enableldap --enableldapauth --enablemkhomedir --enablesssd --enablesssdauth --ldapserver=ldap.iplantc.org --ldapbasedn="dc=iplantcollaborative,dc=org" --passalgo=md5 --update
+
+LDAP_SERVICE: sssd
+
+TEST_LDAP_USER: mattd-test01
