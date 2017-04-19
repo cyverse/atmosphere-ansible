@@ -11,9 +11,6 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
-###################
-#  CHECK FOR GUI  #
-###################
 - name: Verify that X server exists
   stat:
     path: '{{ XGUI.xsession_path }}'
