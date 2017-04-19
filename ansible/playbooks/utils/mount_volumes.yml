@@ -1,0 +1,9 @@
+---
+- name: Playbook to mount volume on Atmosphere VM
+  hosts: atmosphere
+  vars:
+    ATMO_MOUNT:
+      mount_point: /vol5
+      device: /dev/vdd
+  roles:
+    - atmo-mount-volumes

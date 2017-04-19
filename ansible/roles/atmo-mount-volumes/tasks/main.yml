@@ -1,0 +1,36 @@
+---
+# tasks file for atmo-mount-volumes
+
+- name: determine if volume is already mounted
+  shell: "/bin/mount | /bin/grep {{ ATMO_MOUNT.device }}"
+  ignore_errors: yes
+  failed_when: False
+  register: is_vol_mounted
+  tags: debug-mnt
+
+- debug: var=is_vol_mounted.stdout
+  tags: debug-mnt
+
+- name: determine what the mount point should be if none was provided
+  shell: /bin/echo "/vol$(/usr/bin/expr $(ls /vol* | /bin/grep 'vol' | /bin/sed 's/[^0-9]*//g' | /usr/bin/tail -n 1) + 1)"
+  register: mount_point_name
+  ignore_errors: yes
+  failed_when: False
+  tags:
+    - mount-name
+    - debug-mnt
+
+- debug: var=mount_point_name
+  tags: debug-mnt
+
+- name: set variable to be used for mount point location
+  set_fact: ATMO_MOUNT_POINT="{{ mount_point_name.stdout }}"
+  tags: debug-mnt
+
+- debug: var=ATMO_MOUNT_POINT
+  tags: debug-mnt
+
+- name: mount volume
+  mount: name="{{ ATMO_MOUNT_POINT }}" src="{{ ATMO_MOUNT.device }}" fstype=ext3 fstab=/etc/mtab state=mounted
+  when: is_vol_mounted.stdout == ""
+  tags: mount-volume
