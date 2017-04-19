@@ -7,25 +7,6 @@
     - "{{ ansible_distribution }}.yml"
   tags: vars
 
-###################
-# Fix Chrome Repo #
-###################
-- name: check to see if outdated chrome repo exists
-  stat: path=/etc/apt/sources.list.d/google-chrome.list
-  when: ansible_distribution == "Ubuntu"
-  register: chrome_installed
-
-- name: fix chrome repo source list
-  shell: "{{ item }}"
-  ignore_errors: yes
-  failed_when: False
-  when: (ansible_distribution == "Ubuntu") and (chrome_installed.stat.exists)
-  with_items:
-    - sed -i -e 's/deb http/deb [arch=amd64] http/' "/etc/apt/sources.list.d/google-chrome.list"
-    - sed -i -e 's/deb http/deb [arch=amd64] http/' "/opt/google/chrome/cron/google-chrome"
-    - apt-get clean
-    - apt-get update
-
 ###########
 # Install #
 ###########
