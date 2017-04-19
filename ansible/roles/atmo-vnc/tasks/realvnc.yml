@@ -1,31 +1,18 @@
 ---
 
-- name: set environment variables for legacy systems
-  set_fact: ansible_python_interpreter=/usr/bin/python
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
-
 - name: gather os specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
-###############################
-# ADD DIRECTORIES AND INSTALL #
-###############################
 - name: create needed directories
   file:
     path: '{{ item.PATH }}'
     state: '{{ item.STATE }}'
     mode: '{{ item.MODE }}'
-  with_items: '{{ XGUI.dirs_to_make }}'
-
-- name: Create .vnc directory in user's home_dir
-  file:
-    path: '/home/{{ ATMOUSERNAME }}/.vnc'
-    state: directory
-    mode: 0750
-    owner: '{{ ATMOUSERNAME }}'
+    owner: '{{ item.OWNER }}'
+  with_items: '{{ REQUIRED.dirs_to_make }}'
 
 - name: install the dependencies for vncserver
   package:
@@ -33,41 +20,62 @@
     state: present
   with_items: '{{ XGUI.vnc_dependencies }}'
 
+- name: Install/remove extra package if Ubuntu 12
+  apt:
+    name: '{{ item.NAME }}'
+    state: '{{ item.STATE }}'
+  with_items:
+    - { NAME: libthunar-vfs-1-2, STATE: present }
+    - { NAME: novnc, STATE: absent }
+  when: (ansible_distribution == "Ubuntu") and (ansible_distribution_major_version < '14')
+
 - name: copy required files to remote host
   copy:
     src: '{{ item.FROM }}'
     dest: '{{ item.TO }}'
   with_items: '{{ XGUI.files_to_add }}'
 
+- name: Copy custom xstartup for CentOS 7
+  copy:
+    src: xstartup.custom-cent7
+    dest: /etc/vnc/xstartup.custom
+
 - name: 'custom configuration templated out'
   template:
     src: 'config.custom.j2'
     dest: '/etc/vnc/config.custom'
 
-- name: install the package for vncserver if CentOS 5
-  package:
+- name: install the package for vncserver if CentOS
+  yum:
     name: '{{ item }}'
     state: present
-    disable_gpg_check: yes
-  with_items: '{{ XGUI.packages }}'
-  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '5')
-
-- name: install the package for vncserver if CentOS
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present {{ XGUI.extra_args }}
-  with_items: '{{ XGUI.packages }}'
-  when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version > '5')
+    disable_gpg_check: '{{XGUI.disable_gpg_check}}'
+  with_items:
+    - 'xorg-x11-xauth'
+    - '/tmp/{{ vncserver_pkg }}'
+  when: (ansible_distribution == "CentOS")
 
 - name: install the package for vncserver if Ubuntu
-  action: >
-    {{ ansible_pkg_mgr }} deb={{ item }} state=present {{ XGUI.extra_args }}
-  with_items: '{{ XGUI.packages }}'
+  apt:
+    deb: "/tmp/{{ vncserver_pkg }}"
+    state: present
+    update_cache: yes
   when: ansible_distribution == "Ubuntu"
 
 - name: remove locks and un-needed files
-  shell: >
-    /bin/rm -rf '{{ item.PATH }}'
-  with_items: '{{ XGUI.files_to_remove }}'
+  file:
+    path: '{{ item.PATH }}'
+    state: absent
+  with_items: '{{ REQUIRED.files_to_remove }}'
+  ignore_errors: yes
+  failed_when: False
+
+- name: template xstartup for vncserver
+  template:
+    src: xstartup.j2
+    dest: "/home/{{ ATMOUSERNAME }}/.vnc/xstartup"
+    mode: 0755
+    owner: '{{ ATMOUSERNAME }}'
 
 # NOTE template xstartup for centos 7 was in jetstream ONLY and should be evaluated
 - name: template xstartup for vncserver for centos 7
@@ -77,24 +85,12 @@
     mode: 0755
     owner: "{{ ATMOUSERNAME }}"
   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == '7')
-  tags: vnc
 
-- name: ensure correct permissions
+- name: ensure correct X server permissions
   file:
     path: /etc/X11/xinit/xinitrc
     mode: 0755
 
-- name: template xstartup for vncserver
-  template:
-    src: xstartup.j2
-    dest: "/home/{{ ATMOUSERNAME }}/.vnc/xstartup"
-    mode: 0755
-    owner: '{{ ATMOUSERNAME }}'
-  tags: vnc
-
-###############################
-#  CHANGE DESKTOP BACKGROUND  #
-###############################
 - name: Copy desktop background to instance
   copy:
     src: "{{ background_img }}"
@@ -114,9 +110,6 @@
     remote_src: True
   when: ansible_distribution == "Ubuntu"
 
-################
-# START SERVER #
-################
 - name: kill all running vncserver sessions
   shell: >
     /bin/su '{{ ATMOUSERNAME }}' -c "/usr/bin/vncserver -kill :'{{ item }}'"
@@ -125,9 +118,10 @@
 
 - name: Run VNC commands (Add license, set password, start server)
   command: '{{ item }}'
-  with_items: '{{ VNC_COMMANDS }}'
+  with_items: '{{ VNC_COMMANDS.realvnc }}'
   failed_when: False
 
 - name: set environment variables for legacy systems
-  set_fact: ansible_python_interpreter=/usr/bin/python26
+  set_fact:
+    ansible_python_interpreter: /usr/bin/python26
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'

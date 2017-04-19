@@ -1,0 +1,40 @@
+---
+
+REALVNC_SERVER_PERMISSIONS: 'root:f,:f'
+
+background_img: 'files/atmosphere_wallpaper_v1.jpg'
+
+VNC_COMMANDS:
+  realvnc:
+    - "/usr/bin/pkill gnome-screensaver"
+    - '/usr/bin/vnclicense -add {{ VNCLICENSE }}'
+    - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd /home/{{ ATMOUSERNAME }}/.vnc/config.d/Xvnc"
+    - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver :1 -SecurityTypes=RA2'"
+  novnc:
+    - "/usr/bin/pkill gnome-screensaver"
+    - "/usr/bin/pkill websockify"
+    - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
+    - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -SecurityTypes=VNCAuth,TLSVnc'"
+    # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
+
+NOVNC:
+  socket_port: 4200
+  vnc_port: 5902
+  vnc_session: 2
+  # RealVNC Password Location
+  passwd_file: /home/{{ ATMOUSERNAME }}/.vnc/config.d/Xvnc
+  config_file: /home/{{ ATMOUSERNAME }}/.vnc/config.insecure
+
+REQUIRED:
+  files_to_remove:
+    - { PATH: /tmp/.X1-lock, STATE: absent }
+    - { PATH: /tmp/.X11-unix, STATE: absent }
+    - { PATH: /tmp/novnc.tar, STATE: absent }
+    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.rpm, STATE: absent }
+    - { PATH: /tmp/VNC-Server-5.2.3-Linux-x64.deb, STATE: absent }
+  dirs_to_make:
+    - { PATH: /tmp/.X11-unix, STATE: directory, MODE: "a+rwxt", OWNER: "root" }
+    - { PATH: /etc/vnc, STATE: directory, MODE: "0755", OWNER: "root" }
+    - { PATH: /etc/vnc/config.d, STATE: directory, MODE: "0755", OWNER: "root" }
+    - { PATH: '/home/{{ ATMOUSERNAME }}/.vnc', STATE: directory, MODE: "0750", OWNER: '{{ ATMOUSERNAME }}' }
+    - { PATH: '/home/{{ ATMOUSERNAME }}/.vnc/config.d', STATE: directory, MODE: "0750", OWNER: '{{ ATMOUSERNAME }}' }

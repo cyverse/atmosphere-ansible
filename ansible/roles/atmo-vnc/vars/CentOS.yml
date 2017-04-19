@@ -1,0 +1,16 @@
+---
+
+vncserver_pkg: 'VNC-Server-5.2.3-Linux-x64.rpm'
+
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/Xorg
+  vnc_dependencies:
+    - xterm
+  packages_to_remove:
+    - gnome-screensaver
+  disable_gpg_check: no
+  files_to_add:
+    - { FROM: '{{ vncserver_pkg }}', TO: '/tmp/{{ vncserver_pkg }}' }
+    - { FROM: vncserver.custom-cent, TO: /etc/pam.d/vncserver.custom }
+    - { FROM: common.custom, TO: /etc/vnc/config.d/common.custom }

@@ -1,6 +1,0 @@
----
-- name: Playbook to install and configure vncserver 
-  hosts: atmosphere
-  roles:
-    # Requires ATMOUSERNAME
-    - atmo-novnc

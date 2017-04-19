@@ -1,7 +1,8 @@
 ---
 
 - name: set environment variables for legacy systems
-  set_fact: ansible_python_interpreter=/usr/bin/python
+  set_fact:
+    ansible_python_interpreter: /usr/bin/python
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
 
 - name: gather os specific variables
@@ -27,6 +28,13 @@
   set_fact:
     has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
 
-- name: Include tasks for install if has_gui
-  include: install.yml
+- block:
+  - include: realvnc.yml
+    when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true
+
+  - include: guacamole.yml
+    when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+
+  - include: novnc.yml
+    when: SETUP_NOVNC is defined and SETUP_NOVNC == true
   when: has_gui
