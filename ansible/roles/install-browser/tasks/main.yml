@@ -1,0 +1,27 @@
+---
+
+- name: verify that X server exists
+  stat:
+    path: "{{ XGUI.xsession_path }}"
+  register: xsession
+  tags:
+    - check-gui
+
+- name: verify that xterm session exists
+  stat:
+    path: "{{ XGUI.xterm_path }}"
+  register: xterm
+  tags:
+    - check-gui
+
+- name: set flag for GUI systems
+  set_fact:
+    has_gui: "{{ xsession.stat.exists and xterm.stat.exists }}"
+  tags:
+    - check-gui
+
+- name: install browser
+  include: install.yml
+  when:
+    - has_gui
+  
