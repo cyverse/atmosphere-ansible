@@ -1,10 +1,5 @@
 ---
 
-- name: set environment variables for legacy systems
-  set_fact:
-    ansible_python_interpreter: /usr/bin/python
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
-
 - name: gather os specific variables
   include_vars: "{{ item }}"
   with_first_found:
