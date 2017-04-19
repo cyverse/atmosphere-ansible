@@ -1,0 +1,3 @@
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/Xorg

@@ -1,5 +1,13 @@
 ---
 
+- name: gather OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags:
+    - x
+
 - name: verify that X server exists
   stat:
     path: "{{ XGUI.xsession_path }}"
@@ -24,4 +32,3 @@
   include: install.yml
   when:
     - has_gui
-  
