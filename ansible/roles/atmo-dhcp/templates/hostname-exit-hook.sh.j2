@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PREFIX="{{ PREFIX }}"
 
@@ -49,7 +49,7 @@ hostname_value=""
 echo $(date +"%m%d%y %H:%M:%S") "dhclient hostname hook started" >> $LOG
 
 while [ $retry -lt $MAX_ATTEMPTS -a -z "$hostname_value" ]; do
-    ((retry++))
+    retry=$((retry+1))
     echo $(date +"%m%d%y %H:%M:%S") "	Attempt #${retry}" >> $LOG
     # Note: gobal hostname_value is returned
     get_hostname
@@ -59,7 +59,7 @@ done
 {% if ADD_EXTERNAL_IP_RESOLUTION_ATTEMPTS %}
 
 # attempt external ip resolution through dyndns
-if [[ -z $hostname_value ]]; then
+if [ -z $hostname_value ]; then
   myip=$(timeout -s SIGTERM 10 curl -s 'http://checkip.dyndns.org' | sed 's/.*Current IP Address: \([0-9\.]*\).*/\1/g')
   if [ $? -eq 0 -a -n "$myip" ]; then
     echo $(date +"%m%d%y %H:%M:%S") "	attempting to set using dyndns (found ip = $myip) " >> $LOG
@@ -71,7 +71,7 @@ if [[ -z $hostname_value ]]; then
 fi
 
 # attempt external ip resolution through ipify
-if [[ -z $hostname_value ]]; then
+if [ -z $hostname_value ]; then
   myip=$(curl https://api.ipify.org)
   if [ $? -eq 0 -a -n "$myip" ]; then
     echo $(date +"%m%d%y %H:%M:%S") "	attempting to set using ipify (found ip = $myip) " >> $LOG
@@ -85,9 +85,9 @@ fi
 {% endif %}
 
 # retest hostname value
-if [[ -z $hostname_value ]]; then
+if [ -z $hostname_value ]; then
     domainname=".$(dnsdomainname)"
-    if [ $domainname == ".(none)" ];then
+    if [ $domainname = ".(none)" ];then
         domainname=""
     fi
     third_octet=$(echo $myip | cut -f 3 -d '.')
