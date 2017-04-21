@@ -216,7 +216,10 @@
     - restart-dbus
 
 - name: restart dbus for Ubuntu 16.04 and later
-  service: name=dbus state=reloaded enabled=yes
+  service:
+    name: 'dbus'
+    state: 'reloaded'
+    enabled: 'yes'
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
   tags:
     - reload-dbus
@@ -244,4 +247,3 @@
   delay: 10
   tags:
     - verify-ldap
-
