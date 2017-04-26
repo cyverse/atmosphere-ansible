@@ -32,10 +32,10 @@
   with_items: '{{ SERVICES.disabled }}'
   failed_when: False
   tags: disable-services
-  
+
 - name: Remove iDrop files
   file:
-    path: "{{ items }}"
+    path: "{{ item }}"
     state: absent
   with_items:
     - /etc/skel/Desktop/idrop.desktop
