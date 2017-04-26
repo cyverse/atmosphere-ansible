@@ -41,4 +41,6 @@
     - /etc/skel/Desktop/idrop.desktop
     - /opt/idrop.tgz
     - /opt/iDrop
+    - /opt/irodsidrop
+    - /home/{{ ATMOUSERNAME }}/Desktop/idrop.desktop
   tags: remove-idrop
