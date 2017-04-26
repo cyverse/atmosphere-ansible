@@ -51,6 +51,7 @@ Enable these optional configurations by setting the corresponding variable to `t
 | SETUP_GLOBUS_CONNECT     | [Globus Connect](https://www.globus.org/globus-connect)   |
 | SETUP_GUACAMOLE          | [Apache Guacamole](https://guacamole.apache.org/)         |
 | SETUP_NOVNC              | NoVNC VNC Client                                          |
+| SETUP_GUI_BROWSER        | Web browser on instances with a GUI                       |
 
 ### Guacamole Information
 

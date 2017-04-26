@@ -41,7 +41,8 @@
     set_fact: use_remote_user=root
     when: "'Atmosphere is cool!' in root_connection.stdout"
 
-- fail:
+- name: Fail if use_remote_user cannot be found
+  fail:
     msg: "No remote connection established, atmo-ssh-setup can not continue."
   when: use_remote_user is not defined
 
