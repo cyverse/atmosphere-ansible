@@ -1,6 +1,16 @@
 ---
 # ansible-playbook playbooks/utils/mount_volume.yml -i hosts --limit "vm0" -e "{'VOLUME_DEVICE':'/dev/sdb', 'VOLUME_MOUNT_LOCATION':'/vol1', 'VOLUME_DEVICE_TYPE': 'ext4'}"
 
+- name: gather OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "defaults.yml"
+  tags:
+    - vars
+
 - name: Debug ansible devices
   debug:
     var: item
@@ -17,6 +27,9 @@
     src: '{{ VOLUME_DEVICE }}'
     state: 'mounted'
     name: '{{ VOLUME_MOUNT_LOCATION }}'
+    opts: '{{ MOUNT_OPTIONS }}'
+    dump: 0
+    passno: 2
   register: mount_result
 
 - name: Debug mount result
