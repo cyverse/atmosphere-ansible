@@ -73,6 +73,11 @@
     src: /tmp/kanki-irodsclient/src/icons/irodsclient.png
     dest: /usr/share/icons/irodsclient.png
 
+- name: Make sure Desktop directory exists
+  file:
+    state: directory
+    path: "/home/{{ ATMOUSERNAME }}/Desktop"
+
 - name: Copy desktop launcher
   copy:
     src: files/kanki.desktop
