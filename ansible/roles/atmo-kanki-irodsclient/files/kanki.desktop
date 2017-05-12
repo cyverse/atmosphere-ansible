@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=kanki-irodsclient
+Comment=Open kanki
+Exec=/usr/bin/irodsclient %f
+Icon=/usr/share/icons/irodsclient.png
+Terminal=false
+Type=Application
+Categories=Utility;Application;
