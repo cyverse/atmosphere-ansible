@@ -199,7 +199,6 @@ Options to pass to 'ezj':
 -u	force update of anaconda (default is no update)
 -p	takes a directory as an option; install in a different location other than default ($INSTALL_ROOT)
 	NOTE: if you set this, you must pass it again for future calls
-	NOTE: useful option if you want to install onto an attached volume (hint)
 
 Example of options
 
