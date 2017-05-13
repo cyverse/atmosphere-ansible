@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 # NOTE: if you change this, you must change it below as well
 INSTALL_ROOT=/home
@@ -10,7 +10,7 @@ export sudo_anaconda_install='
 ANACONDA_VERSION=4.3.1
 INSTALL_ROOT=/home
 python_detect () {
-	if [ -n "$pversion" ]; then
+	if [ -n "$pversion" -a $pversion -ne 0 ]; then
 		PYTHON_VERSION=$pversion
 	else
 		which python3
@@ -29,6 +29,12 @@ anaconda_update () {
 }
 
 anaconda_install () {
+
+	# set the INSTALL_ROOT if found
+	if [ -n "$install_root" ]; then
+		INSTALL_ROOT=$install_root
+	fi
+
 	ANACONDA_ROOT=${INSTALL_ROOT}/anaconda${PYTHON_VERSION}
 	lastdir=$PWD
 	echo "DEBUG: downloading anaconda binary, may take a few minutes"
@@ -41,8 +47,8 @@ anaconda_install () {
 	fi
 
 	# only bash install if the directory doesnt already exist
-	if [ -e Anaconda${PYTHON_VERSION}-${ANACONDA_VERSION}-Linux-x86_64.sh ]; then
-		if [ ! -d $ANACONDA_ROOT ]; then 
+	if [ -e "Anaconda${PYTHON_VERSION}-${ANACONDA_VERSION}-Linux-x86_64.sh" ]; then
+		if [ ! -d "$ANACONDA_ROOT" ]; then 
 			echo "DEBUG: install Anaconda"
 			bash Anaconda${PYTHON_VERSION}-${ANACONDA_VERSION}-Linux-x86_64.sh -b -p ${ANACONDA_ROOT}
 		else
@@ -50,11 +56,13 @@ anaconda_install () {
 		fi 
 
 		# if r-install is detected do the following
-		if [ -n "$rkernel" ]; then
+		if [ -n "$rkernel" -a "$rkernel" -eq 1 ]; then
 			echo "DEBUG: installing rkernel"
 			${ANACONDA_ROOT}/bin/conda install -y -c r r-essentials
 		fi
+	fi
 
+	if [ -n "$update_enabled" -a "$update_enabled" -eq 1 ]; then
 		anaconda_update
 	fi
 
@@ -78,7 +86,7 @@ anaconda_install
 ###########################
 
 python_detect () {
-	if [ -n "$1" ]; then
+	if [ -n "$1" -a "$1" -ne 0 ]; then
 		PYTHON_VERSION=$1
 	else
 		which python3
@@ -109,17 +117,93 @@ jupyter_notebook_launch () {
 	fi
 }
 
-alias ezj="sudo bash -c '$sudo_anaconda_install'; anaconda_setpath;jupyter_notebook_launch"
-alias ezj2="sudo bash -c 'eval export pversion=2;$sudo_anaconda_install'; anaconda_setpath 2;jupyter_notebook_launch"
-alias ezj3="sudo bash -c 'eval export pversion=3;$sudo_anaconda_install'; anaconda_setpath 3;jupyter_notebook_launch"
-alias ezjr="sudo bash -c 'eval export rkernel=1;$sudo_anaconda_install'; anaconda_setpath;jupyter_notebook_launch"
+ezj () {
+	local OPTIND opt
+
+	update_option=0
+	r_option=0
+	quick=0
+	pv=0
+	option_error=0
+	while getopts "qrRu23p:" opt; do
+		case $opt in
+		q)
+			echo "DEBUG: option for quick launch enabled"
+			quick=1
+			;;
+		r)
+			echo "DEBUG: option to install R kernel enabled"
+			r_option=1
+			;;
+		R)
+			echo "DEBUG: option to install R kernel enabled"
+			r_option=1
+			;;
+		u)
+			echo "DEBUG: option to update anaconda enabled"
+			update_option=1
+			;;
+		p)
+			if [ -n "$OPTARG" -a -d "$OPTARG" ]; then
+				echo "DEBUG: changing INSTALL_ROOT to $OPTARG" 
+				INSTALL_ROOT=$OPTARG
+			else
+				echo "ERROR: invalid INSTALL_ROOT = $OPTARG"
+				option_error=1
+			fi
+			;;
+		2)
+			if [ "$pv" -ne 0 ]; then
+				echo "ERROR: options -2 and -3 cannot be combined"
+				option_error=1
+			else
+				echo "DEBUG: forcing Python 2"
+				pv=2
+			fi
+			;;
+		3)
+			if [ "$pv" -ne 0 ]; then
+				echo "ERROR: options -2 and -3 cannot be combined"
+				option_error=1
+			else
+				echo "DEBUG: forcing Python 3"
+				pv=3
+			fi
+			;;
+		\?)
+			echo "invalid flag -$OPTARG"
+			;;
+		esac
+	done
+
+	if [ $option_error -eq 0 ]; then
+		if [ $quick -eq 0 ]; then
+			sudo bash -c "eval export update_enabled=${update_option};export rkernel=${r_option};export pversion=${pv};install_root=${INSTALL_ROOT};$sudo_anaconda_install"
+		fi
+		anaconda_setpath $pv
+		jupyter_notebook_launch
+	fi
+}
 
 alias ez="echo '
-Here are the different ez options:
+Here are the different ez commands:
 
 ez   -> this help menu
 ezj  -> run jupyter-notebook with python detection
-ezj2 -> run jupyter-notebook with python 2
-ezj3 -> run jupyter-notebook with python 3
-ezjr -> run jupyter-notebook with R kernel
+
+Options to pass to 'ezj':
+-q	do not attempt to install, just launch jupyter!
+-R	install the R kernel (-r also works)
+-2	force python 2 kernel (not compatible with -3 option)
+-3	force python 3 kernel (not compatible with -2 option)
+-u	force update of anaconda (default is no update)
+-p	takes a directory as an option; install in a different location other than default ($INSTALL_ROOT)
+	NOTE: if you set this, you must pass it again for future calls
+	NOTE: useful option if you want to install onto an attached volume (hint)
+
+Example of options
+
+	ezj -u -R
+	ezj -p /opt -u
+
 '"
