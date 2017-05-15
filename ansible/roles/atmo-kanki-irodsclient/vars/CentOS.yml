@@ -1,5 +1,8 @@
 ---
 
+xsession_path: /usr/bin/xinit
+xterm_path: /usr/bin/Xorg
+
 dependencies:
   - epel-release
   - openssl-devel

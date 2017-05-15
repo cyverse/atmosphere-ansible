@@ -1,12 +1,25 @@
 ---
 
-- block:
-    - name: Gather OS specific variables
-      include_vars: "{{ item }}"
-      with_first_found:
-        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-        - "{{ ansible_distribution }}.yml"
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
 
+- name: verify that X server exists
+  stat:
+    path: "{{ xsession_path }}"
+  register: xsession
+
+- name: verify that xterm session exists
+  stat:
+    path: "{{ xterm_path }}"
+  register: xterm
+
+- name: set flag for GUI systems
+  set_fact: has_gui="{{ xsession.stat.exists and xterm.stat.exists }}"
+
+- block:
     - name: Install dependencies
       package:
         state: present
@@ -90,4 +103,4 @@
       file:
         state: absent
         path: /tmp/kanki-irodsclient
-  when: (ansible_distribution_major_version == "Ubuntu" and ansible_distribution_major_version > 12) or (ansible_distribution_major_version == "CentOS" and ansible_distribution_major_version > 5)
+  when: has_gui and ((ansible_distribution == "Ubuntu" and ansible_distribution_major_version > 12) or (ansible_distribution == "CentOS" and ansible_distribution_major_version > 5))
