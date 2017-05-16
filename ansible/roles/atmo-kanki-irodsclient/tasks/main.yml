@@ -107,4 +107,4 @@
     has_gui and
     ((ansible_distribution == "Ubuntu" and ansible_distribution_major_version != '12')
     or
-    (ansible_distribution == "CentOS" and ansible_distribution_major_version != '5')
+    (ansible_distribution == "CentOS" and ansible_distribution_major_version != '5'))
