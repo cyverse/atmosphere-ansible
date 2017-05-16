@@ -99,6 +99,13 @@
         owner: "{{ ATMOUSERNAME }}"
         mode: 0755
 
+    - name: Copy application menu launcher
+      copy:
+        src: files/kanki.desktop
+        dest: "/usr/share/applications/kanki.desktop"
+        owner: root
+        mode: 0644
+
     - name: Remove git repository
       file:
         state: absent
