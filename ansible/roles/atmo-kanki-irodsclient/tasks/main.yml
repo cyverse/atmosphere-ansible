@@ -1,0 +1,117 @@
+---
+
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+- name: verify that X server exists
+  stat:
+    path: "{{ xsession_path }}"
+  register: xsession
+
+- name: verify that xterm session exists
+  stat:
+    path: "{{ xterm_path }}"
+  register: xterm
+
+- name: set flag for GUI systems
+  set_fact: has_gui="{{ xsession.stat.exists and xterm.stat.exists }}"
+
+- block:
+    - name: Install dependencies
+      package:
+        state: present
+        name: "{{ item }}"
+      with_items: "{{ dependencies }}"
+
+    - name: Install iRods on CentOS
+      yum:
+        state: present
+        pkg: "{{ item }}"
+      with_items: "{{ irods_files }}"
+      when: ansible_distribution == "CentOS"
+
+    - name: Install iRods on Ubuntu
+      apt:
+        state: present
+        deb: "{{ item }}"
+      with_items: "{{ irods_files }}"
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Create ~/.irods directory
+      file:
+        state: directory
+        path: "/home/{{ ATMOUSERNAME }}/.irods"
+        owner: "{{ ATMOUSERNAME }}"
+
+    - name: Create /etc/irods directory
+      file:
+        state: directory
+        path: "/etc/irods"
+
+    - name: Template irods_environment.json
+      template:
+        dest: "/home/{{ ATMOUSERNAME }}/.irods/irods_environment.json"
+        src: irods_environment.json.j2
+        owner: "{{ ATMOUSERNAME }}"
+
+    - name: Download git repository
+      git:
+        repo: https://github.com/ilarik/kanki-irodsclient.git
+        dest: /tmp/kanki-irodsclient
+
+    - name: Build kanki-irodsclient
+      command: "{{ build_cmd }}"
+      args:
+        chdir: /tmp/kanki-irodsclient/
+
+    - name: Copy binary to PATH
+      copy:
+        remote_src: True
+        src: /tmp/kanki-irodsclient/src/irodsclient
+        dest: /usr/bin/irodsclient
+        mode: 0755
+
+    - name: Copy schema.xml over
+      copy:
+        remote_src: True
+        src: /tmp/kanki-irodsclient/src/schema.xml
+        dest: /etc/irods/schema.xml
+        mode: 0644
+
+    - name: Copy icon image
+      copy:
+        remote_src: True
+        src: /tmp/kanki-irodsclient/src/icons/irodsclient.png
+        dest: /usr/share/icons/irodsclient.png
+
+    - name: Make sure Desktop directory exists
+      file:
+        state: directory
+        path: "/home/{{ ATMOUSERNAME }}/Desktop"
+
+    - name: Copy desktop launcher
+      copy:
+        src: files/kanki.desktop
+        dest: "/home/{{ ATMOUSERNAME }}/Desktop/kanki.desktop"
+        owner: "{{ ATMOUSERNAME }}"
+        mode: 0755
+
+    - name: Copy application menu launcher
+      copy:
+        src: files/kanki.desktop
+        dest: "/usr/share/applications/kanki.desktop"
+        owner: root
+        mode: 0644
+
+    - name: Remove git repository
+      file:
+        state: absent
+        path: /tmp/kanki-irodsclient
+  when:
+    has_gui and
+    ((ansible_distribution == "Ubuntu" and ansible_distribution_major_version != '12')
+    or
+    (ansible_distribution == "CentOS" and ansible_distribution_major_version != '5'))
