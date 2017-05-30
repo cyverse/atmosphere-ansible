@@ -95,7 +95,13 @@
         src: /usr/share/backgrounds/cloud_background.jpg
         dest: /usr/share/backgrounds/default.jpg
         remote_src: True
-      when: ansible_distribution == "Ubuntu"
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
+
+  - name: Change desktop background on Ubuntu 16+
+    command: >
+      xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/wokspace0/last-image -s /usr/share/backgrounds/cloud_background.jpg
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
+
   when: has_gui
 
 - name: remove locks and un-needed files
