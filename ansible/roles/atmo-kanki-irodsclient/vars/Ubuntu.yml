@@ -10,6 +10,7 @@ dependencies:
   - libqt5svg5-dev
   - libcurl4-nss-dev
   - qt5-default
+  - g++
 
 irods_files:
   - ftp://ftp.renci.org/pub/irods/releases/4.1.9/ubuntu14/irods-runtime-4.1.9-ubuntu14-x86_64.deb
