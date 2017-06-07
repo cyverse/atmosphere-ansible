@@ -50,6 +50,7 @@ Enable these optional configurations by setting the corresponding variable to `t
 | SETUP_REALVNC_SERVER     | RealVNC server for Atmosphere Web Desktop feature         |
 | SETUP_GLOBUS_CONNECT     | [Globus Connect](https://www.globus.org/globus-connect)   |
 | SETUP_GUI_BROWSER        | Web browser on instances with a GUI                       |
+| SET_DESKTOP_BACKGROUND   | Change desktop background for CyVerse but not Jetstream   |
 
 ## Utility Playbooks
 
