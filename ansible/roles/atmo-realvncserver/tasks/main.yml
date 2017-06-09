@@ -89,7 +89,6 @@
       command: >
         gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
       when: ansible_distribution == "CentOS"
-      ignore_errors: yes
 
     # Note: These tasks trick the os by replacing their defaults with our own instead of properly
     # setting the background because "Unable to autolaunch a dbus-daemon without a $DISPLAY for X11"
@@ -99,7 +98,6 @@
         dest: /usr/share/backgrounds/default.jpg
         remote_src: True
       when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
-      ignore_errors: yes
 
     - name: Change desktop background on Ubuntu 16+
       copy:
@@ -107,8 +105,7 @@
         dest: /usr/share/backgrounds/xfce/xfce-teal.jpg
         remote_src: True
       when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
-      ignore_errors: yes
-
+  ignore_errors: yes
   when: has_gui and SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
 
 - name: remove locks and un-needed files
