@@ -56,9 +56,9 @@
 - name: fail when ssh errors occur related to Host key verification failed.
   fail:
     msg: "Configuration Error: Host key verification failed for IP: {{vm_ip}} . Does your ssh/config have 'StrictHostKeyChecking no' for the IP/IP Range/*"
-  when: (default_remote_user.stderr is defined and default_remote_user.stderr == "Host key verification failed.") and
-        (centos_remote_user.stderr is defined and centos_remote_user.stderr == "Host key verification failed.") and
-        (ubuntu_remote_user.stderr is defined and ubuntu_remote_user.stderr == "Host key verification failed.")
+  when: (default_remote_user.stderr is defined and "Host key verification failed." in  default_remote_user.stderr) and
+        (centos_remote_user.stderr is defined and  "Host key verification failed." in centos_remote_user.stderr) and
+        (ubuntu_remote_user.stderr is defined and  "Host key verification failed." in ubuntu_remote_user.stderr)
 
 - name: fail when ssh not possible
   fail: msg="The host is not reachable via SSH as root and cloud users."
