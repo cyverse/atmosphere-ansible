@@ -97,15 +97,15 @@
 ###########
 # Profile #
 ###########
-- name: copy profile-cyverse10-utils.sh to /etc/profile.d
-  copy:
-    src=profile-cyverse10-utils.sh
+- name: copy profile-cyverse10-utils.sh.j2 to /etc/profile.d
+  template:
+    src=profile-cyverse10-utils.sh.j2
     dest=/etc/profile.d/cyverse10-utils.sh
     mode=0755
 
-- name: copy profile-cyverse20-ezj-setup.sh to /etc/profile.d
-  copy:
-    src=profile-cyverse20-ezj-setup.sh
+- name: copy profile-cyverse20-ezj-setup.sh.j2 to /etc/profile.d
+  template:
+    src=profile-cyverse20-ezj-setup.sh.j2
     dest=/etc/profile.d/cyverse20-ezj-setup.sh
     mode=0755
 
