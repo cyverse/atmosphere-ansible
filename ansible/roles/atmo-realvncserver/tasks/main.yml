@@ -105,8 +105,8 @@
         dest: /usr/share/backgrounds/xfce/xfce-teal.jpg
         remote_src: True
       when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
-
-  when: has_gui
+  ignore_errors: yes
+  when: has_gui and SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
 
 - name: remove locks and un-needed files
   shell: /bin/rm -rf {{ item.PATH }}
