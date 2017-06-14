@@ -21,6 +21,8 @@ PACKAGES:
   - zsh
   - mosh
   - qemu-guest-agent
+  - git
+  - ansible
 
 MODULES_TO_LOAD:
   - acpiphp

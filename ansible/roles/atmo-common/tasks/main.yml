@@ -10,6 +10,12 @@
 ###########
 # Install #
 ###########
+- name: for ubuntu, add the ansible official repo before installing packages
+  apt_repository:
+    repo: 'ppa:ansible/ansible'
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
 - name: install dependencies
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
@@ -97,17 +103,19 @@
 ###########
 # Profile #
 ###########
-- name: copy profile-cyverse10-utils.sh.j2 to /etc/profile.d
-  template:
-    src=profile-cyverse10-utils.sh.j2
-    dest=/etc/profile.d/cyverse10-utils.sh
-    mode=0755
 
-- name: copy profile-cyverse20-ezj-setup.sh.j2 to /etc/profile.d
-  template:
-    src=profile-cyverse20-ezj-setup.sh.j2
-    dest=/etc/profile.d/cyverse20-ezj-setup.sh
-    mode=0755
+# ansible-pull ez facility install without EZ_INSTALL_DIR; ignore errors
+- name: ansible-pull the ez facility without EZ_INSTALL_DIR
+  shell: ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i locahost -o >> /var/log/cyverse-ez.log 2>&1
+  ignore_errors: yes
+  when: EZ_INSTALL_DIR is undefined
+
+# ansible-pull ez facility install with EZ_INSTALL_DIR; ignore errors
+- name: ansible-pull the ez facility with EZ_INSTALL_DIR
+  shell: "ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i locahost -e EZ_INSTALL_DIR={{ EZ_INSTALL_DIR }} -o >> /var/log/cyverse-ez.log 2>&1"
+  ignore_errors: yes
+  when: EZ_INSTALL_DIR is defined
+
 
 ###########
 # General #
