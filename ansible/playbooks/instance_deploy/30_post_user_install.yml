@@ -8,5 +8,5 @@
     - { role: atmo-kanki-irodsclient, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
     - { role: install-browser, when: SETUP_GUI_BROWSER is defined and SETUP_GUI_BROWSER == true }
     - { role: atmo-realvncserver, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
-    - ansible-atmo-backup
+    - atmo-backup
     - atmo-cleanup
