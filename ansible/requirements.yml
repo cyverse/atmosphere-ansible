@@ -8,4 +8,4 @@
   name: irods-icommands
 
 - src: CyVerse-Ansible.atmo-backup
-  name: ansible-atmo-backup
+  name: atmo-backup
