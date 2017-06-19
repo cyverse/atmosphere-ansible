@@ -1,0 +1,7 @@
+---
+
+- name: Playbook to install BWA tool
+  hosts: localhost
+  remote_user: root
+  roles:
+    - ansible-atmo-backup

@@ -1,0 +1,13 @@
+---
+
+- name: Copy cyverse_backup.sh with correct permissions
+  copy:
+    src: "files/cyverse_backup.sh"
+    dest: "/opt/cyverse_backup.sh"
+    mode: "0755"
+
+- name: Link to executables path
+  file:
+    src: "/opt/cyverse_backup.sh"
+    dest: "/usr/local/bin/cyverse_backup.sh"
+    state: link
