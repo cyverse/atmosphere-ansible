@@ -21,6 +21,8 @@ PACKAGES:
   - zsh
   - mosh
   - qemu-guest-agent
+  - git
+  - ansible
 
 # Add modules to be loaded here
 # MODULES_TO_LOAD:

@@ -26,6 +26,8 @@ PACKAGES:
   - bzip2
   - vim
   - qemu-guest-agent
+  - git
+  - ansible
 
 SYSLOG_SERVICE_NAME: rsyslog
 

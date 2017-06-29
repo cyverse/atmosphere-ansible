@@ -23,6 +23,8 @@ PACKAGES:
   - python
   - python-ldap
   - qemu-guest-agent
+  - git
+  - ansible
 
 SYSLOG_SERVICE_NAME: rsyslog
 

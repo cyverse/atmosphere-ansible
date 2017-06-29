@@ -22,6 +22,8 @@ PACKAGES:
   - mosh
   - fuse-utils
   - fuse
+  - git
+  - ansible
 
 MODULES_TO_LOAD:
   - acpiphp

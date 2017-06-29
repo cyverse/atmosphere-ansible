@@ -20,6 +20,8 @@ PACKAGES:
   - fuse-devel.x86_64
   - python
   - python-ldap
+  - git
+  - ansible
 
 SYSLOG_SERVICE_NAME: syslog
 

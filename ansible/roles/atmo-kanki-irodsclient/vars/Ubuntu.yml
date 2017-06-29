@@ -1,0 +1,20 @@
+---
+
+xsession_path: /usr/bin/X
+xterm_path: /usr/bin/xinit
+
+dependencies:
+  - git
+  - qt5-qmake
+  - qtbase5-dev
+  - libqt5svg5-dev
+  - libcurl4-nss-dev
+  - qt5-default
+  - g++
+
+irods_files:
+  - ftp://ftp.renci.org/pub/irods/releases/4.1.9/ubuntu14/irods-runtime-4.1.9-ubuntu14-x86_64.deb
+  - ftp://ftp.renci.org/pub/irods/releases/4.1.9/ubuntu14/irods-icommands-4.1.9-ubuntu14-x86_64.deb
+  - ftp://ftp.renci.org/pub/irods/releases/4.1.9/ubuntu14/irods-dev-4.1.9-ubuntu14-x86_64.deb
+
+build_cmd: ./build.sh -q /usr/lib/x86_64-linux-gnu/qt5

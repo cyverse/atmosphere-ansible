@@ -10,6 +10,12 @@
 ###########
 # Install #
 ###########
+- name: for ubuntu, add the ansible official repo before installing packages
+  apt_repository:
+    repo: 'ppa:ansible/ansible'
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
 - name: install dependencies
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=present
@@ -93,6 +99,29 @@
   when: (ansible_distribution == "Ubuntu") and (ubuntu_legal.stat.exists is defined) and (ubuntu_legal.stat.exists)
   tags:
     - legal
+
+###########
+# Profile #
+###########
+
+- name: create the /etc/cyverse directory if EZ_INSTALL_DIR is defined
+  file:
+    path: /etc/cyverse
+    state: directory
+    mode: 0755
+  when: EZ_INSTALL_DIR is defined
+
+- name: copy over template if EZ_INSTALL_DIR is defined
+  template:
+    src: ez.yml.j2
+    dest: /etc/cyverse/ez.yml
+    mode: 0755
+  when: EZ_INSTALL_DIR is defined
+
+# ansible-pull ez facility install without EZ_INSTALL_DIR; ignore errors
+- name: ansible-pull the ez facility
+  shell: ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i locahost -f >> /var/log/cyverse-ez.log 2>&1
+  ignore_errors: yes
 
 ###########
 # General #

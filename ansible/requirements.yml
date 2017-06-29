@@ -6,3 +6,9 @@
 
 - src: CyVerse-Ansible.irods-icommands
   name: irods-icommands
+
+- src: CyVerse-Ansible.atmo-backup
+  name: atmo-backup
+
+- src: CyVerse-Ansible.ez
+  name: ez
