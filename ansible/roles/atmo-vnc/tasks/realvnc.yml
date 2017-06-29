@@ -91,37 +91,6 @@
     path: /etc/X11/xinit/xinitrc
     mode: 0755
 
-- block:
-    - name: Copy desktop background to instance
-      copy:
-        src: "{{ background_img }}"
-        dest: /usr/share/backgrounds/cloud_background.jpg
-
-    - name: Change desktop background on CentOS
-      become: yes
-      become_user: "{{ ATMOUSERNAME }}"
-      command: >
-        gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
-      when: ansible_distribution == "CentOS"
-
-    # Note: These tasks trick the os by replacing their defaults with our own instead of properly
-    # setting the background because "Unable to autolaunch a dbus-daemon without a $DISPLAY for X11"
-    - name: Change desktop background on Ubuntu
-      copy:
-        src: /usr/share/backgrounds/cloud_background.jpg
-        dest: /usr/share/backgrounds/default.jpg
-        remote_src: True
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
-
-    - name: Change desktop background on Ubuntu 16+
-      copy:
-        src: /usr/share/backgrounds/cloud_background.jpg
-        dest: /usr/share/backgrounds/xfce/xfce-teal.jpg
-        remote_src: True
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
-  ignore_errors: yes
-  when: has_gui and SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
-
 - name: kill all running vncserver sessions
   shell: >
     /bin/su '{{ ATMOUSERNAME }}' -c "/usr/bin/vncserver -kill :'{{ item }}'"
