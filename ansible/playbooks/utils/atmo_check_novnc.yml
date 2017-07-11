@@ -2,4 +2,4 @@
 - name: Playbook to fail when VNC is not running
   hosts: atmosphere
   roles:
-    - atmo-check-novnc
+    - { role: atmo-check-novnc, when: SETUP_NOVNC is defined and SETUP_NOVNC == true }

@@ -1,0 +1,68 @@
+---
+
+- name: set environment variables for legacy systems
+  set_fact:
+    ansible_python_interpreter: /usr/bin/python
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version < '6'
+
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+- name: Verify that X server exists
+  stat:
+    path: '{{ XGUI.xsession_path }}'
+  register: xsession
+
+- name: Verify that xterm session exists
+  stat:
+    path: '{{ XGUI.xterm_path }}'
+  register: xterm
+
+- name: Set flag for GUI systems
+  set_fact:
+    has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
+
+- block:
+  - block:
+      - name: Copy desktop background to instance
+        copy:
+          src: "{{ background_img }}"
+          dest: /usr/share/backgrounds/cloud_background.jpg
+
+      - name: Change desktop background on CentOS
+        become: yes
+        become_user: "{{ ATMOUSERNAME }}"
+        command: >
+          gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
+        when: ansible_distribution == "CentOS"
+
+      # Note: These tasks trick the os by replacing their defaults with our own instead of properly
+      # setting the background because "Unable to autolaunch a dbus-daemon without a $DISPLAY for X11"
+      - name: Change desktop background on Ubuntu
+        copy:
+          src: /usr/share/backgrounds/cloud_background.jpg
+          dest: /usr/share/backgrounds/default.jpg
+          remote_src: True
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
+
+      - name: Change desktop background on Ubuntu 16+
+        copy:
+          src: /usr/share/backgrounds/cloud_background.jpg
+          dest: /usr/share/backgrounds/xfce/xfce-teal.jpg
+          remote_src: True
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
+    ignore_errors: yes
+    when: SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
+
+  - include: realvnc.yml
+    when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true
+
+  - include: guacamole.yml
+    when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
+
+  - include: novnc.yml
+    when: SETUP_NOVNC is defined and SETUP_NOVNC == true
+  when: has_gui

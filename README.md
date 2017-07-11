@@ -49,8 +49,16 @@ Enable these optional configurations by setting the corresponding variable to `t
 | SETUP_IRODS_ICOMMANDS    | iRODS iCommands and iRODS FUSE client                     |
 | SETUP_REALVNC_SERVER     | RealVNC server for Atmosphere Web Desktop feature         |
 | SETUP_GLOBUS_CONNECT     | [Globus Connect](https://www.globus.org/globus-connect)   |
+| SETUP_GUACAMOLE          | [Apache Guacamole](https://guacamole.apache.org/)         |
+| SETUP_NOVNC              | NoVNC VNC Client                                          |
 | SETUP_GUI_BROWSER        | Web browser on instances with a GUI                       |
 | SET_DESKTOP_BACKGROUND   | Set desktop background for instances with a GUI           |
+
+### Guacamole Information
+
+Guacamole is a VNC and SSH gateway. If using this feature, `GUACAMOLE_SERVER_IP` must also be defined.
+
+**Security Warning**: the Guacamole remote desktop requires unencrypted VNC connections from the Guacamole server to your target instances. Ensure that your Guacamole server connects to instances via a trusted network where no unauthorized parties can listen to network traffic. If these connections transit an untrusted network, anyone listening on the wire would get everything from the unencrypted VNC sessions.
 
 ## Utility Playbooks
 
