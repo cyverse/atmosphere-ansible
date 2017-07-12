@@ -12,3 +12,6 @@
 
 - src: CyVerse-Ansible.ez
   name: ez
+
+- src: CyVerse-Ansible.kanki-irodsclient
+  name: atmo-kanki-irodsclient

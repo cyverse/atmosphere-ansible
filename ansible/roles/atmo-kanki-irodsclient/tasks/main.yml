@@ -57,34 +57,29 @@
         src: irods_environment.json.j2
         owner: "{{ ATMOUSERNAME }}"
 
-    - name: Download git repository
-      git:
-        repo: https://github.com/ilarik/kanki-irodsclient.git
-        dest: /tmp/kanki-irodsclient
+    - name: Install kanki-irodsclient on CentOS
+      yum:
+        name: "https://github.com/ilarik/kanki-irodsclient/releases/download/1.0.7/kanki-irodsclient-1.0.7-1.el6.x86_64.rpm"
+        state: present
+      when: ansible_distribution == "CentOS"
 
-    - name: Build kanki-irodsclient
-      command: "{{ build_cmd }}"
-      args:
-        chdir: /tmp/kanki-irodsclient/
+    - block:
+        - name: Copy binary on Ubuntu
+          copy:
+            src: "files/irodsclient-ubuntu"
+            dest: /usr/bin/irodsclient
+            mode: 0755
 
-    - name: Copy binary to PATH
-      copy:
-        remote_src: True
-        src: /tmp/kanki-irodsclient/src/irodsclient
-        dest: /usr/bin/irodsclient
-        mode: 0755
-
-    - name: Copy schema.xml over
-      copy:
-        remote_src: True
-        src: /tmp/kanki-irodsclient/src/schema.xml
-        dest: /etc/irods/schema.xml
-        mode: 0644
+        - name: Copy schema.xml over
+          copy:
+            src: "files/ubuntu-schema.xml"
+            dest: /etc/irods/schema.xml
+            mode: 0644
+      when: ansible_distribution == "Ubuntu"
 
     - name: Copy icon image
       copy:
-        remote_src: True
-        src: /tmp/kanki-irodsclient/src/icons/irodsclient.png
+        src: "files/irodsclient.png"
         dest: /usr/share/icons/irodsclient.png
 
     - name: Make sure Desktop directory exists
@@ -105,11 +100,6 @@
         dest: "/usr/share/applications/kanki.desktop"
         owner: root
         mode: 0644
-
-    - name: Remove git repository
-      file:
-        state: absent
-        path: /tmp/kanki-irodsclient
   when:
     has_gui and
     ((ansible_distribution == "Ubuntu" and ansible_distribution_major_version != '12')
