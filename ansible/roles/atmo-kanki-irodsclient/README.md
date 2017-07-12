@@ -4,7 +4,7 @@ https://travis-ci.org/calvinmclean/ansible-kanki-irodsclient.svg?branch=master
 
 ### Description
 
-Ansible to install [kanki-irodsclient](https://github.com/ilarik/kanki-irodsclient)
+Ansible to install [kanki-irodsclient](https://github.com/ilarik/kanki-irodsclient). **Current version in this role is 1.0.7**
 
 This role will install kanki-irodsclient and place an icon on the user's desktop. It only works on Ubuntu 14+ and CentOS 6+ distros with GUI.
 

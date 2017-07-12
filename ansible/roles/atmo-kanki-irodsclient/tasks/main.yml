@@ -57,49 +57,24 @@
         src: irods_environment.json.j2
         owner: "{{ ATMOUSERNAME }}"
 
-    - name: Install kanki-irodsclient on CentOS
-      yum:
-        name: "https://github.com/ilarik/kanki-irodsclient/releases/download/1.0.7/kanki-irodsclient-1.0.7-1.el6.x86_64.rpm"
-        state: present
-      when: ansible_distribution == "CentOS"
-
-    - block:
-        - name: Copy binary on Ubuntu
-          copy:
-            src: "files/irodsclient-ubuntu"
-            dest: /usr/bin/irodsclient
-            mode: 0755
-
-        - name: Copy schema.xml over
-          copy:
-            src: "files/ubuntu-schema.xml"
-            dest: /etc/irods/schema.xml
-            mode: 0644
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Copy icon image
-      copy:
-        src: "files/irodsclient.png"
-        dest: /usr/share/icons/irodsclient.png
-
     - name: Make sure Desktop directory exists
       file:
         state: directory
         path: "/home/{{ ATMOUSERNAME }}/Desktop"
 
-    - name: Copy desktop launcher
+    - name: Copy files
       copy:
-        src: files/kanki.desktop
-        dest: "/home/{{ ATMOUSERNAME }}/Desktop/kanki.desktop"
-        owner: "{{ ATMOUSERNAME }}"
-        mode: 0755
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        mode: "{{ item.mode }}"
+      with_items:
+        - { src: "files/irodsclient-{{ ansible_distribution }}", dest: "/usr/bin/irodsclient", owner: "root", mode: "0755" }
+        - { src: "files/schema.xml", dest: "/etc/irods/schema.xml", owner: "root", mode: "0644" }
+        - { src: "files/irodsclient.png", dest: "/usr/share/icons/irodsclient.png", owner: "root", mode: "0644" }
+        - { src: "files/kanki.desktop", dest: "/home/{{ ATMOUSERNAME }}/Desktop/kanki.desktop", owner: "{{ ATMOUSERNAME }}", mode: "0755" }
+        - { src: "files/kanki.desktop", dest: "/usr/share/applications/kanki.desktop", owner: "root", mode: "0644" }
 
-    - name: Copy application menu launcher
-      copy:
-        src: files/kanki.desktop
-        dest: "/usr/share/applications/kanki.desktop"
-        owner: root
-        mode: 0644
   when:
     has_gui and
     ((ansible_distribution == "Ubuntu" and ansible_distribution_major_version != '12')
