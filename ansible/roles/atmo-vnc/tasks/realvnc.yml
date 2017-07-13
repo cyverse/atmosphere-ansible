@@ -12,8 +12,6 @@
     state: absent
   with_items:
     - tightvncserver
-    # - tigervnc
-    # - tigervnc-server
 
 - name: create needed directories
   file:
