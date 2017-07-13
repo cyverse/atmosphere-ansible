@@ -6,7 +6,7 @@ background_img: 'files/atmosphere_wallpaper_v1.jpg'
 
 SET_DESKTOP_BACKGROUND: false
 
-VNC_EXECUTABLE: "/usr/bin/vncserver-virtual"
+VNC_EXECUTABLE: "/usr/bin/vncserver"
 
 VNC_COMMANDS:
   realvnc:
