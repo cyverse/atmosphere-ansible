@@ -12,6 +12,7 @@
     state: absent
   with_items:
     - tightvncserver
+    - tigervnc-server
 
 - name: create needed directories
   file:
@@ -68,6 +69,12 @@
     state: present
     update_cache: yes
   when: ansible_distribution == "Ubuntu"
+
+- name: Link RealVNC binary to vncserver binary
+  file:
+    src: "/usr/bin/vncserver-virtual"
+    dest: "/usr/bin/vncserver"
+    state: link
 
 - name: remove locks and un-needed files
   file:
