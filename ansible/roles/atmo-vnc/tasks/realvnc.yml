@@ -6,6 +6,15 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
+- name: Remove old vnc packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - tightvncserver
+    # - tigervnc
+    # - tigervnc-server
+
 - name: create needed directories
   file:
     path: '{{ item.PATH }}'
