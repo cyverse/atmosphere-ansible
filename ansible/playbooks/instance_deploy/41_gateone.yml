@@ -1,5 +1,22 @@
 ---
-- name: this is the playbook for adding an ssh key to a gateone user
+- name: this is the play for adding an ssh key to a gateone user
   hosts: atmosphere
+  vars:
+    KEY_LOC:
+      path: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+      owner: root
+      group: root
+    play_on: "shell"
+  roles:
+    - gateone-gen-sshkey
+
+- name: this is the play for adding an ssh key to a guacamole user
+  hosts: atmosphere
+  vars:
+    KEY_LOC:
+      path: "/etc/guacamole/keys/{{ ATMOUSERNAME }}"
+      owner: tomcat7
+      group: tomcat7
+    play_on: "guac_server"
   roles:
     - gateone-gen-sshkey
