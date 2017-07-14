@@ -1,0 +1,22 @@
+---
+- name: this is the play for adding an ssh key to a gateone user
+  hosts: atmosphere
+  vars:
+    KEY_LOC_PATH: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+    KEY_LOC_OWNER: root
+    KEY_LOC_GROUP: root
+    KEY_LOC_PREFIX: ""
+    play_on: "shell"
+  roles:
+    - sshkey-host-access
+
+- name: this is the play for adding an ssh key to a guacamole user
+  hosts: atmosphere
+  vars:
+    KEY_LOC_PATH: "/etc/guacamole/keys/{{ ATMOUSERNAME }}"
+    KEY_LOC_OWNER: tomcat7
+    KEY_LOC_GROUP: tomcat7
+    KEY_LOC_PREFIX: "_guac"
+    play_on: "guac_server"
+  roles:
+    - sshkey-host-access

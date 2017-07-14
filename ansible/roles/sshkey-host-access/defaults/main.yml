@@ -1,0 +1,7 @@
+---
+
+KEY_LOC_PATH: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+KEY_LOC_OWNER: root
+KEY_LOC_GROUP: root
+KEY_LOC_PREFIX: ""
+play_on: "shell"

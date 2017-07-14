@@ -1,0 +1,73 @@
+---
+
+- name: ensure the existence of the user directory
+  file:
+    path: "{{ KEY_LOC_PATH }}"
+    owner: "{{ KEY_LOC_OWNER }}"
+    group: "{{ KEY_LOC_GROUP }}"
+    mode: 0700
+    state: directory
+  delegate_to: "{{ play_on }}"
+
+- block:
+    - name: check the existence of a given ssh key by name
+      stat:
+        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
+      register: go_key
+
+    - name: generate the keypair
+      command: >
+        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f {{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default -C {{ ATMOUSERNAME }}
+      when: go_key.stat.exists == False
+
+    - name: set the permissions on the private key file
+      file:
+        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
+        mode: 0600
+        owner: "{{ KEY_LOC_OWNER }}"
+        group: "{{ KEY_LOC_GROUP }}"
+
+    - name: add the key name to .default_ids
+      lineinfile:
+        dest: "{{ KEY_LOC_PATH }}/.default_ids"
+        line: "{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
+        create: yes
+        state: present
+        owner: "{{ KEY_LOC_OWNER }}"
+        group: "{{ KEY_LOC_GROUP }}"
+
+    - name: finally, transfer the public key locally
+      fetch:
+        src: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default.pub"
+        dest: "{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}"
+        flat: yes
+
+    - name: Ensure correct ownership of public key
+      file:
+        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default.pub"
+        owner: "{{ KEY_LOC_OWNER }}"
+        group: "{{ KEY_LOC_GROUP }}"
+  delegate_to: "{{ play_on }}"
+
+- name: grab local copy of user ssh public key
+  set_fact:
+    pk_file: "{{ lookup('file', '/tmp/' + ATMOUSERNAME + KEY_LOC_PREFIX + '_default.pub') }}"
+  tags: debug
+
+- name: distribute the generated pub key to the instance
+  authorized_key:
+    key: "{{ pk_file }}"
+    state: present
+    user: "{{ item }}"
+  when: pk_file is defined
+  with_items:
+    - "{{ ATMOUSERNAME }}"
+  tags:
+    - ssh-keys
+    - debug
+
+- name: remove user key from controller node
+  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+  tags:
+    - ssh-keys
+    - delete-key
