@@ -6,6 +6,14 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
+- name: Remove old vnc packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - tightvncserver
+    - tigervnc-server
+
 - name: create needed directories
   file:
     path: '{{ item.PATH }}'
@@ -62,6 +70,12 @@
     update_cache: yes
   when: ansible_distribution == "Ubuntu"
 
+- name: Link RealVNC binary to vncserver binary
+  file:
+    src: "/usr/bin/vncserver-virtual"
+    dest: "/usr/bin/vncserver"
+    state: link
+
 - name: remove locks and un-needed files
   file:
     path: '{{ item.PATH }}'
@@ -93,7 +107,7 @@
 
 - name: kill all running vncserver sessions
   shell: >
-    /bin/su '{{ ATMOUSERNAME }}' -c "/usr/bin/vncserver -kill :'{{ item }}'"
+    /bin/su '{{ ATMOUSERNAME }}' -c "{{ VNC_EXECUTABLE }} -kill :'{{ item }}'"
   with_items: [1, 2, 3, 4, 5, 6, 7, 8]
   failed_when: False
 
