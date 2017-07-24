@@ -1,0 +1,153 @@
+---
+
+- name: Fail if ATMOUSERNAME or USERSSHKEYS is undefined
+  fail:
+    msg: "ATMOUSERNAME or USERSSHKEYS is undefined but required for this role."
+  when: ATMOUSERNAME is not defined or USERSSHKEYS is not defined
+
+- name: 'local user account created'
+  user:
+    name: '{{ ATMOUSERNAME }}'
+    state: 'present'
+    shell: '/bin/bash'
+
+- name: 'home directory created for user'
+  file:
+    path: '/home/{{ ATMOUSERNAME }}'
+    state: 'directory'
+    mode: 0700
+
+- name: 'Add users ssh keys to authorized_keys'
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ item }}"
+  with_items: '{{ USERSSHKEYS }}'
+  become: yes
+  when: USERSSHKEYS is defined
+
+- name: 'verify that home directory of user exists (to avoid ansible error)'
+  stat:
+    path: "/home/{{ ATMOUSERNAME }}"
+  register: user_home_dir
+  when: ATMOUSERNAME is defined
+
+- name: 'Add users ssh keys to authorized_keys to home directory of user'
+  authorized_key:
+    user: "{{ ATMOUSERNAME }}"
+    state: present
+    exclusive: no
+    key: '{{ item }}'
+  with_items: '{{ USERSSHKEYS }}'
+  when: ATMOUSERNAME is defined and USERSSHKEYS is defined and user_home_dir.stat.exists
+
+# From atmosphere-ansible role atmo-setup-user
+- name: 'conflicting users and groups removed from sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: 'yes'
+    regexp: '{{ item.value.reg }}'
+    line: '{{ item.value.line }}'
+    state: 'absent'
+  with_dict: '{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}'
+  tags: 'sudoers'
+
+- name: 'all instances of atmosphere username removed from sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    state: 'absent'
+    regexp: '^{{ ATMOUSERNAME }}'
+  failed_when: false
+
+- name: 'users and groups added to sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: true
+    regexp: '{{ item.value.reg }}'
+    line: '{{ item.value.line }}'
+    state: 'present'
+  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
+  when: MAKE_SUDO == true
+  tags: 'sudoers'
+
+- name: '/etc/skel/.bashrc populated'
+  lineinfile:
+    dest: '/etc/skel/.bashrc'
+    line: '{{ item }}'
+  with_items: '{{ SETUP_USER_BASHRC_LINES }}'
+
+- name: 'atmousername and %users added to sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: 'yes'
+    line: '{{ item }}'
+  with_items:
+    - '%users ALL=(ALL) NOPASSWD: ALL'
+    - '{{ ATMOUSERNAME }} ALL=(ALL) NOPASSWD:ALL'
+  # We want password-required sudo when we have an LDAP password to authenticate with
+  when: '(SETUP_LDAP is not defined or SETUP_LDAP != true) and MAKE_SUDO == true'
+
+- name: see if user is already located in /etc/group
+  command: grep "{{ ADD_TO_GROUP.GROUP }}:x:100:.*{{ ATMOUSERNAME }}.*" /etc/group
+  register: user_not_present
+  failed_when: False
+  tags: debug-ssh
+  when: ADD_TO_GROUP is defined
+
+- name: add ADD_TO_GROUP.GROUP to /etc/group if not present
+  lineinfile:
+    dest: "/etc/group"
+    regexp: '^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)'
+    line: '\1{{ item }},\2'
+    state: present
+    backrefs: yes
+  with_items:
+    - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
+  tags: debug-ssh
+  when: ADD_TO_GROUP is defined and 'user_not_present.rc == 1'
+
+- name: add ATMOUSERNAME to users group
+  lineinfile:
+    dest: "/etc/group"
+    regexp: '^(users:x:100:)(.*)'
+    line: '\1{{ ATMOUSERNAME }},\2'
+    state: present
+    backrefs: yes
+  when:
+    - 'ADD_TO_GROUP is not defined'
+  tags: debug-ssh
+
+- name: see if user is already located in docker group
+  command: grep docker /etc/group
+  register: docker_user_present
+  failed_when: False
+
+- name: add user to docker group in /etc/group if docker group exists
+  lineinfile:
+    dest: "/etc/group"
+    regexp: '^(docker:x:999:)(.*)'
+    line: '\1{{ ATMOUSERNAME }},\2'
+    state: present
+    backrefs: yes
+  when: docker_user_present.rc == 0
+
+- name: check if the home directory exists yet
+  stat:
+    path: "/home/{{ ATMOUSERNAME }}"
+  register: atmouser_home
+
+- name: copy skel files into home directory
+  shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
+  when: not atmouser_home.stat.exists
+
+# This chown will cause errors if /home/ATMOUSERNAME/.gvfs is mounted.  We should add code to manually unmount it if
+# it exists, then chown that user's home. -mgd
+- name: set ownership for user's home
+  file:
+    path: "/home/{{ ATMOUSERNAME }}"
+    owner: "{{ ATMOUSERNAME }}"
+    group: iplant-everyone
+    mode: 0755
+    recurse: yes
+  failed_when: False
+  tags: chown_users_home
