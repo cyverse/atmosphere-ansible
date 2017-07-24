@@ -1,0 +1,6 @@
+---
+
+KEY_LOC:
+  path: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+  owner: root
+  group: root
