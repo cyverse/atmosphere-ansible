@@ -11,9 +11,28 @@
     - vars
     - install
 
-- name: ensure curl is installed
+- name: Test curl installed by package manager
   action: >
     {{ ansible_pkg_mgr }} name=curl state=present
+  register: package_result
+  failed_when: package_result.msg == "No package matching 'curl' is available"
+  tags:
+    - install
+
+- name: Test path to curl exists
+  shell: which curl
+  register: which_result
+  failed_when: False
+  tags:
+    - install
+
+- name: Fail if curl not installed
+  fail: msg="curl is not installed on the machine."
+  when: package_result.msg == "No package matching 'curl' is available" and which_result.rc != 0
+  tags:
+    - install
+
+- set_fact: curl_path=which_result.stdout
   tags:
     - install
 
