@@ -30,3 +30,9 @@
   shell: >
     ATMO_USER={{ ATMOUSERNAME }} "{{POST_SCRIPT_DIR}}/{{ item.name }}" 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
   with_items: '{{ SCRIPTS }}'
+
+- name: bootscript_4.3 - remove scripts
+  file:
+    path: "{{POST_SCRIPT_DIR}}/{{ item.name }}"
+    state: absent
+  with_items: '{{ SCRIPTS }}'
