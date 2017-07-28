@@ -12,3 +12,9 @@
 
 - src: CyVerse-Ansible.ez
   name: ez
+
+- src: CyVerse-Ansible.add-user
+  name: add-user
+
+- src: CyVerse-Ansible.remove-user
+  name: remove-user
