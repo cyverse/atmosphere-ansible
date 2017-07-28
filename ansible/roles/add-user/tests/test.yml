@@ -1,0 +1,11 @@
+---
+
+- name: Playbook to add user
+  hosts: localhost
+  remote_user: root
+  vars:
+    ATMOUSERNAME: "hotdog"
+    USERSSHKEYS:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDttkkpIF9N10HloHoLxFX7+1U1zpqUwlK+62G/ZR2/jd+ILCkPP3JOb9d896Nmo80+llUkNSlon9B3hCY7htw3he5yKTO//0TIOGmC9SNDyDi2LR9s3kFQomJzVfzGbpEC0QbOQJSO9pvnL6msTiZ5XduGNSjvkIgU6WtWst2Pqm3xPJMmUoRdQ2Xyxya5vggHDCL+yJqR67UfOlovPG0N/O45d78+5peRb0tc5lqzd1zhvevlhKUgT1OW0B4a78TqazjuiUs38bO71OLWp7fE9fmRNtdKKTguHfHX91xxYCRW9GtKvvckZH1dBjwknQsoRuby3yJl2E6Lsu/F6e03 hotdog@travis"
+  roles:
+    - share-instance-ansible

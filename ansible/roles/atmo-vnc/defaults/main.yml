@@ -6,17 +6,19 @@ background_img: 'files/atmosphere_wallpaper_v1.jpg'
 
 SET_DESKTOP_BACKGROUND: false
 
+VNC_EXECUTABLE: "/usr/bin/vncserver"
+
 VNC_COMMANDS:
   realvnc:
     - "/usr/bin/pkill gnome-screensaver"
     - '/usr/bin/vnclicense -add {{ VNCLICENSE }}'
     - /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/printf '%s\n%s\n' 'display' 'display' | vncpasswd /home/{{ ATMOUSERNAME }}/.vnc/config.d/Xvnc"
-    - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver :1 -SecurityTypes=RA2'"
+    - "/bin/su {{ ATMOUSERNAME }} -c '{{ VNC_EXECUTABLE }} :1 -SecurityTypes=RA2'"
   novnc:
     - "/usr/bin/pkill gnome-screensaver"
     - "/usr/bin/pkill websockify"
     - "for i in $(/usr/bin/pgrep -f '/opt/kanaka-noVNC-8b0a0f6/utils/');do /bin/echo 'killing process:' $i; /bin/kill -HUP $i;done"
-    - "/bin/su {{ ATMOUSERNAME }} -c '/usr/bin/vncserver -localhost :{{ NOVNC.vnc_session }} -SecurityTypes=VNCAuth,TLSVnc'"
+    - "/bin/su {{ ATMOUSERNAME }} -c '{{ VNC_EXECUTABLE }} -localhost :{{ NOVNC.vnc_session }} -SecurityTypes=VNCAuth,TLSVnc'"
     # To disable NoVNC web when entering prod, remove "--web /usr/share/novnc/" from the command below
 
 NOVNC:

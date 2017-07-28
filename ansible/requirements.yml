@@ -15,3 +15,9 @@
 
 - src: CyVerse-Ansible.kanki-irodsclient
   name: atmo-kanki-irodsclient
+
+- src: CyVerse-Ansible.add-user
+  name: add-user
+
+- src: CyVerse-Ansible.remove-user
+  name: remove-user

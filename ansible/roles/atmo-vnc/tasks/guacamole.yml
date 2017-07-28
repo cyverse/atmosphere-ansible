@@ -28,4 +28,4 @@
 
 - name: guac - Start VNC Server for Guacamole
   command: >
-    /bin/su {{ ATMOUSERNAME }} -c "/usr/bin/vncserver -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
+    /bin/su {{ ATMOUSERNAME }} -c "{{ VNC_EXECUTABLE }} -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
