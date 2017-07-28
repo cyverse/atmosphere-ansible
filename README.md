@@ -53,6 +53,7 @@ Enable these optional configurations by setting the corresponding variable to `t
 | SETUP_NOVNC              | NoVNC VNC Client                                          |
 | SETUP_GUI_BROWSER        | Web browser on instances with a GUI                       |
 | SET_DESKTOP_BACKGROUND   | Set desktop background for instances with a GUI           |
+| SETUP_ATMO_BACKUP        | Deploy [cyverse_backup](https://wiki.cyverse.org/wiki/display/atmman/Backing+Up+and+Restoring+Your+Data+to+the+Data+Store) script |
 
 ### Guacamole Information
 
