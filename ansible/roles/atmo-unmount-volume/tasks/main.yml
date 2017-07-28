@@ -1,0 +1,22 @@
+---
+# ansible-playbook playbooks/utils/unmount_volume.yml -i hosts --limit "vm0" -e "{'VOLUME_MOUNT_LOCATION':'/vol1'}"
+
+- name: Debug ansible devices
+  debug:
+    var: item
+  with_items: '{{ ansible_devices }}'
+
+- name: Debug ansible mounts
+  debug:
+    var: item
+  with_items: '{{ ansible_mounts }}'
+
+- name: 'Unmount volume using ansible module'
+  mount:
+    state: 'unmounted'
+    name: '{{ VOLUME_MOUNT_LOCATION }}'
+  register: mount_result
+
+- name: Debug mount result
+  debug:
+    var: mount_result

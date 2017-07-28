@@ -1,16 +1,17 @@
 ---
+
 - name: Checking for necessary --extra_vars
   hosts: all
   vars:
     example:
-      - "-e \"{src: '/dev/vdc'}\""
+        - "-e \"{'VOLUME_MOUNT_LOCATION':'/vol-b'}\""
 
   tasks:
 
-    - fail: msg=" Must set pg_version. Pass a value in via `-e` as JSON {{example[0]}}"
-      when: "{{ src is not defined }}"
+    - fail: msg="Variable VOLUME_MOUNT_LOCATION is not set."
+      when: VOLUME_MOUNT_LOCATION is not defined
 
-- name: Playbook to unmount a volume
+- name: Play to unmount a volume
   hosts: atmosphere
   roles:
-    - unmount-volume
+    - atmo-unmount-volume
