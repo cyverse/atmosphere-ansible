@@ -15,6 +15,24 @@
     do
         if [ -f $SCRIPT -a -x $SCRIPT ]
         then
-            $SCRIPT 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
+            ATMO_USER={{ ATMOUSERNAME }} $SCRIPT 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
         fi
     done
+
+- name: bootscript_4.1 - copy scripts to location
+  copy:
+    content: "{{ item.text }}"
+    dest: "{{POST_SCRIPT_DIR}}/{{item.name}}"
+    mode: "u+rwx"
+  with_items: '{{ SCRIPTS }}'
+
+- name: bootscript_4.2 - run scripts passed in to the playbook
+  shell: >
+    ATMO_USER={{ ATMOUSERNAME }} "{{POST_SCRIPT_DIR}}/{{ item.name }}" 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
+  with_items: '{{ SCRIPTS }}'
+
+- name: bootscript_4.3 - remove scripts
+  file:
+    path: "{{POST_SCRIPT_DIR}}/{{ item.name }}"
+    state: absent
+  with_items: '{{ SCRIPTS }}'
