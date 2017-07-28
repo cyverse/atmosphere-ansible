@@ -1,0 +1,16 @@
+---
+
+- name: Pre-install unzip
+  hosts: localhost
+  remote_user: root
+  tasks:
+    - package: name="{{ item }}" state=present
+      with_items:
+        - unzip
+        - make
+        - gcc
+        - bunzip2
+        - bzip2
+      ignore_errors: yes
+    - package: name="build-essential" state=present
+      when: ansible_distribution == "Ubuntu"
