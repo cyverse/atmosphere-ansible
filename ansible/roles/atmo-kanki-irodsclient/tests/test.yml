@@ -1,0 +1,7 @@
+---
+
+- name: Playbook to install kanki-irodsclient
+  hosts: localhost
+  remote_user: root
+  roles:
+    - kanki-irodsclient-ansible

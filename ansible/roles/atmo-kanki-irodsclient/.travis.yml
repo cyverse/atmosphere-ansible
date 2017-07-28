@@ -1,0 +1,41 @@
+---
+language: python
+python: "2.7"
+
+sudo: required
+dist: trusty
+services:
+  - docker
+
+env:
+  - distro: centos7
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  - distro: centos6
+    init: /sbin/init
+    run_opts: ""
+  - distro: ubuntu1604
+    init: /lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  - distro: ubuntu1404
+    init: /sbin/init
+    run_opts: ""
+
+before_install:
+  - 'docker pull geerlingguy/docker-${distro}-ansible:latest'
+
+script:
+  # Create a random file to store the container ID.
+  - container_id=$(mktemp)
+
+  - 'docker run --detach --volume="${PWD}":/etc/ansible/roles/kanki-irodsclient-ansible:ro ${run_opts} geerlingguy/docker-${distro}-ansible:latest "${init}" > "${container_id}"'
+
+  # Run the pre-test palybook.
+  # - >
+  #   docker exec --tty "$(cat ${container_id})" env TERM=xterm
+  #   ansible-playbook /etc/ansible/roles/kanki-irodsclient-ansible/tests/pre-test.yml
+
+  # Run the test palybook.
+  - >
+    docker exec --tty "$(cat ${container_id})" env TERM=xterm
+    ansible-playbook /etc/ansible/roles/kanki-irodsclient-ansible/tests/test.yml
