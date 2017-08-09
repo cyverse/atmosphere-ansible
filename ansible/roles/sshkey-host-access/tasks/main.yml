@@ -7,12 +7,12 @@
     group: "{{ KEY_LOC_GROUP }}"
     mode: 0700
     state: directory
-  delegate_to: "{{ play_on }}"
+  delegate_to: "{{ target_host }}"
 
 - block:
     - name: check the existence of a given ssh key by name
       stat:
-        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
+        path: "{{ FULL_PRIVKEY_PATH }}"
       register: go_key
 
     - name: generate the keypair
@@ -22,7 +22,7 @@
 
     - name: set the permissions on the private key file
       file:
-        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
+        path: "{{ FULL_PRIVKEY_PATH }}"
         mode: 0600
         owner: "{{ KEY_LOC_OWNER }}"
         group: "{{ KEY_LOC_GROUP }}"
@@ -38,28 +38,22 @@
 
     - name: finally, transfer the public key locally
       fetch:
-        src: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default.pub"
-        dest: "{{ GATEONE_LOCAL_PUBKEY_DIR | default('/tmp/') }}"
+        src: "{{ FULL_PUBKEY_PATH }}"
+        dest: "{{ LOCAL_PUBKEY_DIR }}"
         flat: yes
 
     - name: Ensure correct ownership of public key
       file:
-        path: "{{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default.pub"
+        path: "{{ FULL_PUBKEY_PATH }}"
         owner: "{{ KEY_LOC_OWNER }}"
         group: "{{ KEY_LOC_GROUP }}"
-  delegate_to: "{{ play_on }}"
-
-- name: grab local copy of user ssh public key
-  set_fact:
-    pk_file: "{{ lookup('file', '/tmp/' + ATMOUSERNAME + KEY_LOC_PREFIX + '_default.pub') }}"
-  tags: debug
+  delegate_to: "{{ target_host }}"
 
 - name: distribute the generated pub key to the instance
   authorized_key:
-    key: "{{ pk_file }}"
+    key: "{{ lookup('file', LOCAL_PUBKEY_DIR + ATMOUSERNAME + KEY_LOC_PREFIX + '_default.pub') }}"
     state: present
     user: "{{ item }}"
-  when: pk_file is defined
   with_items:
     - "{{ ATMOUSERNAME }}"
   tags:
@@ -67,7 +61,10 @@
     - debug
 
 - name: remove user key from controller node
-  local_action: file path=/tmp/{{ ATMOUSERNAME }}_default.pub state=absent
+  local_action:
+    module: file
+    path: "{{ LOCAL_PUBKEY_DIR }}{{ ATMOUSERNAME }}_default.pub"
+    state: absent
   tags:
     - ssh-keys
     - delete-key

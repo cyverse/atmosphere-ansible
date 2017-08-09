@@ -6,7 +6,7 @@
     KEY_LOC_OWNER: root
     KEY_LOC_GROUP: root
     KEY_LOC_PREFIX: ""
-    play_on: "shell"
+    target_host: "shell"
   roles:
     - sshkey-host-access
 
@@ -17,6 +17,6 @@
     KEY_LOC_OWNER: tomcat7
     KEY_LOC_GROUP: tomcat7
     KEY_LOC_PREFIX: "_guac"
-    play_on: "guac_server"
+    target_host: "guac_server"
   roles:
     - sshkey-host-access

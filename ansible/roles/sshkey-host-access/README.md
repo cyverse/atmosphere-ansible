@@ -9,12 +9,14 @@ Role Variables
 | Variable                | Required | Default | Choices                   | Comments                                 |
 |-------------------------|----------|---------|---------------------------|------------------------------------------|
 | ATMOUSERNAME            | yes      |         |                           | Username of user getting the keys        |
-| GATEONE_LOCAL_PUBKEY_DIR| no       | `/tmp/`    |                           | the directory to transfer the public key locally |
+| LOCAL_PUBKEY_DIR        | yes      | `/tmp/` |                           | the directory to transfer the public key locally |
 | KEY_LOC_PATH            | yes      |`/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh`|| the directory to transfer the public key |
 | KEY_LOC_OWNER           | yes      | root    | "root", "tomcat7"         | owner of new keys                        |
 | KEY_LOC_GROUP           | yes      | root    | "root", "tomcat7"         | group of new keys                        |
 | KEY_LOC_PREFIX          | yes      | ""      | "_guac", ""               | prefix to name key for specific server   |
-| play_on                 | yes      | shell   | "shell", "guac_server"    | hostname for delegated tasks             |
+| target_host             | yes      | shell   | "shell", "guac_server"    | hostname for delegated tasks             |
+| FULL_PUBKEY_PATH        | yes      |         |                           | simplifies long string of other variables|
+| FULL_PRIVKEY_PATH       | yes      |         |                           | simplifies long string of other variables|
 
 Example Playbook
 ----------------
