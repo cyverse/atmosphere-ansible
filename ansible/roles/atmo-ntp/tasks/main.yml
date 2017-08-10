@@ -15,7 +15,7 @@
   action: >
     {{ ansible_pkg_mgr }} name=curl state=present
   register: package_result
-  failed_when: package_result.msg == "No package matching 'curl' is available"
+  failed_when: package_result.msg is defined and package_result.msg == "No package matching 'curl' is available"
   tags:
     - install
 
@@ -28,7 +28,7 @@
 
 - name: Fail if curl not installed
   fail: msg="curl is not installed on the machine."
-  when: package_result.msg == "No package matching 'curl' is available" and which_result.rc != 0
+  when: package_result.msg is defined and package_result.msg == "No package matching 'curl' is available" and which_result.rc != 0
   tags:
     - install
 
