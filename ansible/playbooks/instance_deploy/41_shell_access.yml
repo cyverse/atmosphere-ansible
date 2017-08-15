@@ -19,4 +19,4 @@
     KEY_LOC_PREFIX: "_guac"
     target_host: "guac_server"
   roles:
-    - sshkey-host-access
+    - { role: "sshkey-host-access", when: SETUP_GUACAMOLE == true }
