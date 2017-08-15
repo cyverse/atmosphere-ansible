@@ -1,70 +1,52 @@
 ---
 
-- name: ensure the existence of the user directory
-  file:
-    path: "{{ KEY_LOC_PATH }}"
-    owner: "{{ KEY_LOC_OWNER }}"
-    group: "{{ KEY_LOC_GROUP }}"
-    mode: 0700
-    state: directory
-  delegate_to: "{{ target_host }}"
-
 - block:
-    - name: check the existence of a given ssh key by name
+    - name: Ensure the existence of the user directory
+      file:
+        path: "{{ EXTERNAL_HOST_KEY_DIR }}"
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+        mode: 0700
+        state: directory
+
+    - name: Check the existence of an ssh key to use for access into target vm
       stat:
         path: "{{ FULL_PRIVKEY_PATH }}"
-      register: go_key
+      register: existing_key
 
-    - name: generate the keypair
+    - name: Generate the keypair
       command: >
-        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f {{ KEY_LOC_PATH }}/{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default -C {{ ATMOUSERNAME }}
-      when: go_key.stat.exists == False
+        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f {{ EXTERNAL_HOST_KEY_DIR }}/{{ EXTERNAL_HOST_KEY_NAME }} -C {{ USERNAME }}
+      when: existing_key.stat.exists == False
 
-    - name: set the permissions on the private key file
+    - name: Set the permissions on the private key file
       file:
         path: "{{ FULL_PRIVKEY_PATH }}"
         mode: 0600
-        owner: "{{ KEY_LOC_OWNER }}"
-        group: "{{ KEY_LOC_GROUP }}"
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
 
-    - name: add the key name to .default_ids
-      lineinfile:
-        dest: "{{ KEY_LOC_PATH }}/.default_ids"
-        line: "{{ ATMOUSERNAME }}{{ KEY_LOC_PREFIX }}_default"
-        create: yes
-        state: present
-        owner: "{{ KEY_LOC_OWNER }}"
-        group: "{{ KEY_LOC_GROUP }}"
-
-    - name: finally, transfer the public key locally
-      fetch:
-        src: "{{ FULL_PUBKEY_PATH }}"
-        dest: "{{ LOCAL_PUBKEY_DIR }}"
-        flat: yes
-
-    - name: Ensure correct ownership of public key
+    - name: Set ownership of public key
       file:
         path: "{{ FULL_PUBKEY_PATH }}"
-        owner: "{{ KEY_LOC_OWNER }}"
-        group: "{{ KEY_LOC_GROUP }}"
-  delegate_to: "{{ target_host }}"
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
 
-- name: distribute the generated pub key to the instance
+    - name: Transfer the public key from {{ EXTERNAL_HOST }} host to controller
+      fetch:
+        src: "{{ FULL_PUBKEY_PATH }}"
+        dest: "{{ LOCAL_PUBKEY_DIR }}/"
+        flat: yes
+  delegate_to: "{{ EXTERNAL_HOST }}"
+
+- name: Add authorized access to vm from the {{ EXTERNAL_HOST }} host
   authorized_key:
-    key: "{{ lookup('file', LOCAL_PUBKEY_DIR + ATMOUSERNAME + KEY_LOC_PREFIX + '_default.pub') }}"
+    key: "{{ lookup('file', LOCAL_FULL_PUBKEY_PATH) }}"
     state: present
-    user: "{{ item }}"
-  with_items:
-    - "{{ ATMOUSERNAME }}"
-  tags:
-    - ssh-keys
-    - debug
+    user: "{{ USERNAME }}"
 
-- name: remove user key from controller node
+- name: Remove user key from controller node
   local_action:
     module: file
-    path: "{{ LOCAL_PUBKEY_DIR }}{{ ATMOUSERNAME }}_default.pub"
+    path: "{{ LOCAL_FULL_PUBKEY_PATH }}"
     state: absent
-  tags:
-    - ssh-keys
-    - delete-key
