@@ -1,0 +1,52 @@
+---
+
+- block:
+    - name: Ensure the existence of the user directory
+      file:
+        path: "{{ EXTERNAL_HOST_KEY_DIR }}"
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+        mode: 0700
+        state: directory
+
+    - name: Check the existence of an ssh key to use for access into target vm
+      stat:
+        path: "{{ FULL_PRIVKEY_PATH }}"
+      register: existing_key
+
+    - name: Generate the keypair
+      command: >
+        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f {{ EXTERNAL_HOST_KEY_DIR }}/{{ EXTERNAL_HOST_KEY_NAME }} -C {{ USERNAME }}
+      when: existing_key.stat.exists == False
+
+    - name: Set the permissions on the private key file
+      file:
+        path: "{{ FULL_PRIVKEY_PATH }}"
+        mode: 0600
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+
+    - name: Set ownership of public key
+      file:
+        path: "{{ FULL_PUBKEY_PATH }}"
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+
+    - name: Transfer the public key from {{ EXTERNAL_HOST }} host to controller
+      fetch:
+        src: "{{ FULL_PUBKEY_PATH }}"
+        dest: "{{ LOCAL_PUBKEY_DIR }}/"
+        flat: yes
+  delegate_to: "{{ EXTERNAL_HOST }}"
+
+- name: Add authorized access to vm from the {{ EXTERNAL_HOST }} host
+  authorized_key:
+    key: "{{ lookup('file', LOCAL_FULL_PUBKEY_PATH) }}"
+    state: present
+    user: "{{ USERNAME }}"
+
+- name: Remove user key from controller node
+  local_action:
+    module: file
+    path: "{{ LOCAL_FULL_PUBKEY_PATH }}"
+    state: absent

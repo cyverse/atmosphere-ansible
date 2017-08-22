@@ -1,0 +1,37 @@
+---
+- name: Enable ssh access from gateone shell host into user vm
+  hosts: atmosphere
+  vars:
+    EXTERNAL_HOST_KEY_NAME: "id_rsa_gateone"
+    EXTERNAL_HOST_KEY_DIR: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+    EXTERNAL_HOST_KEY_OWNER: root
+    EXTERNAL_HOST_KEY_GROUP: root
+    EXTERNAL_HOST: "shell"
+    USERNAME: "{{ ATMOUSERNAME }}"
+  roles:
+    - sshkey-host-access
+  tasks:
+    # Gateone reads this file in the gatone user ssh directory, and uses each
+    # identity found there when it tries to open an SSH connection from the
+    # gateone server to the user's vm
+    - name: Add the key name to gateones .default_ids
+      lineinfile:
+        dest: "{{ EXTERNAL_HOST_KEY_DIR }}/.default_ids"
+        line: "{{ EXTERNAL_HOST_KEY_NAME }}"
+        create: yes
+        state: present
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+      delegate_to: "{{ EXTERNAL_HOST }}"
+
+- name: Enable ssh access from guac_server host into user vm
+  hosts: atmosphere
+  vars:
+    EXTERNAL_HOST_KEY_DIR: "/etc/guacamole/keys/{{ ATMOUSERNAME }}"
+    EXTERNAL_HOST_KEY_OWNER: tomcat7
+    EXTERNAL_HOST_KEY_GROUP: tomcat7
+    EXTERNAL_HOST_KEY_NAME: "id_rsa_guac"
+    EXTERNAL_HOST: "guac_server"
+    USERNAME: "{{ ATMOUSERNAME }}"
+  roles:
+    - { role: "sshkey-host-access", when: SETUP_GUACAMOLE == true }
