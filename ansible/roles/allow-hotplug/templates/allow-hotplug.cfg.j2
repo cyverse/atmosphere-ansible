@@ -1,0 +1,5 @@
+{% for interface in ansible_interfaces %}
+{% if interface != 'lo' %}
+allow-hotplug {{ interface }}
+{% endif %}
+{% endfor %}

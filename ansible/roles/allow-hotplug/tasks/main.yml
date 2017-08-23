@@ -1,0 +1,13 @@
+---
+
+# Todo CentOS 6
+
+- name: Allow-hotplug file templated
+  template:
+    src: 'allow-hotplug.cfg.j2'
+    dest: '/etc/network/interfaces.d/allow-hotplug.cfg'
+  when: 'ansible_distribution == "Ubuntu"'
+
+- name: Interfaces bounced
+  shell: 'ifdown --exclude=lo -a; sleep 1; ifup --exclude=lo -a'
+  when: 'ansible_distribution == "Ubuntu"'

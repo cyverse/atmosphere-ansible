@@ -1,0 +1,5 @@
+---
+- name: Playbook configures networking
+  hosts: atmosphere
+  roles:
+    - allow-hotplug
