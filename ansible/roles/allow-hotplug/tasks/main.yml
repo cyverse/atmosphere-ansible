@@ -1,0 +1,14 @@
+---
+
+# Todo CentOS 6
+
+- name: Allow-hotplug file templated
+  template:
+    src: 'allow-hotplug.cfg.j2'
+    dest: '/etc/network/interfaces.d/allow-hotplug.cfg'
+  when: 'ansible_distribution == "Ubuntu"'
+
+- name: Networking restarted
+  service: 'networking'
+  state: 'restarted'
+  when: 'ansible_distribution == "Ubuntu"'
