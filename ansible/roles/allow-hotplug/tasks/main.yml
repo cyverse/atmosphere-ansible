@@ -8,8 +8,7 @@
     dest: '/etc/network/interfaces.d/allow-hotplug.cfg'
   when: 'ansible_distribution == "Ubuntu"'
 
-- name: Networking restarted
-  service:
-    name: 'networking'
-    state: 'restarted'
+- name: Interfaces bounced
+  shell: 'ifdown {{ item }} && ifup {{ item }}'
+  with_items: {{ ansible_interfaces | reject("equalto", "lo") }}
   when: 'ansible_distribution == "Ubuntu"'
