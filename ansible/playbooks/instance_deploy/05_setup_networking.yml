@@ -1,5 +1,5 @@
 ---
-- name: Playbook updates package manager and installs atmosphere dependencies
+- name: Playbook configures networking
   hosts: atmosphere
   roles:
     - allow-hotplug
