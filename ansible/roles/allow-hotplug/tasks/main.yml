@@ -9,6 +9,7 @@
   when: 'ansible_distribution == "Ubuntu"'
 
 - name: Networking restarted
-  service: 'networking'
-  state: 'restarted'
+  service:
+    name: 'networking'
+    state: 'restarted'
   when: 'ansible_distribution == "Ubuntu"'
