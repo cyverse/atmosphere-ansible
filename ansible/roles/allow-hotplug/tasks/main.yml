@@ -9,6 +9,5 @@
   when: 'ansible_distribution == "Ubuntu"'
 
 - name: Interfaces bounced
-  shell: 'ifdown {{ item }} ; ifup {{ item }}'
-  with_items: '{{ ansible_interfaces | reject("equalto", "lo") }}'
+  shell: 'ifdown --exclude=lo -a; sleep 1; ifup --exclude=lo -a'
   when: 'ansible_distribution == "Ubuntu"'
