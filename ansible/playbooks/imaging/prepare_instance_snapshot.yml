@@ -1,0 +1,11 @@
+---
+
+- name: Sync and freeze instance (Helpful as part of the imaging process)
+  hosts: all
+  tasks:
+    - name: Run sync command
+      command: sync
+
+    - name: Run async freeze command
+      raw: "set -m; nohup fsfreeze -f / && sleep 15 && fsfreeze -u / >/dev/null 2>&1 </dev/null &"
+      register: nohup_result

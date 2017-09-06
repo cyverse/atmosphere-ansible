@@ -7,7 +7,8 @@
 
   tasks:
 
-    - fail: msg=" Must set pg_version. Pass a value in via `-e` as JSON {{example[0]}}"
+    - fail:
+        msg: "Must set src. Pass a value in via `-e` as JSON {{example[0]}}"
       when: "{{ src is not defined }}"
 
 - name: Playbook to unmount a volume
