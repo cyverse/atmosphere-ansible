@@ -98,5 +98,7 @@ if [ -z $hostname_value ]; then
     echo $(date +"%m%d%y %H:%M:%S") " Hostname could not be determined. using `hostname`" >> $LOG
 else
     hostname $hostname_value
+    echo $hostname_value > /etc/hostname
+    sed -i "/^127.0.0.1/ s/^.*$/127.0.0.1 $hostname_value localhost/" /etc/hosts
     echo $(date +"%m%d%y %H:%M:%S") "   Hostname has been set to `hostname`" >> $LOG
 fi
