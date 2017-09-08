@@ -1,38 +1,43 @@
 - name: bootscript_1 - make directories for post scripts and logs
   file: path={{ item }} state=directory
-  with_items: '{{ POST_MAKE_DIR }}'
+  with_items: '{{ POST_MAKE_DIRS }}'
 
-- name: bootscript_2 - touch log files
-  file: path={{ item }} state=touch
-  with_items: '{{ POST_SCRIPT_LOGS }}'
-  # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
-  register: touch_log
-  changed_when: touch_log.diff.before.state != "file"
-
-- name: bootscript_3 - run user's scripts in script directory
-  shell: >
-    for SCRIPT in {{ POST_SCRIPT_DIR_RUN }};
-    do
-        if [ -f $SCRIPT -a -x $SCRIPT ]
-        then
-            ATMO_USER={{ ATMOUSERNAME }} $SCRIPT 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
-        fi
-    done
-
-- name: bootscript_4.1 - copy scripts to location
+- name: bootscript_2 - copy scripts to script directory
   copy:
     content: "{{ item.text }}"
-    dest: "{{POST_SCRIPT_DIR}}/{{item.name}}"
+    dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
     mode: "u+rwx"
   with_items: '{{ SCRIPTS }}'
 
-- name: bootscript_4.2 - run scripts passed in to the playbook
-  shell: >
-    ATMO_USER={{ ATMOUSERNAME }} "{{POST_SCRIPT_DIR}}/{{ item.name }}" 2>> {{ POST_SCRIPT_LOG_STDERR }} >> {{ POST_SCRIPT_LOG_STDOUT }}
-  with_items: '{{ SCRIPTS }}'
+#Reviewer NOTE:
+# - Can we refactor for-loop and log-name logic to ansible?
+- name: bootscript_3 - execute scripts found in RUN_SCRIPT_DIRS
+  shell: |
+    set -m  # allows backgrounded processes to persist
+    for SCRIPT in {{item.dir}}/*;
+    do
+      if [[ -f $SCRIPT && -x $SCRIPT ]]; then
+        LOG_DIR="{{item.log}}"
+        BASENAME=${SCRIPT##*/}
+        DATE=$(date +%F_%T)
+        SCRIPT_STDOUT=$LOG_DIR/$BASENAME.$DATE.stdout
+        SCRIPT_STDERR=$LOG_DIR/$BASENAME.$DATE.stderr
+        ATMO_USER={{ATMOUSERNAME}} nohup $SCRIPT >$SCRIPT_STDOUT 2>$SCRIPT_STDERR </dev/null &
+      fi
+    done
+    exit 0
+  args:
+    executable: /bin/bash
+  register: shell_result
+  with_items: '{{ RUN_SCRIPTS }}'
 
-- name: bootscript_4.3 - remove scripts
+# Helpful if the shell script above fails..
+# - debug: msg="item.item={{item.item}}, item.stdout={{item.stdout}}, item.changed={{item.changed}}"
+#   with_items: "{{shell_result.results}}"
+
+
+- name: bootscript_4 - Remove instance scripts to avoid being picked up on next run
   file:
-    path: "{{POST_SCRIPT_DIR}}/{{ item.name }}"
+    path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
     state: absent
   with_items: '{{ SCRIPTS }}'
