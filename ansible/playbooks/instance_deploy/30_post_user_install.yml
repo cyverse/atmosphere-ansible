@@ -2,11 +2,16 @@
 # Requires ATMOUSERNAME and VNCLICENSE
 - name: Playbook lists roles that should be executed after ATMOUSERNAME has been created
   hosts: atmosphere
+  pre_tasks:
+    - name: Determine if X2GO is installed
+      stat:
+        path: "/etc/x2go"
+      register: x2go
   roles:
     - { role: atmo-fail2ban, when: true }
     - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
     - { role: atmo-kanki-irodsclient, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
     - { role: install-browser, when: SETUP_GUI_BROWSER is defined and SETUP_GUI_BROWSER == true }
-    - { role: atmo-vnc, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
+    - { role: atmo-vnc, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true and x2go.stat.exists == false }
     - { role: atmo-backup, when: SETUP_ATMO_BACKUP is defined and SETUP_ATMO_BACKUP == true }
     - atmo-cleanup
