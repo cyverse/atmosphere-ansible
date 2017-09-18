@@ -102,6 +102,6 @@ else
     hostname_value_short=$(echo $hostname_value | sed "s/\..*//")
     myip=$(dig $hostname_value +short)
     sed -ri "/^.*vm[0-9]+-[0-9]+\.cyverse\.org.*$/d" /etc/hosts
-    echo "$myip $hostname_value $hostname_value_short" >> /etc/hosts
+    grep -q "$myip $hostname_value $hostname_value_short" /etc/hosts || echo "$myip $hostname_value $hostname_value_short" >> /etc/hosts
     echo $(date +"%m%d%y %H:%M:%S") "   Hostname has been set to `hostname`" >> $LOG
 fi
