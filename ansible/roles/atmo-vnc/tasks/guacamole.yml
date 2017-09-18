@@ -26,6 +26,13 @@
     src: 'config.guac.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
 
+- name: Check if vnc is already running
+  command: lsof -i :5905
+  register: vnc_running
+  failed_when: False
+  changed_when: False
+
 - name: guac - Start VNC Server for Guacamole
   command: >
     /bin/su {{ ATMOUSERNAME }} -c "{{ VNC_EXECUTABLE }} -config /home/{{ ATMOUSERNAME }}/.vnc/config.guac :5"
+  when: vnc_running.rc != 0
