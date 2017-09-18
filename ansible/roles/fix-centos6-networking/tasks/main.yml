@@ -1,0 +1,7 @@
+---
+
+- name: Networking service restarted for CentOS 6
+  service:
+    name: network
+    state: restarted
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
