@@ -1,7 +1,21 @@
 ---
 
+
 - name: Networking service restarted for CentOS 6
   service:
-    name: network
-    state: restarted
+    name: 'network'
+    state: 'restarted'
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+- name: check-restart-network script templated
+  template:
+    src: 'check-restart-network.sh.j2'
+    dest: '/etc/cron.d/check-restart-network.sh'
+    mode: '0700'
+    owner: 'root'
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+- name: check-restart-network script scheduled via cron
+  cron:
+    job: '/etc/cron.d/check-restart-network.sh'
+    minute: '*/5'
+    name: 'check-restart-network'
   when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'

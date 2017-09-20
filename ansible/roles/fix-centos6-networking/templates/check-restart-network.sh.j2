@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# https://serverfault.com/questions/47915/how-do-i-get-the-default-gateway-in-linux-given-the-destination
+DEFAULT_GW=$(/sbin/ip route show default | awk '/default/ {print $3}')
+ping -c 1 -W 1 $DEFAULT_GW > /dev/null 2>&1
+pingrc=$?
+if [[ $pingrc != 0 ]]
+then
+    /sbin/service network restart
+fi
