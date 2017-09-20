@@ -1,3 +1,9 @@
+- fail: msg="Variable DEPLOY_SCRIPTS is not set."
+  when: DEPLOY_SCRIPTS is not defined
+
+- fail: msg="Variable ASYNC_SCRIPTS is not set."
+  when: ASYNC_SCRIPTS is not defined
+
 - name: bootscript_1 - make directories for post scripts and logs
   file: path={{ item }} state=directory
   with_items: '{{ POST_MAKE_DIRS }}'
@@ -7,11 +13,33 @@
     content: "{{ item.text }}"
     dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
     mode: "u+rwx"
-  with_items: '{{ SCRIPTS }}'
+  with_items: '{{ DEPLOY_SCRIPTS }}'
 
-#Reviewer NOTE:
-# - Can we refactor for-loop and log-name logic to ansible?
-- name: bootscript_3 - execute scripts found in RUN_SCRIPT_DIRS
+- name: bootscript_3 - Run deploy boot scripts synchronously, register results and return if failure occurs.
+  command: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
+  register: "deploy_script_result"
+  with_items: '{{ DEPLOY_SCRIPTS }}'
+
+- name: bootscript_4 - Remove instance scripts to avoid being picked up on next run
+  file:
+    path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
+    state: absent
+  with_items: '{{ DEPLOY_SCRIPTS }}'
+
+
+- name: bootscript_5 - copy scripts to script directory
+  copy:
+    content: "{{ item.text }}"
+    dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
+    mode: "u+rwx"
+  with_items: '{{ ASYNC_SCRIPTS }}'
+
+#Future TODO:
+# - If possible, refactor these components into ansible:
+#   - get name of  each file in script directory
+#   - if file is executable, generate 'dynamic log files' based on 'script|basename' and 'date()'
+#   - if file is executable, run ` set -m; nohup-call-to-file..` and point to dynamic log files from above.
+- name: bootscript_6 - execute scripts found in RUN_SCRIPT_DIRS asynchronously
   shell: |
     set -m  # allows backgrounded processes to persist
     for SCRIPT in {{item.dir}}/*;
@@ -29,15 +57,15 @@
   args:
     executable: /bin/bash
   register: shell_result
-  with_items: '{{ RUN_SCRIPTS }}'
+  with_items: '{{ ASYNC_RUN_SCRIPTS }}'
 
 # Helpful if the shell script above fails..
 # - debug: msg="item.item={{item.item}}, item.stdout={{item.stdout}}, item.changed={{item.changed}}"
 #   with_items: "{{shell_result.results}}"
 
-
-- name: bootscript_4 - Remove instance scripts to avoid being picked up on next run
+- name: bootscript_7 - Remove instance scripts to avoid being picked up on next run
   file:
     path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
     state: absent
-  with_items: '{{ SCRIPTS }}'
+  with_items: '{{ ASYNC_SCRIPTS }}'
+
