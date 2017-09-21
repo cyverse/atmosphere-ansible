@@ -1,5 +1,10 @@
 ---
 - name: Playbook to fail when VNC is not running
   hosts: atmosphere
+  pre_tasks:
+  - name: Fail when SETUP_NOVNC is false because the role will skip instead of fail
+    fail:
+      msg: "SETUP_NOVNC is false or undefined"
+    when: SETUP_NOVNC is not defined or SETUP_NOVNC == false
   roles:
     - { role: atmo-check-novnc, when: SETUP_NOVNC is defined and SETUP_NOVNC == true }
