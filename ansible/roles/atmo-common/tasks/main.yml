@@ -124,7 +124,7 @@
 # normally, dependency on a remote resource should be limited, but in this
 #   situation. we'll allow it due to the benefit. Any failure is ignore,
 #   limiting the risk of affecting deploys.
-- name: checkout the git repo
+- name: checkout the top level git repo for ez
   git: 
     repo: "https://github.com/cyverse/cyverse-ez.git"
     dest: "/opt/cyverse-ez" 
