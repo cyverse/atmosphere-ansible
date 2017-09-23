@@ -260,7 +260,7 @@ then
            read destination
            echo
 
-           FILE=`/bin/basename $source`
+           FILE=`basename $source`
            FILE_EXISTS="$destination/$FILE"
 
            output=`set_env`
