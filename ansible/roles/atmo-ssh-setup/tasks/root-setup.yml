@@ -8,20 +8,10 @@
   lineinfile:
     dest: /root/.ssh/authorized_keys
     state: absent
-    regexp: command\=
+    regexp: 'command='
 
-- name: Add ssh keys to authorized_keys
+- name: Give atmosphere ssh access into guest
   authorized_key:
     user: root
-    key: "{{ item }}"
+    key: "{{ lookup('file', ATMOSPHERE_KEYPAIR_FILE) }}"
     state: present
-  with_items: '{{ SSHKEYS }}'
-  when: SSHKEYS is defined
-
-- name: Remove ssh keys from authorized_keys
-  authorized_key:
-    user: root
-    key: "{{ item }}"
-    state: absent
-  with_items: '{{ SSH_KEYS_TO_REMOVE }}'
-  when: SSH_KEYS_TO_REMOVE is defined
