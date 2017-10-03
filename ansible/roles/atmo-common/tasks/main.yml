@@ -118,6 +118,16 @@
     mode: 0755
   when: EZ_INSTALL_DIR is defined
 
+# This line is needed because ansible-pull broke as of 2.4.0.
+# Once ansible-pull is fixed to actually pull, we can remove this task
+# See https://github.com/ansible/ansible/issues/30636
+- name: checkout the git repo
+  git: 
+    repo: "https://github.com/cyverse/cyverse-ez.git"
+    dest: "/opt/cyverse-ez" 
+    force: yes
+  ignore_errors: yes
+
 # ansible-pull ez facility install without EZ_INSTALL_DIR; ignore errors
 - name: ansible-pull the ez facility
   shell: ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i locahost -f >> /var/log/cyverse-ez.log 2>&1
