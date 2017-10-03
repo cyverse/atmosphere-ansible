@@ -6,7 +6,7 @@
     var: item
   with_items: '{{ ansible_devices }}'
 
-- name: Ensure a file system is on VOLUME_DEVICE --  if not, create VOLUME_DEVICE_TYPE.
+- name: Ensure a file system is on {{ VOLUME_DEVICE }} --  if not, create a {{ VOLUME_DEVICE_TYPE }} fs.
   filesystem:
     fstype: '{{ VOLUME_DEVICE_TYPE }}'
     dev: '{{ VOLUME_DEVICE }}'

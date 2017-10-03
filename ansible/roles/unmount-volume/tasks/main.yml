@@ -6,15 +6,26 @@
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version < '5')
 
 - name: register mountpoint and fstype
-  shell: grep "^{{ src }} " /proc/mounts | cut -d ' ' -f 2,3 | awk '{ printf "[\"%s\",\"%s\"]\n", $1, $2 }' 
-  register: result
+  shell: grep "^{{ src }} " /proc/mounts | cut -d ' ' -f 2,3 | awk '{ printf "[\"%s\",\"%s\"]\n", $1, $2 }'
+  register: list_mount_result
+
+- name: Run lsof over the device
+  shell: "lsof {{ src }}"
+  failed_when: lsof_result.stdout != ""
+  register: lsof_result
 
 - name: Print out mountpoints for the device {{ src }}
-  debug: msg="{{ (item |from_json )[0] }} {{ src }} {{ (item |from_json )[1] }}" 
+  debug:
+    msg: "{{ (item |from_json )[0] }} {{ src }} {{ (item |from_json )[1] }}"
   with_items:
-    - "{{ result.stdout_lines }}"
+    - "{{ list_mount_result.stdout_lines }}"
 
 - name: Loop through list and unmount
-  mount: name="{{ (item |from_json )[0] }}" src="{{ src }}" fstype="{{ (item |from_json )[1] }}" state=unmounted
+  mount:
+    name: "{{ (item |from_json )[0] }}"
+    src: "{{ src }}"
+    fstype: "{{ (item |from_json )[1] }}"
+    state: unmounted
+  register: unmount_result
   with_items:
-    - "{{ result.stdout_lines }}"
+    - "{{ list_mount_result.stdout_lines }}"

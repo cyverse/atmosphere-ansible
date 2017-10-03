@@ -1,15 +1,14 @@
+INSTANCE_SCRIPT_DIR: /etc/atmo/instance-scripts.d
+INSTANCE_SCRIPT_LOG_DIR: /var/log/atmo/instance-scripts
 POST_SCRIPT_DIR: /etc/atmo/post-scripts.d
 POST_SCRIPT_LOG_DIR: /var/log/atmo/post-scripts
-POST_SCRIPT_LOG_STDOUT: "{{ POST_SCRIPT_LOG_DIR }}/stdout" 
-POST_SCRIPT_LOG_STDERR: "{{ POST_SCRIPT_LOG_DIR }}/stderr"
 
-POST_MAKE_DIR: 
+POST_MAKE_DIRS:
   - "{{ POST_SCRIPT_DIR }}"
+  - "{{ INSTANCE_SCRIPT_DIR }}"
   - "{{ POST_SCRIPT_LOG_DIR }}"
+  - "{{ INSTANCE_SCRIPT_LOG_DIR }}"
 
-
-POST_SCRIPT_LOGS: 
-  - "{{ POST_SCRIPT_LOG_STDOUT }}"
-  - "{{ POST_SCRIPT_LOG_STDERR }}"
-
-POST_SCRIPT_DIR_RUN: "/etc/atmo/post-scripts.d/*"
+ASYNC_RUN_SCRIPTS:
+  - { log: "{{ INSTANCE_SCRIPT_LOG_DIR }}", dir: "{{ INSTANCE_SCRIPT_DIR }}" }
+  - { log: "{{ POST_SCRIPT_LOG_DIR }}", dir: "{{ POST_SCRIPT_DIR }}" }

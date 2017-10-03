@@ -121,7 +121,10 @@
 # This line is needed because ansible-pull broke as of 2.4.0.
 # Once ansible-pull is fixed to actually pull, we can remove this task
 # See https://github.com/ansible/ansible/issues/30636
-- name: checkout the git repo
+# normally, dependency on a remote resource should be limited, but in this
+#   situation. we'll allow it due to the benefit. Any failure is ignore,
+#   limiting the risk of affecting deploys.
+- name: checkout the top level git repo for ez
   git: 
     repo: "https://github.com/cyverse/cyverse-ez.git"
     dest: "/opt/cyverse-ez" 

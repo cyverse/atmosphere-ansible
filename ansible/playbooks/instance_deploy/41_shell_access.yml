@@ -34,4 +34,4 @@
     EXTERNAL_HOST: "guac_server"
     USERNAME: "{{ ATMOUSERNAME }}"
   roles:
-    - { role: "sshkey-host-access", when: SETUP_GUACAMOLE == true }
+    - { role: "sshkey-host-access", when: (SETUP_GUACAMOLE | default(false)) == true }
