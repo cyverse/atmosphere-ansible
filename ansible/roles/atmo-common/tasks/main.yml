@@ -101,8 +101,17 @@
     - legal
 
 ###########
-# Profile #
+# EZ      #
 ###########
+
+- name: remove any existing ez directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/ansible/roles/ez
+    - /root/.ansible/roles/ez
+    - /opt/cyverse-ez
 
 - name: create the /etc/cyverse directory if EZ_INSTALL_DIR is defined
   file:
