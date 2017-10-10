@@ -46,29 +46,36 @@
   lineinfile:
     dest: '/etc/sudoers'
     backup: 'yes'
-    regexp: '{{ item.value.reg }}'
-    line: '{{ item.value.line }}'
-    state: 'absent'
-  with_dict: '{{ SUDOERS_USERS_AND_GROUPS.TO_REMOVE }}'
-  tags: 'sudoers'
-
-- name: 'all instances of atmosphere username removed from sudoers'
-  lineinfile:
-    dest: '/etc/sudoers'
-    state: 'absent'
-    regexp: '^{{ ATMOUSERNAME }}'
-  failed_when: false
-
-- name: 'users and groups added to sudoers'
-  lineinfile:
-    dest: '/etc/sudoers'
-    backup: true
-    regexp: '{{ item.value.reg }}'
-    line: '{{ item.value.line }}'
+    line: "%{{ item }} ALL=(ALL) ALL"
+    regex: "^%{{ item }}\\s+ALL=\\(ALL\\)\\s*ALL"
     state: 'present'
-  with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
-  when: MAKE_SUDO == true
-  tags: 'sudoers'
+  with_items: {{ SUDOER_GROUPS }}
+  tags:
+      - 'sudoers'
+      - fuckyou
+
+- name: 'conflicting users and groups removed from sudoers'
+  lineinfile:
+    dest: '/etc/sudoers'
+    backup: 'yes'
+    line: "{{ item }} ALL=(ALL) ALL"
+    regex: "^{{ item }}\\s+ALL=\\(ALL\\)\\s*ALL"
+    state: 'present'
+  with_items: {{ SUDOER_USERS }}
+  tags:
+      - 'sudoers'
+      - fuckyou
+
+# - name: 'users and groups added to sudoers'
+#   lineinfile:
+#     dest: '/etc/sudoers'
+#     backup: true
+#     regexp: '{{ item.value.reg }}'
+#     line: '{{ item.value.line }}'
+#     state: 'present'
+#   with_dict: "{{ SUDOERS_USERS_AND_GROUPS.TO_ADD }}"
+#   when: MAKE_SUDO == true
+#   tags: 'sudoers'
 
 - name: '/etc/skel/.bashrc populated'
   lineinfile:

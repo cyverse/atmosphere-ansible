@@ -4,7 +4,12 @@ SSH_ALLOW_GROUPS: "root users"
 
 SSH_PORT: 22
 
-SSH_OPTIONS: -o PreferredAuthentications=publickey -o ConnectTimeout=2
+SSH_OPTIONS: >
+    -o PreferredAuthentications=publickey
+    -o ConnectTimeout=2
+    -o IdentityFile="{{ ATMOSPHERE_PRIVATE_KEYFILE }}"
+    -o StrictHostKeyChecking=no
+    -o UserKnownHostsFile=/dev/null
 
 SSHD_CHANGES:
   - regexp: '^PermitRootLogin'
