@@ -2,12 +2,14 @@
 
 SSH_ALLOW_GROUPS: "root users"
 
+SSH_IDENTITY_FILE: "/opt/dev/atmosphere/extras/ssh/id_rsa"
+
 SSH_PORT: 22
 
 SSH_OPTIONS: >
     -o PreferredAuthentications=publickey
     -o ConnectTimeout=2
-    -o IdentityFile="/opt/dev/atmosphere/extras/ssh/id_rsa"
+    -o IdentityFile={{ SSH_IDENTITY_FILE }}
     -o StrictHostKeyChecking=no
     -o UserKnownHostsFile=/dev/null
 

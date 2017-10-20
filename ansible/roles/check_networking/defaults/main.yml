@@ -1,5 +1,14 @@
 ---
 
+SSH_IDENTITY_FILE: "/opt/dev/atmosphere/extras/ssh/id_rsa"
+
+SSH_OPTIONS: >
+    -o PreferredAuthentications=publickey
+    -o ConnectTimeout=2
+    -o IdentityFile={{ SSH_IDENTITY_FILE }}
+    -o StrictHostKeyChecking=no
+    -o UserKnownHostsFile=/dev/null
+
 SSH_PORT: 22
 SSH_PORT_TIMEOUT: 30
 SSH_TIMEOUT: 30

@@ -1,8 +1,10 @@
 --- 
 - name: get atmo vm ip address
-  set_fact: vm_ip="{{ ansible_host }}"
+  set_fact:
+    vm_ip: "{{ ansible_host }}"
 
-- debug: msg="Atmo VM IP is {{ vm_ip }}"
+- debug:
+    msg: "Atmo VM IP is {{ vm_ip }}"
 
 - name: verify that host is reachable via ssh port
   local_action: wait_for
@@ -14,7 +16,8 @@
   tags: verify-ssh
 
 - name: test default ansible connection
-  local_action: "shell ssh -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello' | grep 'hello'"
+  local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} 'echo hello' | grep 'hello'
   register: default_remote_user
   ignore_errors: yes
   failed_when: False
@@ -25,7 +28,8 @@
 # CENTOS SETUP
 ###
 - name: test centos connection
-  local_action: "shell ssh -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'"
+  local_action: >
+      command ssh {{ SSH_OPTIONS}} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'
   register: centos_remote_user
   ignore_errors: yes
   when: default_remote_user|failed
@@ -37,7 +41,8 @@
 # UBUNTU SETUP
 ###
 - name: test ubuntu connection
-  local_action: "shell ssh -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello' | grep 'hello'"
+  local_action: >
+    command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello' | grep 'hello'
   register: ubuntu_remote_user
   ignore_errors: yes
   when: default_remote_user|failed and centos_remote_user|failed
