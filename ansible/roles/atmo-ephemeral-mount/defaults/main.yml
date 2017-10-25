@@ -1,0 +1,5 @@
+---
+
+MOUNT_SOURCE: 'vdb'
+MOUNT_PATH: '/scratch'
+MOUNT_TYPE: 'ext4'

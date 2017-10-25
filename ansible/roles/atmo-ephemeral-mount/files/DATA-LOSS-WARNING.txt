@@ -1,0 +1,6 @@
+This directory and its contents will be *destroyed* when your Atmosphere
+allocation is exceeded, and when certain instance actions are performed (e.g.
+when the instance is shelved).
+Do not store the sole copy of any important work or data in this directory!
+Only store files which are easily re-created or which are also stored elsewhere.
+Failure to heed this warning may result in data loss and sadness.

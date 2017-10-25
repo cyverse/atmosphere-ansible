@@ -1,0 +1,21 @@
+---
+
+# If instance already has ephemeral storage mounted at /home, don't change it
+- set_fact:
+    home_mounted: true
+  when: 'item.mount == "/home"'
+  with_items: '{{ ansible_mounts }}'
+
+- name: 'Ephemeral disk mounted'
+  mount:
+    path: '{{ MOUNT_NAME }}'
+    src: '/dev/{{ MOUNT_SOURCE }}'
+    fstype: '{{ MOUNT_TYPE }}'
+    state: 'mounted'
+  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (home_mounted is not defined)'
+
+- name: 'Data loss warning for Ephemeral storage"
+  copy:
+    src: 'DATA-LOSS-WARNING.txt'
+    dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
+  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (home_mounted is not defined)'

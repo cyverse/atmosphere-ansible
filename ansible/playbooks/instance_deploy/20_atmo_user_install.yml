@@ -3,5 +3,4 @@
   hosts: atmosphere
   roles:
     - atmo-common
-    - atmo-setup-mount-point
     - atmo-setup-user
