@@ -8,13 +8,13 @@
 
 - name: 'Ephemeral disk mounted'
   mount:
-    path: '{{ MOUNT_NAME }}'
+    path: '{{ MOUNT_PATH }}'
     src: '/dev/{{ MOUNT_SOURCE }}'
     fstype: '{{ MOUNT_TYPE }}'
     state: 'mounted'
   when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (home_mounted is not defined)'
 
-- name: 'Data loss warning for Ephemeral storage"
+- name: 'Data loss warning for Ephemeral storage'
   copy:
     src: 'DATA-LOSS-WARNING.txt'
     dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
