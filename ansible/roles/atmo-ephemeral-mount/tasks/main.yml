@@ -3,7 +3,7 @@
 # If /dev/vdb is already mounted somewhere else (e.g. /home for a legacy instance), don't change it
 - set_fact:
     vdb_mounted: true
-  when: 'item.device == "/dev/vdb"'
+  when: 'item.device == "/dev/vdb" and item.mount != "/mnt"'
   with_items: '{{ ansible_mounts }}'
 
 - name: 'Ephemeral disk mounted'
