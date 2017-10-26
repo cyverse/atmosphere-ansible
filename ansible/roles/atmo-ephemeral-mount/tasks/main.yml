@@ -1,10 +1,22 @@
 ---
 
-# If /dev/vdb is already mounted somewhere else (e.g. /home for a legacy instance), don't change it
+# If MOUNT_SOURCE is already mounted somewhere else (e.g. /home for a legacy instance or /vol1 for a volume), don't change it
 - set_fact:
-    vdb_mounted: true
-  when: 'item.device == "/dev/vdb" and item.mount != "/mnt"'
+    disk_mounted_elsewhere: true
+  when: '(item.device == "/dev/{{ MOUNT_SOURCE }}") and (item.mount != "/mnt")'
   with_items: '{{ ansible_mounts }}'
+
+- name: 'Ephemeral disk unmounted from default location'
+  mount:
+    path: '/mnt'
+    state: 'unmounted'
+  when: 'disk_mounted_elsewhere == false'
+
+- name: 'Ephemeral disk removed from /etc/fstab'
+  mount:
+    path: '/mnt'
+    state: 'absent'
+  when: 'disk_mounted_elsewhere == false'
 
 - name: 'Ephemeral disk mounted'
   mount:
@@ -12,10 +24,10 @@
     src: '/dev/{{ MOUNT_SOURCE }}'
     fstype: '{{ MOUNT_TYPE }}'
     state: 'mounted'
-  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (vdb_mounted is not defined)'
+  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (disk_mounted_elsewhere == false)'
 
 - name: 'Data loss warning for Ephemeral storage'
   copy:
     src: 'DATA-LOSS-WARNING.txt'
     dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
-  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (vdb_mounted is not defined)'
+  when: '(ansible_devices.{{ MOUNT_SOURCE }} is defined) and (disk_mounted_elsewhere == false)'
