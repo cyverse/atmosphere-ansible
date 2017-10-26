@@ -1,6 +1,6 @@
 ---
 
-vdb_mounted_elsewhere: false
+disk_mounted_elsewhere: false
 
 MOUNT_SOURCE: 'vdb'
 MOUNT_PATH: '/scratch'
