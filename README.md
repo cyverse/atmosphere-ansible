@@ -61,7 +61,7 @@ Guacamole is a VNC and SSH gateway. If using this feature, `GUACAMOLE_SERVER_IP`
 ## Additional Playbooks
 
 ### Utility Playbooks
-[These playbooks]((ansible/playbooks/utils) are called separately via `subspace` to verify things such as network connectivity and VNC status for Atmosphere deployments.
+[These playbooks](ansible/playbooks/utils) are called separately via `subspace` to verify things such as network connectivity and VNC status for Atmosphere deployments.
 
 ```
 ansible/playbooks/utils/
