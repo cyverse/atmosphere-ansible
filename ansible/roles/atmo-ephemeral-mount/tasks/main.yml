@@ -16,7 +16,7 @@
     - 'item.mount != "/mnt"'
   with_items: '{{ ansible_mounts }}'
 
-block:
+- block:
   - name: 'Ephemeral disk unmounted from default location'
     mount:
       path: '/mnt'
@@ -38,7 +38,7 @@ block:
     copy:
       src: 'DATA-LOSS-WARNING.txt'
       dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
-when:
-  - 'ephem_stat.islnk is defined'
-  - 'ephem_stat.islnk == true'
-  - 'disk_mounted_elsewhere == false)'
+  when:
+    - 'ephem_stat.islnk is defined'
+    - 'ephem_stat.islnk == true'
+    - 'disk_mounted_elsewhere == false)'
