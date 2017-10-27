@@ -2,7 +2,8 @@
 
 # We need to set this fact because on the following local_actions, ansible_host is localhost
 - name: Get VM IP address
-  set_fact: vm_ip="{{ ansible_host }}"
+  set_fact:
+    vm_ip: "{{ ansible_host }}"
 
 # SSH as different users to determine which can connect (and determine linux distro)
 - block:
