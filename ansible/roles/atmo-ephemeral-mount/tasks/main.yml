@@ -10,9 +10,9 @@
   set_fact:
     disk_mounted_elsewhere: true
   when:
-    - 'ephem_stat.islnk is defined'
-    - 'ephem_stat.islnk == true'
-    - 'item.device == "{{ ephem_stat.lnk_source }}"'
+    - 'ephem_stat.stat.islnk is defined'
+    - 'ephem_stat.stat.islnk == true'
+    - 'item.device == "{{ ephem_stat.stat.lnk_source }}"'
     - 'item.mount != "/mnt"'
   with_items: '{{ ansible_mounts }}'
 
@@ -30,7 +30,7 @@
   - name: 'Ephemeral disk mounted'
     mount:
       path: '{{ MOUNT_PATH }}'
-      src: '{{ ephem_stat.lnk_source }}'
+      src: '{{ ephem_stat.stat.lnk_source }}'
       fstype: '{{ MOUNT_TYPE }}'
       state: 'mounted'
 
@@ -39,6 +39,6 @@
       src: 'DATA-LOSS-WARNING.txt'
       dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
   when:
-    - 'ephem_stat.islnk is defined'
-    - 'ephem_stat.islnk == true'
-    - 'disk_mounted_elsewhere == false)'
+    - 'ephem_stat.stat.islnk is defined'
+    - 'ephem_stat.stat.islnk == true'
+    - 'disk_mounted_elsewhere == false'
