@@ -5,7 +5,6 @@
   set_fact:
     vm_ip: "{{ ansible_host }}"
 
-# SSH as different users to determine which can connect (and determine linux distro)
 - include_tasks: 'find_connection.yml'
   with_items: "{{ CONNECTION_USERNAMES }}"
 

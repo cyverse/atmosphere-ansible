@@ -1,15 +1,14 @@
 ---
-
-- set_fact: username="{{ item }}"
+# Design note: These tasks are included from main.yml because it allows us to use 'with_items' on more than one task.
 
 - block:
   - name: Test connection to instance using different usernames
     local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} {{ username }}@{{ vm_ip }} echo "Atmosphere is cool!"
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} {{ item }}@{{ vm_ip }} echo "Atmosphere is cool!"
     failed_when: false
     register: connection
 
   - name: Set use_remote_user based on connection results
-    set_fact: use_remote_user="{{ username }}"
+    set_fact: use_remote_user="{{ item }}"
     when: '"Atmosphere is cool!" in connection.stdout'
   when: use_remote_user is undefined
