@@ -1,0 +1,44 @@
+---
+
+- name: 'See if we have an ephemeral disk'
+  stat:
+    path: '/dev/disk/by-label/ephemeral0'
+  register: 'ephem_stat'
+
+- name: 'Determine if ephemeral disk is already mounted in a non-default location'
+  # If it is, we won't alter it
+  set_fact:
+    disk_mounted_elsewhere: true
+  when:
+    - 'ephem_stat.stat.islnk is defined'
+    - 'ephem_stat.stat.islnk == true'
+    - 'item.device == "{{ ephem_stat.stat.lnk_source }}"'
+    - 'item.mount != "/mnt"'
+  with_items: '{{ ansible_mounts }}'
+
+- block:
+  - name: 'Ephemeral disk unmounted from default location'
+    mount:
+      path: '/mnt'
+      state: 'unmounted'
+
+  - name: 'Ephemeral disk removed from /etc/fstab'
+    mount:
+      path: '/mnt'
+      state: 'absent'
+
+  - name: 'Ephemeral disk mounted'
+    mount:
+      path: '{{ MOUNT_PATH }}'
+      src: '{{ ephem_stat.stat.lnk_source }}'
+      fstype: '{{ MOUNT_TYPE }}'
+      state: 'mounted'
+
+  - name: 'Data loss warning for Ephemeral storage'
+    copy:
+      src: 'DATA-LOSS-WARNING.txt'
+      dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
+  when:
+    - 'ephem_stat.stat.islnk is defined'
+    - 'ephem_stat.stat.islnk == true'
+    - 'disk_mounted_elsewhere == false'
