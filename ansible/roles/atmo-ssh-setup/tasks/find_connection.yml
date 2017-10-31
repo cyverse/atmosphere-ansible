@@ -1,0 +1,15 @@
+---
+
+- set_fact: username="{{ item }}"
+
+- block:
+  - name: Test connection to instance using different usernames
+    local_action: >
+      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} {{ username }}@{{ vm_ip }} echo "Atmosphere is cool!"
+    failed_when: false
+    register: connection
+
+  - name: Set use_remote_user based on connection results
+    set_fact: use_remote_user="{{ username }}"
+    when: '"Atmosphere is cool!" in connection.stdout'
+  when: use_remote_user is undefined

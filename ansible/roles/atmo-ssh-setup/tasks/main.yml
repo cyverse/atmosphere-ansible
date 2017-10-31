@@ -6,41 +6,8 @@
     vm_ip: "{{ ansible_host }}"
 
 # SSH as different users to determine which can connect (and determine linux distro)
-- block:
-  - name: Test default ansible connection and register root_connection
-    local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} root@{{ vm_ip }} echo "Atmosphere is cool!"
-    failed_when: false
-    register: root_connection
-
-  - name: Test CentOS connection and register centos_connection
-    local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} centos@{{ vm_ip }} echo "Atmosphere is cool!"
-    register: centos_connection
-    failed_when: false
-    when: "'Atmosphere is cool!' not in root_connection.stdout"
-
-  - name: Test Ubuntu connection and register ubuntu_connection
-    local_action: >
-      command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} echo "Atmosphere is cool!"
-    register: ubuntu_connection
-    failed_when: false
-    when: "('Atmosphere is cool!' not in root_connection.stdout) and ('Atmoshphere is cool!' not in centos_connection.stdout)"
-  ignore_errors: True
-
-# Set use_remote_user depending on which SSH task succeeded
-- block:
-  - name: Set use_remote_user variable to "centos"
-    set_fact: use_remote_user=centos
-    when: "(not centos_connection|skipped) and ('Atmosphere is cool!' in centos_connection.stdout)"
-
-  - name: Set use_remote_user variable to "ubuntu"
-    set_fact: use_remote_user=ubuntu
-    when: "(not ubuntu_connection|skipped) and ('Atmosphere is cool!' in ubuntu_connection.stdout)"
-
-  - name: Set use_remote_user variable to "root"
-    set_fact: use_remote_user=root
-    when: "'Atmosphere is cool!' in root_connection.stdout"
+- include_tasks: 'find_connection.yml'
+  with_items: "{{ CONNECTION_USERNAMES }}"
 
 - name: Fail if use_remote_user cannot be found
   fail:

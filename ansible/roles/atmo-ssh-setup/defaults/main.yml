@@ -42,3 +42,8 @@ SSHD_CHANGES:
   - regexp: 'AllowUsers'
     line: ''
     state: 'absent'
+
+CONNECTION_USERNAMES:
+  - 'root'
+  - 'centos'
+  - 'ubuntu'
