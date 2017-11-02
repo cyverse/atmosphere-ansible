@@ -11,28 +11,25 @@ We use this term to denote that an installation of Atmosphere could customize / 
 
 Execution Order
 ---------------
-The number prefixing the name of a playbook (example: [`20_atmo_dhcp.yml`](ansible/playbooks)) is used to determine the order of execution by [subspace](https://github.com/iPlantCollaborativeOpenSource/subspace). So `20_atmo_dhcp.yml` happens after `15_atmo_ntp.yml`. And, `66_atmo_user_ssh_keys.yml` will happen _last_ even though it appears second in a directory listing of [playbooks](ansible/playbooks).  To prevent this, ensure that playbook names do not exceed a prefix of 100.  Here is a list of currently executed playbooks:
+The number prefixing the name of a playbook (example: [`20_atmo_user_install.yml`](ansible/playbooks/instance_deploy)) is used to determine the order of execution by [subspace](https://github.com/iPlantCollaborativeOpenSource/subspace). So `20_atmo_user_install.yml` happens after `18_atmo_local_user_account.yml`. And, `66_atmo_user_ssh_keys.yml` will happen _last_ even though it appears second in a directory listing of [playbooks](ansible/playbooks).  To prevent this, ensure that playbook names do not exceed a prefix of 100.  Here is a list of currently executed playbooks:
 
 ```
-ansible/playbooks/
-├── 00_check_networking.yml
-├── 05_ssh_setup.yml
-├── 10_atmo_pre_setup.yml
-├── 15_atmo_ntp.yml
-├── 20_atmo_dhcp.yml
-├── 21_atmo_hostname.yml
-├── 22_iplant_ldap.yml
-├── 25_atmo_common.yml
-├── 30_atmo_mount_home.yml
-├── 40_atmo_setup_user.yml
-├── 45_atmo_fail2ban.yml
-├── 49_atmo_irods.yml
-├── 50_atmo_realvnc.yml
-├── 55_atmo_idrop.yml
-├── 56_atmo_cleanup.yml
-├── 60_atmo_postbootscripts.yml
-├── 65_gateone-gen-sshkey.yml
-└── 66_atmo_user_ssh_keys.yml
+ansible/playbooks/instance_deploy/
+├── 00_setup_ssh.yml
+├── 10_setup_pkg_mgr.yml
+├── 18_atmo_local_user_account.yml
+├── 20_atmo_user_install.yml
+├── 30_post_user_install.yml
+├── 41_shell_access.yml
+└── 42_globus_connect.yml
+```
+
+After instance_deploy, these playbooks are run to add user's SSH keys and run their boot scripts.
+
+```
+ansible/playbooks/user_deploy/
+├── 00_inject_ssh_keys.yml
+└── 10_post_boot.yml
 ```
 
 ## Configuring atmosphere-ansible
@@ -61,15 +58,42 @@ Guacamole is a VNC and SSH gateway. If using this feature, `GUACAMOLE_SERVER_IP`
 
 **Security Warning**: the Guacamole remote desktop requires unencrypted VNC connections from the Guacamole server to your target instances. Ensure that your Guacamole server connects to instances via a trusted network where no unauthorized parties can listen to network traffic. If these connections transit an untrusted network, anyone listening on the wire would get everything from the unencrypted VNC sessions.
 
-## Utility Playbooks
+## Additional Playbooks
 
-These playbooks are called separately via `subspace` to verify things such as network connectivity and VNC status for Atmosphere deployments.
+### Utility Playbooks
+[These playbooks](ansible/playbooks/utils) are called separately via `subspace` to verify things such as network connectivity and VNC status for Atmosphere deployments.
 
 ```
-ansible/util_playbooks/
+ansible/playbooks/utils/
+├── atmo_check_novnc.yml
 ├── atmo_check_vnc.yml
-└── check_networking.yml
+├── check_networking.yml
+├── play_role.yml
+└── print_variables.yml
 ```
+
+### Instance Action Playbooks
+[This directory](ansible/playbooks/instance_actions) contains playbooks for performing additionaly actions on an instance post-deploy, such as mounting volumes.
+```
+ansible/playbooks/instance_actions/
+├── check_volume.yml
+├── mount_volume.yml
+└── unmount_volume.yml
+```
+
+### User Customization Playbooks
+[This directory](ansible/playbooks/user_customizations) will contain playbooks that can be selected by a user and installed. They may contain additional *metadata* that will help users understand the playbooks intention additionally they may take different *arguments* depending on the purpose of the playbook.
+
+```
+ansible/playbooks/user_customizations/
+├── README.md
+├── add_user.yml
+└── remove_user.yml
+```
+
+### Imaging Playbooks
+[This directory](ansible/playbooks/imaging) contains a playbook `prepare_instance_snapshot.yml` that syncs and freezes an instance to prepare it for imaging process.
+
 
 ## Troubleshooting Instances
 See this troubleshooting page: [Troubleshooting Atmosphere Ansible](docs/troubleshooting_atmo_ansible.md)
