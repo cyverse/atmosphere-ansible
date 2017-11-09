@@ -1,0 +1,16 @@
+---
+
+- name: Create .Xresources file for user
+  copy:
+    src: 'files/Xresources'
+    dest: '/home/{{ ATMOUSERNAME }}/.Xresources'
+
+- name: Update X server for all displays
+  become: true
+  become_user: '{{ ATMOUSERNAME }}'
+  command: >
+    /usr/bin/xrdb -display {{ item }} -merge /home/{{ ATMOUSERNAME }}/.Xresources
+  with_items:
+    - ':1'
+    - ':2'
+    - ':5'

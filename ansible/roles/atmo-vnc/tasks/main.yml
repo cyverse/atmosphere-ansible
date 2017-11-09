@@ -65,4 +65,6 @@
 
   - include: novnc.yml
     when: SETUP_NOVNC is defined and SETUP_NOVNC == true
+
+  - include: xterm_font.yml
   when: has_gui
