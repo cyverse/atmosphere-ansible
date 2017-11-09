@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=change_desktop_resolution
+comment=Change desktop resolution
+Exec=/opt/cyverse_change_resolution.sh
+Terminal=true
+Type=Application
+Categories=Utility
