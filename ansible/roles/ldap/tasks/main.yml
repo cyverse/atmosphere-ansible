@@ -185,6 +185,13 @@
   tags:
     - common-session
 
+- name: template common-auth
+  template: src=Ubuntu.common-auth.j2 dest=/etc/pam.d/common-auth backup=yes
+  when: ansible_distribution == "Ubuntu"
+  tags:
+    - common-auth
+
+
 - name: template nsswitch.conf
   template: src=Ubuntu.nsswitch.conf.j2 dest=/etc/nsswitch.conf backup=yes
   when: ansible_distribution == "Ubuntu"
