@@ -10,24 +10,20 @@
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
-  tags: test
 
 - name: Verify that X server exists
   stat:
     path: '{{ XGUI.xsession_path }}'
   register: xsession
-  tags: test
 
 - name: Verify that xterm session exists
   stat:
     path: '{{ XGUI.xterm_path }}'
   register: xterm
-  tags: test
 
 - name: Set flag for GUI systems
   set_fact:
     has_gui: '{{ xsession.stat.exists and xterm.stat.exists }}'
-  tags: test
 
 - block:
   - block:
@@ -66,14 +62,12 @@
       src: 'files/cyverse_change_resolution.sh'
       dest: '/opt/cyverse_change_resolution.sh'
       mode: '0755'
-    tags: test
 
   - name: Copy desktop icon for changing desktop resolution
     copy:
       src: 'files/change_resolution.desktop'
       dest: '/home/{{ ATMOUSERNAME }}/Desktop/change_resolution.desktop'
       mode: '0755'
-    tags: test
 
   - include: realvnc.yml
     when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true
