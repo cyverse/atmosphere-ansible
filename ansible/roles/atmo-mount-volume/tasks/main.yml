@@ -16,7 +16,7 @@
     src: '{{ VOLUME_DEVICE }}'
     state: 'mounted'
     path: '{{ VOLUME_MOUNT_LOCATION }}'
-    opts: 'nobootwait'
+    opts: 'nofail'
     passno: '2'
   register: mount_result
 

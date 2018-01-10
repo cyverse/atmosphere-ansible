@@ -33,7 +33,7 @@
       src: '{{ ephem_stat.stat.lnk_source }}'
       fstype: '{{ MOUNT_TYPE }}'
       state: 'mounted'
-      opts: 'nobootwait'
+      opts: 'nofail'
       passno: '2'
 
   - name: 'Data loss warning for Ephemeral storage'
