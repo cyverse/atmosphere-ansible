@@ -1,5 +1,13 @@
 ---
 
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+        - "{{ ansible_distribution }}.yml"
+      skip: true
+
 - name: 'See if we have an ephemeral disk'
   stat:
     path: '/dev/disk/by-label/ephemeral0'
@@ -33,6 +41,8 @@
       src: '{{ ephem_stat.stat.lnk_source }}'
       fstype: '{{ MOUNT_TYPE }}'
       state: 'mounted'
+      opts: '{{ MOUNT_OPTS }}'
+      passno: '{{ MOUNT_PASSNO }}'
 
   - name: 'Data loss warning for Ephemeral storage'
     copy:

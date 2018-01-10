@@ -1,5 +1,13 @@
 ---
 
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+        - "{{ ansible_distribution }}.yml"
+      skip: true
+
 - name: Debug ansible devices
   debug:
     var: item
@@ -16,6 +24,8 @@
     src: '{{ VOLUME_DEVICE }}'
     state: 'mounted'
     path: '{{ VOLUME_MOUNT_LOCATION }}'
+    passno: '{{ VOLUME_PASSNO }}'
+    opts: '{{ VOLUME_OPTS }}'
   register: mount_result
 
 - name: Debug mount result
