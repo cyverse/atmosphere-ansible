@@ -1,5 +1,10 @@
 ---
 
+- name: Set MOUNT_OPTS Ubuntu < 16
+  set_fact:
+    MOUNT_OPTS: 'nobootwait'
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
+
 - name: 'See if we have an ephemeral disk'
   stat:
     path: '/dev/disk/by-label/ephemeral0'
@@ -33,7 +38,7 @@
       src: '{{ ephem_stat.stat.lnk_source }}'
       fstype: '{{ MOUNT_TYPE }}'
       state: 'mounted'
-      opts: 'nofail'
+      opts: '{{ MOUNT_OPTS }}'
       passno: '2'
 
   - name: 'Data loss warning for Ephemeral storage'

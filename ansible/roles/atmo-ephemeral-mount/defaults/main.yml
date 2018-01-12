@@ -4,3 +4,4 @@ disk_mounted_elsewhere: false
 
 MOUNT_PATH: '/scratch'
 MOUNT_TYPE: 'ext4'
+MOUNT_OPTS: "nofail"

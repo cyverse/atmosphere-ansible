@@ -1,5 +1,10 @@
 ---
 
+- name: Set MOUNT_OPTS Ubuntu < 16
+  set_fact:
+    MOUNT_OPTS: 'nobootwait'
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
+
 - name: Debug ansible devices
   debug:
     var: item
@@ -16,7 +21,7 @@
     src: '{{ VOLUME_DEVICE }}'
     state: 'mounted'
     path: '{{ VOLUME_MOUNT_LOCATION }}'
-    opts: 'nofail'
+    opts: '{{ MOUNT_OPTS }}'
     passno: '2'
   register: mount_result
 

@@ -1,3 +1,4 @@
 ---
 
 ATMO_USER_GROUP: "users"
+MOUNT_OPTS: "nofail"
