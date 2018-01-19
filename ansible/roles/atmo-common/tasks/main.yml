@@ -142,7 +142,7 @@
 
 # ansible-pull ez facility install without EZ_INSTALL_DIR; ignore errors
 - name: ansible-pull the ez facility
-  shell: ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i locahost -f >> /var/log/cyverse-ez.log 2>&1
+  shell: ansible-pull -v -U https://github.com/cyverse/cyverse-ez.git -d /opt/cyverse-ez -i localhost -f >> /var/log/cyverse-ez.log 2>&1
   ignore_errors: yes
 
 ###########
