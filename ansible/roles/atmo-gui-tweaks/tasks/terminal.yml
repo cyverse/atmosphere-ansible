@@ -22,5 +22,5 @@
 
 - name: install terminal
   package:
-    name: {{ terminal_application }}
+    name: '{{ terminal_application }}'
     state: latest
