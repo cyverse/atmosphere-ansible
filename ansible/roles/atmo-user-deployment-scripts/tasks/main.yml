@@ -4,7 +4,12 @@
 - fail: msg="Variable ASYNC_SCRIPTS is not set."
   when: ASYNC_SCRIPTS is not defined
 
-- name: bootscript_1 - make directories for post scripts and logs
+- name: deploy_script_0 - make a README for context
+  template:
+    src: README.txt.j2
+    dest: "{{SCRIPTS_ROOT}}/README.txt"
+
+- name: deploy_script_1 - make directories for post scripts and logs
   file: path={{ item }} state=directory
   with_items: '{{ POST_MAKE_DIRS }}'
 
