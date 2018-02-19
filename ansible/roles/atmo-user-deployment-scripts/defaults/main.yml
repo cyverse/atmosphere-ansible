@@ -1,5 +1,5 @@
 SCRIPTS_ROOT: /etc/atmo
-INSTANCE_SCRIPT_AVAILABLE_DIR: "{{ SCRIPTS_ROOT }}/instance-scripts-avaiable"
+INSTANCE_SCRIPT_AVAILABLE_DIR: "{{ SCRIPTS_ROOT }}/instance-scripts-available"
 INSTANCE_SCRIPT_DIR: "{{ SCRIPTS_ROOT }}/instance-scripts.d"
 INSTANCE_SCRIPT_LOG_DIR: /var/log/atmo/instance-scripts
 POST_SCRIPT_DIR: "{{ SCRIPTS_ROOT }}/post-scripts.d"
