@@ -6,6 +6,7 @@ POST_SCRIPT_DIR: "{{ SCRIPTS_ROOT }}/post-scripts.d"
 POST_SCRIPT_LOG_DIR: /var/log/atmo/post-scripts
 
 POST_MAKE_DIRS:
+  - "{{ SCRIPTS_ROOT }}"
   - "{{ POST_SCRIPT_DIR }}"
   - "{{ INSTANCE_SCRIPT_AVAILABLE_DIR }}"
   - "{{ INSTANCE_SCRIPT_DIR }}"
