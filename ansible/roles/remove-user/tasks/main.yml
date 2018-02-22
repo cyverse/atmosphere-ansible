@@ -11,6 +11,13 @@
     state: 'absent'
     shell: '/bin/bash'
     remove: 'yes'
+  failed_when: false
+
+- name: 'Verify user account removed -- check /etc/passwd'
+  shell: "grep {{ATMOUSERNAME}} /etc/passwd"
+  register: etc_password_result
+  changed_when: true
+  failed_when: etc_password_result.rc == 0
 
 - name: 'Remove user home directory'
   file:
