@@ -30,12 +30,14 @@
 
 - name: install browser
   include: 'install-browser.yml'
+  ignore_errors: yes
   when:
     - has_gui
     - SETUP_GUI_BROWSER is defined and SETUP_GUI_BROWSER == true
 
 - name: install new terminal
   include: 'terminal.yml'
+  ignore_errors: yes
   when:
     - has_gui
 
