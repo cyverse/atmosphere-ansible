@@ -1,0 +1,12 @@
+---
+- name: Copy script to change desktop resolution
+  copy:
+    src: 'files/cyverse_change_resolution.sh'
+    dest: '/opt/cyverse_change_resolution.sh'
+    mode: '0755'
+
+- name: Copy desktop icon for changing desktop resolution
+  copy:
+    src: 'files/change_resolution.desktop'
+    dest: '/home/{{ ATMOUSERNAME }}/Desktop/change_resolution.desktop'
+    mode: '0755'
