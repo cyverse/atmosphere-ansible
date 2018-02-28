@@ -11,6 +11,7 @@ Role Variables
 | VOLUME_DEVICE           | yes      |         |                           | Location of the device to mount          |
 | VOLUME_DEVICE_TYPE      | yes      |         |                           | Filesystem type of device                |
 | VOLUME_MOUNT_LOCATION   | yes      |         |                           | Location to mount                        |
+| VOLUME_PASSNO           | no       |   2     |                           | see fstab 5                              |
 | ATMOUSERNAME            | yes      |         |                           | User that should own the volume          |
 
 Example Playbook

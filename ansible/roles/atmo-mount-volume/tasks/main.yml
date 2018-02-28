@@ -16,6 +16,7 @@
     src: '{{ VOLUME_DEVICE }}'
     state: 'mounted'
     path: '{{ VOLUME_MOUNT_LOCATION }}'
+    passno: '{{ VOLUME_PASSNO }}'
   register: mount_result
 
 - name: Debug mount result
