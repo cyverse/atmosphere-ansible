@@ -25,7 +25,7 @@
     name: "{{ (item |from_json )[0] }}"
     src: "{{ src }}"
     fstype: "{{ (item |from_json )[1] }}"
-    state: unmounted
+    state: absent
   register: unmount_result
   with_items:
     - "{{ list_mount_result.stdout_lines }}"
