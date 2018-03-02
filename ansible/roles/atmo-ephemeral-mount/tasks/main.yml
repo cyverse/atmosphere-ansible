@@ -1,9 +1,10 @@
 ---
 
-- name: Set MOUNT_OPTS Ubuntu < 16
-  set_fact:
-    MOUNT_OPTS: 'defaults,nobootwait'
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
 
 - name: 'See if we have an ephemeral disk'
   stat:
