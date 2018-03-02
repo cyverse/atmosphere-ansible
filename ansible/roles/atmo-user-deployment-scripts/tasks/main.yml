@@ -4,34 +4,58 @@
 - fail: msg="Variable ASYNC_SCRIPTS is not set."
   when: ASYNC_SCRIPTS is not defined
 
-- name: bootscript_1 - make directories for post scripts and logs
+- name: deploy_script_0 - make directories for scripts and logs
   file: path={{ item }} state=directory
   with_items: '{{ POST_MAKE_DIRS }}'
 
-- name: bootscript_2 - copy scripts to script directory
+- name: deploy_script_1 - make a README for context
+  template:
+    src: README.txt.j2
+    dest: "{{SCRIPTS_ROOT}}/README.txt"
+
+
+- name: deploy_script_2a - copy scripts to available scripts directory
   copy:
     content: "{{ item.text }}"
-    dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
+    dest: "{{INSTANCE_SCRIPT_AVAILABLE_DIR}}/{{item.name}}"
     mode: "u+rwx"
   with_items: '{{ DEPLOY_SCRIPTS }}'
 
-- name: bootscript_3 - Run deploy boot scripts synchronously, register results and return if failure occurs.
+- name: bootscript_2b - symlink from available scripts to script directory
+  file:
+    src: "{{INSTANCE_SCRIPT_AVAILABLE_DIR}}/{{item.name}}"
+    dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
+    mode: "u+rwx"
+    state: link
+  with_items: '{{ DEPLOY_SCRIPTS }}'
+
+# Subspace uses this `register` variable to determine RC (return-code)
+#
+- name: deploy_script_3 - Run deploy boot scripts synchronously, register results and return if failure occurs.
   command: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
   register: "deploy_script_result"
   with_items: '{{ DEPLOY_SCRIPTS }}'
 
-- name: bootscript_4 - Remove instance scripts to avoid being picked up on next run
+- name: deploy_script_4 - Remove instance scripts to avoid being picked up on next run
   file:
     path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
     state: absent
   with_items: '{{ DEPLOY_SCRIPTS }}'
 
 
-- name: bootscript_5 - copy scripts to script directory
+- name: deploy_script_5a - copy scripts to available scripts directory
   copy:
     content: "{{ item.text }}"
+    dest: "{{INSTANCE_SCRIPT_AVAILABLE_DIR}}/{{item.name}}"
+    mode: "u+rwx"
+  with_items: '{{ ASYNC_SCRIPTS }}'
+
+- name: deploy_script_5b - symlink from available scripts to script directory
+  file:
+    src: "{{INSTANCE_SCRIPT_AVAILABLE_DIR}}/{{item.name}}"
     dest: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
     mode: "u+rwx"
+    state: link
   with_items: '{{ ASYNC_SCRIPTS }}'
 
 #Future TODO:
@@ -39,7 +63,7 @@
 #   - get name of  each file in script directory
 #   - if file is executable, generate 'dynamic log files' based on 'script|basename' and 'date()'
 #   - if file is executable, run ` set -m; nohup-call-to-file..` and point to dynamic log files from above.
-- name: bootscript_6 - execute scripts found in RUN_SCRIPT_DIRS asynchronously
+- name: deploy_script_6b - execute scripts found in ASYNC_RUN_SCRIPTS asynchronously
   shell: |
     set -m  # allows backgrounded processes to persist
     for SCRIPT in {{item.dir}}/*;
@@ -63,7 +87,7 @@
 # - debug: msg="item.item={{item.item}}, item.stdout={{item.stdout}}, item.changed={{item.changed}}"
 #   with_items: "{{shell_result.results}}"
 
-- name: bootscript_7 - Remove instance scripts to avoid being picked up on next run
+- name: deploy_script_7 - Remove instance scripts to avoid being picked up on next run
   file:
     path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
     state: absent

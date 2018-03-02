@@ -1,0 +1,22 @@
+SCRIPTS_ROOT: /etc/atmo
+INSTANCE_SCRIPT_AVAILABLE_DIR: "{{ SCRIPTS_ROOT }}/instance-scripts-available"
+INSTANCE_SCRIPT_DIR: "{{ SCRIPTS_ROOT }}/instance-scripts.d"
+INSTANCE_SCRIPT_LOG_DIR: /var/log/atmo/instance-scripts
+POST_SCRIPT_DIR: "{{ SCRIPTS_ROOT }}/post-scripts.d"
+POST_SCRIPT_LOG_DIR: /var/log/atmo/post-scripts
+
+POST_MAKE_DIRS:
+  - "{{ SCRIPTS_ROOT }}"
+  - "{{ POST_SCRIPT_DIR }}"
+  - "{{ INSTANCE_SCRIPT_AVAILABLE_DIR }}"
+  - "{{ INSTANCE_SCRIPT_DIR }}"
+  - "{{ POST_SCRIPT_LOG_DIR }}"
+  - "{{ INSTANCE_SCRIPT_LOG_DIR }}"
+
+# NOTE:
+# I believe what accounts for the name "post-scripts" is that they are run
+# _after_ all other scripts. And, "post-scripts" (if present) were part of
+# the image used to launch the instance.
+ASYNC_RUN_SCRIPTS:
+  - { log: "{{ INSTANCE_SCRIPT_LOG_DIR }}", dir: "{{ INSTANCE_SCRIPT_DIR }}" }
+  - { log: "{{ POST_SCRIPT_LOG_DIR }}", dir: "{{ POST_SCRIPT_DIR }}" }
