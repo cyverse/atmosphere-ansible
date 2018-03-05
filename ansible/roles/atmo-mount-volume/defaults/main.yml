@@ -1,3 +1,7 @@
 ---
 
 ATMO_USER_GROUP: "users"
+
+VOLUME_OPTS: "defaults,nofail"
+
+VOLUME_PASSNO: "2"
