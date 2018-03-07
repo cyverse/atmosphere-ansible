@@ -32,7 +32,7 @@
 # Subspace uses this `register` variable to determine RC (return-code)
 #
 - name: deploy_script_3 - Run deploy boot scripts synchronously, register results and return if failure occurs.
-  command: "{{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
+  shell: "ATMO_USER={{ATMOUSERNAME}} {{INSTANCE_SCRIPT_DIR}}/{{item.name}}"
   register: "deploy_script_result"
   with_items: '{{ DEPLOY_SCRIPTS }}'
 
