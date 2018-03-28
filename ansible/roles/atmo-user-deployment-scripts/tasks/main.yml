@@ -58,30 +58,25 @@
     state: link
   with_items: '{{ ASYNC_SCRIPTS }}'
 
-#Future TODO:
-# - If possible, refactor these components into ansible:
-#   - get name of  each file in script directory
-#   - if file is executable, generate 'dynamic log files' based on 'script|basename' and 'date()'
-#   - if file is executable, run ` set -m; nohup-call-to-file..` and point to dynamic log files from above.
-- name: deploy_script_6b - execute scripts found in ASYNC_RUN_SCRIPTS asynchronously
-  shell: |
-    set -m  # allows backgrounded processes to persist
-    for SCRIPT in {{item.dir}}/*;
-    do
-      if [[ -f $SCRIPT && -x $SCRIPT ]]; then
-        LOG_DIR="{{item.log}}"
-        BASENAME=${SCRIPT##*/}
-        DATE=$(date +%F_%T)
-        SCRIPT_STDOUT=$LOG_DIR/$BASENAME.$DATE.stdout
-        SCRIPT_STDERR=$LOG_DIR/$BASENAME.$DATE.stderr
-        ATMO_USER={{ATMOUSERNAME}} nohup $SCRIPT >$SCRIPT_STDOUT 2>$SCRIPT_STDERR </dev/null &
-      fi
-    done
-    exit 0
-  args:
-    executable: /bin/bash
-  register: shell_result
-  with_items: '{{ ASYNC_RUN_SCRIPTS }}'
+
+- name: deploy_script_6a - Get list of scripts in '{{ INSTANCE_SCRIPT_DIR }}'
+  command: 'ls {{ INSTANCE_SCRIPT_DIR }}'
+  register: AVAILABLE_SCRIPTS
+
+- name: deploy_script_6b - Execute scripts
+  shell: 'set -m; ATMO_USER={{ ATMOUSERNAME }} nohup {{ INSTANCE_SCRIPT_DIR }}/{{ item }} &'
+  register: SCRIPT_RESULT
+  with_items: '{{ AVAILABLE_SCRIPTS.stdout_lines }}'
+
+- name: deploy_script_6c - Register date
+  command: 'date +"%Y-%m-%d-%H:%M"'
+  register: DATE
+
+- name: deploy_script_6d - Create logs
+  template:
+    src: 'deploy_log.j2'
+    dest: '{{ INSTANCE_SCRIPT_LOG_DIR }}/{{ DATE.stdout }}_{{ item.item }}.log'
+  with_items: '{{ SCRIPT_RESULT.results }}'
 
 # Helpful if the shell script above fails..
 # - debug: msg="item.item={{item.item}}, item.stdout={{item.stdout}}, item.changed={{item.changed}}"
@@ -92,4 +87,3 @@
     path: "{{INSTANCE_SCRIPT_DIR}}/{{ item.name }}"
     state: absent
   with_items: '{{ ASYNC_SCRIPTS }}'
-
