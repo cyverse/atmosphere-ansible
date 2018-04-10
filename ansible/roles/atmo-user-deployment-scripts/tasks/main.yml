@@ -64,7 +64,7 @@
   register: AVAILABLE_SCRIPTS
 
 - name: deploy_script_6b - Execute scripts
-  shell: 'set -m; ATMO_USER={{ ATMOUSERNAME }} nohup {{ INSTANCE_SCRIPT_DIR }}/{{ item }} &'
+  shell: 'ATMO_USER={{ ATMOUSERNAME }} nohup {{ INSTANCE_SCRIPT_DIR }}/{{ item }} &'
   register: SCRIPT_RESULT
   with_items: '{{ AVAILABLE_SCRIPTS.stdout_lines }}'
 
@@ -75,12 +75,8 @@
 - name: deploy_script_6d - Create logs
   template:
     src: 'deploy_log.j2'
-    dest: '{{ INSTANCE_SCRIPT_LOG_DIR }}/{{ DATE.stdout }}_{{ item.item }}.log'
+    dest: '{{ INSTANCE_SCRIPT_LOG_DIR }}/{{ item.item }}_{{ DATE.stdout }}.log'
   with_items: '{{ SCRIPT_RESULT.results }}'
-
-# Helpful if the shell script above fails..
-# - debug: msg="item.item={{item.item}}, item.stdout={{item.stdout}}, item.changed={{item.changed}}"
-#   with_items: "{{shell_result.results}}"
 
 - name: deploy_script_7 - Remove instance scripts to avoid being picked up on next run
   file:
