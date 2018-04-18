@@ -58,24 +58,19 @@
     state: link
   with_items: '{{ ASYNC_SCRIPTS }}'
 
-
-- name: deploy_script_6a - Get list of scripts in '{{ INSTANCE_SCRIPT_DIR }}'
-  command: 'ls {{ INSTANCE_SCRIPT_DIR }}'
-  register: AVAILABLE_SCRIPTS
-
-- name: deploy_script_6b - Execute scripts
-  shell: 'ATMO_USER={{ ATMOUSERNAME }} nohup {{ INSTANCE_SCRIPT_DIR }}/{{ item }} &'
+- name: deploy_script_6a - Execute scripts
+  shell: 'ATMO_USER={{ ATMOUSERNAME }} nohup {{ INSTANCE_SCRIPT_DIR }}/{{ item.name }} &'
   register: SCRIPT_RESULT
-  with_items: '{{ AVAILABLE_SCRIPTS.stdout_lines }}'
+  with_items: '{{ ASYNC_SCRIPTS }}'
 
-- name: deploy_script_6c - Register date
+- name: deploy_script_6b - Register date
   command: 'date +"%Y-%m-%d-%H:%M"'
   register: DATE
 
-- name: deploy_script_6d - Create logs
+- name: deploy_script_6c - Create logs
   template:
     src: 'deploy_log.j2'
-    dest: '{{ INSTANCE_SCRIPT_LOG_DIR }}/{{ item.item }}_{{ DATE.stdout }}.log'
+    dest: '{{ INSTANCE_SCRIPT_LOG_DIR }}/{{ item.item.name }}_{{ DATE.stdout }}.log'
   with_items: '{{ SCRIPT_RESULT.results }}'
 
 - name: deploy_script_7 - Remove instance scripts to avoid being picked up on next run
