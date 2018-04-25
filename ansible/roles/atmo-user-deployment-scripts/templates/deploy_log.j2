@@ -1,0 +1,15 @@
+Start time: {{ item.start }}
+Finish time: {{ item.end }}
+Command: {{ item.cmd }}
+Changed: {{ item.changed }}
+Return Code: {{ item.rc }}
+
+stderr_lines:
+{% for line in item.stderr_lines %}
+  {{ line }}
+{% endfor %}
+
+stdout_lines:
+{% for line in item.stdout_lines %}
+  {{ line }}
+{% endfor %}
