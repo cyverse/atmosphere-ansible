@@ -1,64 +1,83 @@
 # config file for ansible -- http://ansible.com/
 # ==============================================
 
-# nearly all parameters can be overridden in ansible-playbook 
+# nearly all parameters can be overridden in ansible-playbook
 # or with command line flags. ansible will read ANSIBLE_CONFIG,
 # ansible.cfg in the current working directory, .ansible.cfg in
 # the home directory or /etc/ansible/ansible.cfg, whichever it
 # finds first
 
+# NOTE: If a parameter is listed below, but commented out, then
+# it is already the default value for that parameter.
+# In the example below, 'smart' is already a default.
+# To set a different transport, un-comment and change the value as necessary.
+# transport = 'smart'
+
+###
+# General defaults -- most options will fall under this category.
+###
 [defaults]
 
-# some basic default values...
+###
+# Paths and plugins included by atmosphere-ansible
+###
+
+# additional paths to search for roles in, colon separated
+roles_path = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/roles
+# logging is off by default unless this path is defined
+# if so defined, consider logrotate
+log_path = {{ ATMOSPHERE_ANSIBLE_LOG_DIR }}/ansible.log
+
+# set plugin path directories here, separate with colons
+action_plugins     = /usr/share/ansible_plugins/action_plugins
+callback_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/callback:/usr/share/ansible_plugins/callback_plugins
+connection_plugins = /usr/share/ansible_plugins/connection_plugins
+lookup_plugins     = /usr/share/ansible_plugins/lookup_plugins
+vars_plugins       = /usr/share/ansible_plugins/vars_plugins
+filter_plugins     = /usr/share/ansible_plugins/filter_plugins
+strategy_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/strategy:/usr/share/ansible/plugins/strategy
+
+callback_whitelist = {{ SUBSPACE_CALLBACK_WHITELIST }}
 
 # note, separating out the ansible inventory into a separate directory
 # since by default the group and host vars use the base path of
 # the hosts file
-hostfile       = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/hosts
+inventory      = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/hosts
 library        = /usr/share/ansible
 remote_tmp     = $HOME/.ansible/tmp
 pattern        = *
-# set to 3x number of cores
-forks          = 45
-poll_interval  = 15
-sudo_user      = root
-#ask_sudo_pass = True
-#ask_pass      = True
-transport      = smart
-remote_port    = 22
-module_lang    = C
-retry_files_enabled = False
 
-# plays will gather facts by default, which contain information about
-# the remote system.
-#
-# smart - gather by default, but don't regather if already gathered
-# implicit - gather by default, turn off with gather_facts: False
-# explicit - do not gather by default, must say gather_facts: True
-gathering = smart
-
-# additional paths to search for roles in, colon separated
-roles_path = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/roles
-
-# uncomment this to disable SSH key host checking
-host_key_checking = False
-
-# change this for alternative sudo implementations
-sudo_exe = sudo
-
-# what flags to pass to sudo
-#sudo_flags = -H
+# format of string { ansible_managed } available within Jinja2
+# templates indicates to users editing templates files will be replaced.
+# replacing {file}, {host} and {uid} and strftime codes with proper values.
+ansible_managed = {{ ANSIBLE_MANAGED_STR }}
 
 # SSH timeout
 timeout = {{ ANSIBLE_SSH_TIMEOUT }}
 
+# `forks` is the default number of parallel processes to spawn when communicating with remote hosts.
+# Since Ansible 1.3, the fork number is automatically limited to the number of possible hosts at runtime,
+# so this is really a limit of how much network and CPU load you think you can handle.
+# Many users may set this to 50, some set it to 500 or more.
+# If you have a large number of hosts, higher values will make actions across all of those hosts complete faster.
+# The default is very very conservative: 5
+forks          = 45  # Current recommendation by atmosphere: set to 3x number of cores
+poll_interval  = 15
+
+# transport      = smart
+# remote_port    = 22
+# module_lang    = en_US.UTF-8
+retry_files_enabled = False
+
+# atmosphere-ansible recommends disabling SSH key host checking
+# because instances change IP address often, and host mappings
+# quickly become out of date.
+host_key_checking = False
+
+
 # default user to use for playbooks if user is not specified
 # (/usr/bin/ansible will use current user as default)
 #remote_user = root
-
-# logging is off by default unless this path is defined
-# if so defined, consider logrotate
-log_path = {{ ATMOSPHERE_ANSIBLE_LOG_DIR }}/ansible.log
 
 # default module name for /usr/bin/ansible
 #module_name = command
@@ -76,22 +95,31 @@ log_path = {{ ATMOSPHERE_ANSIBLE_LOG_DIR }}/ansible.log
 # list any Jinja2 extensions to enable here:
 #jinja2_extensions = jinja2.ext.do,jinja2.ext.i18n
 
-# if set, always use this private key file for authentication, same as 
+# if set, always use this private key file for authentication, same as
 # if passing --private-key to ansible or ansible-playbook
 #private_key_file = /path/to/file
 
-# format of string { ansible_managed } available within Jinja2 
-# templates indicates to users editing templates files will be replaced.
-# replacing {file}, {host} and {uid} and strftime codes with proper values.
-ansible_managed = {{ ANSIBLE_MANAGED_STR }}
+# the CA certificate path used for validating SSL certs. This path
+# should exist on the controlling node, not the target nodes
+# common locations:
+# RHEL/CentOS: /etc/pki/tls/certs/ca-bundle.crt
+# Fedora     : /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+# Ubuntu     : /usr/share/ca-certificates/cacert.org/cacert.org.crt
+#ca_file_path =
+
+# the http user-agent string to use when fetching urls. Some web server
+# operators block the default urllib user agent as it is frequently used
+# by malicious attacks/scripts, so we set it to something unique to
+# avoid issues.
+#http_user_agent = ansible-agent
 
 # by default, ansible-playbook will display "Skipping [host]" if it determines a task
-# should not be run on a host.  Set this to "False" if you don't want to see these "Skipping" 
-# messages. NOTE: the task header will still be shown regardless of whether or not the 
+# should not be run on a host.  Set this to "False" if you don't want to see these "Skipping"
+# messages. NOTE: the task header will still be shown regardless of whether or not the
 # task is skipped.
 #display_skipped_hosts = True
 
-# by default (as of 1.3), Ansible will raise errors when attempting to dereference 
+# by default (as of 1.3), Ansible will raise errors when attempting to dereference
 # Jinja2 variables that are not set in templates or action lines. Uncomment this line
 # to revert the behavior to pre-1.3.
 #error_on_undefined_vars = False
@@ -110,26 +138,47 @@ ansible_managed = {{ ANSIBLE_MANAGED_STR }}
 # (as of 1.8), Ansible can optionally warn when usage of the shell and
 # command module appear to be simplified by using a default Ansible module
 # instead.  These warnings can be silenced by adjusting the following
-# setting or adding warn=yes or warn=no to the end of the command line 
+# setting or adding warn=yes or warn=no to the end of the command line
 # parameter string.  This will for example suggest using the git module
 # instead of shelling out to the git command.
 # command_warnings = False
 
+###
+# Fact caching and gathering settings
+###
 
-# set plugin path directories here, separate with colons
-action_plugins     = /usr/share/ansible_plugins/action_plugins
-callback_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/callback:/usr/share/ansible_plugins/callback_plugins
-connection_plugins = /usr/share/ansible_plugins/connection_plugins
-lookup_plugins     = /usr/share/ansible_plugins/lookup_plugins
-vars_plugins       = /usr/share/ansible_plugins/vars_plugins
-filter_plugins     = /usr/share/ansible_plugins/filter_plugins
-strategy_plugins   = {{ SUBSPACE_PLUGINS_DIR }}/strategy:/usr/share/ansible/plugins/strategy
+# The fact_caching option allows you to configure where facts are cached.
+# if set to a persistant type (not 'memory', for example 'redis') fact values
+# from previous runs in Ansible will be stored.  This may be useful when
+# wanting to use, for example, IP information from one group of servers
+# without having to talk to them in the same playbook run to get their
+# current IP information.
+fact_caching = {{ ANSIBLE_FACT_CACHE_BACKEND }}
+# fact_caching_connection = localhost:6379:0  # If using redis
+# 24 hours of fact caching
+fact_caching_timeout = {{ ANSIBLE_FACT_CACHE_TIMEOUT }}
 
-callback_whitelist = {{ SUBSPACE_CALLBACK_WHITELIST }}
+
+# The gathering setting controls the default policy of facts gathering.
+# plays will gather facts by default, which contain information about
+# the remote system.
+#
+# smart - gather by default, but don't regather if already gathered
+# implicit - gather by default, turn off with gather_facts: False
+# explicit - do not gather by default, must say gather_facts: True
+gathering = smart
+
+###
+# Non-essential settings
+###
 
 # don't like cows?  that's unfortunate.
-# set to 1 if you don't want cowsay support or export ANSIBLE_NOCOWS=1 
+# set to 1 if you don't want cowsay support or export ANSIBLE_NOCOWS=1
 nocows = {{ SUBSPACE_NO_COWS }}
+
+# don't like colors either?
+# set to 1 if you don't want colors, or export ANSIBLE_NOCOLOR=1
+#nocolor = 1
 
 # set which cowsay stencil you'd like to use by default. When set to 'random',
 # a random stencil will be selected for each task. The selection will be filtered
@@ -142,93 +191,95 @@ cow_selection = {{ SUBSPACE_COW_SELECTION }}
 # it should be formatted as a comma-separated list with no spaces between names.
 # NOTE: line continuations here are for formatting purposes only, as the INI parser
 #       in python does not support them.
+## Heres a list of cowsay stencils to use when you set 'cow_selection = random':
 #cow_whitelist=bud-frogs,bunny,cheese,daemon,default,dragon,elephant-in-snake,elephant,eyes,\
 #              hellokitty,kitty,luke-koala,meow,milk,moofasa,moose,ren,sheep,small,stegosaurus,\
 #              stimpy,supermilker,three-eyes,turkey,turtle,tux,udder,vader-koala,vader,www
+## Like your cowsay stencils but want to keep them compact? Try this list:
+#cow_whitelist=apt,bud-frogs,bunny,duck,eyes,hellokitty,kitty,koala,moofasa,moose,suse,tux,www
 
-# don't like colors either?
-# set to 1 if you don't want colors, or export ANSIBLE_NOCOLOR=1
-#nocolor = 1
+###
+# Privilege Escalation settings
+###
+become         = True
+# become_user     = root
+# become_method   = sudo
+# become_ask_pass = True
+# become_allow_same_user = False
 
-# the CA certificate path used for validating SSL certs. This path 
-# should exist on the controlling node, not the target nodes
-# common locations:
-# RHEL/CentOS: /etc/pki/tls/certs/ca-bundle.crt
-# Fedora     : /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
-# Ubuntu     : /usr/share/ca-certificates/cacert.org/cacert.org.crt
-#ca_file_path = 
+sudo_user      = root  # DEPRECATED in 2.8 -- Use become_user instead
+# change this for alternative sudo implementations
+sudo_exe = sudo
+# what flags to pass to sudo
+#sudo_flags = -H -S -n
 
-# the http user-agent string to use when fetching urls. Some web server
-# operators block the default urllib user agent as it is frequently used
-# by malicious attacks/scripts, so we set it to something unique to 
-# avoid issues.
-#http_user_agent = ansible-agent
 
-# if set to a persistant type (not 'memory', for example 'redis') fact values
-# from previous runs in Ansible will be stored.  This may be useful when
-# wanting to use, for example, IP information from one group of servers
-# without having to talk to them in the same playbook run to get their
-# current IP information.
-
-fact_caching = {{ ANSIBLE_FACT_CACHE_BACKEND }}
-# 24 hours of fact caching
-fact_caching_timeout = {{ ANSIBLE_FACT_CACHE_TIMEOUT }}
-
+###
+# Paramiko specific settings
+###
 [paramiko_connection]
 
 # uncomment this line to cause the paramiko connection plugin to not record new host
 # keys encountered.  Increases performance on new host additions.  Setting works independently of the
-# host key checking setting above.
-#record_host_keys=False
+# host key checking setting above, Setting `record_host_keys` to False will improve performance
+# and is recommended when host key checking is disabled.
+record_host_keys=False
 
 # by default, Ansible requests a pseudo-terminal for commands executed under sudo. Uncomment this
 # line to disable this behaviour.
 #pty=False
 
+
+###
+# OpenSSH specific settings
+###
 [ssh_connection]
 
 # ssh arguments to use
-# Leaving off ControlPersist will result in poor performance, so use 
+# Leaving off ControlPersist will result in poor performance, so use
 # paramiko on older platforms rather than removing it
 ssh_args = -o ForwardAgent=yes -o ControlMaster=auto -o StrictHostKeyChecking=no -o ControlPersist=60s
 
 # The path to use for the ControlPath sockets. This defaults to
 # "%(directory)s/ansible-ssh-%%h-%%p-%%r", however on some systems with
-# very long hostnames or very long path names (caused by long user names or 
+# very long hostnames or very long path names (caused by long user names or
 # deeply nested home directories) this can exceed the character limit on
-# file socket names (108 characters for most platforms). In that case, you 
+# file socket names (108 characters for most platforms). In that case, you
 # may wish to shorten the string below.
-# 
-# Example: 
+#
+# Example:
 # control_path = %(directory)s/%%h-%%r
 #control_path = %(directory)s/ansible-ssh-%%h-%%p-%%r
 
-# Enabling pipelining reduces the number of SSH operations required to 
-# execute a module on the remote server. This can result in a significant 
-# performance improvement when enabled, however when using "sudo:" you must 
+# Enabling pipelining reduces the number of SSH operations required to
+# execute a module on the remote server. This can result in a significant
+# performance improvement when enabled, however when using "sudo:" you must
 # first disable 'requiretty' in /etc/sudoers
 #
 # By default, this option is disabled to preserve compatibility with
 # sudoers configurations that have requiretty (the default on many distros).
-# 
+#
 pipelining = True
 
-# if True, make ansible use scp if the connection type is ssh 
+# if True, make ansible use scp if the connection type is ssh
 # (default is sftp)
 #scp_if_ssh = True
 
+###
+# Accelerated mode settings -- Use this _ONLY_ if pipelining is False
+# NOTE: accelerate will be removed as a connection type (as of 2.5)
+###
 [accelerate]
-accelerate_port = 5099
-accelerate_timeout = 30
-accelerate_connect_timeout = 5.0
+# accelerate_port = 5099
+# accelerate_timeout = 30
+# accelerate_connect_timeout = 5.0
 
 # The daemon timeout is measured in minutes. This time is measured
 # from the last activity to the accelerate daemon.
-accelerate_daemon_timeout = 30 
+# accelerate_daemon_timeout = 30
 
 # If set to yes, accelerate_multi_key will allow multiple
 # private keys to be uploaded to it, though each user must
 # have access to the system via SSH to add a new key. The default
 # is "no".
 #accelerate_multi_key = yes
-
