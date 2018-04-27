@@ -1,0 +1,31 @@
+---
+
+SSHD: ssh
+
+RC_LOCAL_ATMO: /etc/rc.local.atmo
+
+PACKAGES:
+  - libfam0
+  - python
+  - python-ldap
+  - software-properties-common
+  - python-httplib2
+  - libfuse2
+  - tmux
+  - screen
+  - autoconf
+  - gcc
+  - make
+  - patch
+  - tcsh
+  - zsh
+  - mosh
+  - qemu-guest-agent
+  - git
+  - ansible
+
+# Add modules to be loaded here
+# MODULES_TO_LOAD:
+#   - acpiphp
+
+SYSLOG_SERVICE_NAME: rsyslog

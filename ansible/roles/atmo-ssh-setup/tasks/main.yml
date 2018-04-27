@@ -15,16 +15,16 @@
 
 - name: Manual Ubuntu version detection
   raw: >
-    grep -q 'DISTRIB_RELEASE=16\.04' /etc/lsb-release
-  register: ubuntu16
+    egrep -q '(DISTRIB_RELEASE=16|DISTRIB_RELEASE=18)' /etc/lsb-release
+  register: ubuntu16plus
   remote_user: "{{ use_remote_user }}"
   ignore_errors: True
   when: use_remote_user == "ubuntu"
 
-# Install Python2.7 for Ubuntu 16.04 since it uses Python3 by default and ansible_distribution
+# Install Python2.7 for Ubuntu 16.04 or later since it uses Python3 by default and ansible_distribution
 # requires Python2.7. Ansible 2.2 includes experimental support for Python3
 - block:
-  - name: Install Python2 on Ubuntu 16.04
+  - name: Install Python2 on Ubuntu 16.04 or later distro
     raw: >
       test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
     become: True
@@ -32,7 +32,7 @@
   - name: Set ansible_python_interpreter to python2.7 on Ubuntu 16.04
     set_fact: ansible_python_interpreter=/usr/bin/python2.7
   remote_user: "{{ use_remote_user }}"
-  when: use_remote_user == "ubuntu" and ubuntu16.rc == 0
+  when: use_remote_user == "ubuntu" and ubuntu16plus.rc == 0
 
 - name: Include root-setup.yml, use_remote_user will be ubuntu, centos, or root
   include: root-setup.yml
