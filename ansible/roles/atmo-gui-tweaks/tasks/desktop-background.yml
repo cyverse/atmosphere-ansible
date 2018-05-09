@@ -4,25 +4,22 @@
     src: "{{ background_img }}"
     dest: /usr/share/backgrounds/cloud_background.jpg
 
-- name: Change desktop background on CentOS
+- name: Check for /etc/xfce
+  stat:
+    path: '/usr/bin/xfconf-query'
+  register: xfce
+
+- name: Set change_background_cmd for Gnome
+  set_fact:
+    change_background_cmd: 'gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"'
+  when: not xfce.stat.exists
+
+- name: Set change_background_cmd for XFCE
+  set_fact:
+    change_background_cmd: 'xfconf-query -c xfce4-desktop --property /backdrop/screen0/monitor0/workspace0/last-image --set /usr/share/backgrounds/cloud_background.jpg'
+  when: xfce.stat.exists
+
+- name: Change desktop background
   become: yes
   become_user: "{{ ATMOUSERNAME }}"
-  command: >
-    gconftool-2 -s -t string /desktop/gnome/background/picture_filename "/usr/share/backgrounds/cloud_background.jpg"
-  when: ansible_distribution == "CentOS"
-
-# Note: These tasks trick the os by replacing their defaults with our own instead of properly
-# setting the background because "Unable to autolaunch a dbus-daemon without a $DISPLAY for X11"
-- name: Change desktop background on Ubuntu
-  copy:
-    src: /usr/share/backgrounds/cloud_background.jpg
-    dest: /usr/share/backgrounds/default.jpg
-    remote_src: True
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "16"
-
-- name: Change desktop background on Ubuntu 16+
-  copy:
-    src: /usr/share/backgrounds/cloud_background.jpg
-    dest: /usr/share/backgrounds/xfce/xfce-teal.jpg
-    remote_src: True
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16"
+  command: '{{ change_background_cmd }}'
