@@ -100,6 +100,20 @@
     - template
   when: SET_NTP_SERVERS == true
 
+- name: 'Place CentOS ntp.sh (dhclient.d script) which removes pre-existing NTP servers from ntp.conf when setting DHCP-provided NTP servers'
+  template:
+    src: '{{ item }}'
+    dest: '/etc/dhcp/dhclient.d/ntp.sh'
+    owner: 'root'
+    mode: 'u=rwx,g=rx,o=rx'
+  with_first_found:
+    - '{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.ntp.sh.j2'
+  when: 'ansible_distribution == "CentOS"'
+
+- name: 'Renew DHCP lease for CentOS'
+  command: 'dhclient -r'
+  when: 'ansible_distribution == "CentOS"'
+
 - name: start ntp service
   action: >
     service name={{ NTP_SERVICE }} state=restarted enabled=yes
