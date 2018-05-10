@@ -34,4 +34,15 @@
 
   - include: novnc.yml
     when: SETUP_NOVNC is defined and SETUP_NOVNC == true
+
+  - name: Set VNC Resolution
+    become: yes
+    become_user: '{{ ATMOUSERNAME }}'
+    shell: 'DISPLAY=:{{ item }} xrandr -s {{ VNC_RESOLUTION }}'
+    when: VNC_RESOLUTION is defined
+    with_items:
+      - '1'
+      - '2'
+      - '5'
+    ignore_errors: yes
   when: has_gui
