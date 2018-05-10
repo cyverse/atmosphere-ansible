@@ -22,4 +22,8 @@
 - name: Change desktop background
   become: yes
   become_user: "{{ ATMOUSERNAME }}"
-  command: '{{ change_background_cmd }}'
+  shell: 'DISPLAY=:{{ item }} {{ change_background_cmd }}'
+  with_items:
+    - '1'
+    - '2'
+    - '5'
