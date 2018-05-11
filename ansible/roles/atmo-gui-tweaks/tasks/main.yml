@@ -47,3 +47,9 @@
   when:
     - has_gui
     - SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
+
+- name: add desktop shortcut to change display resolution
+  include: 'desktop-resolution.yml'
+  ignore_errors: yes
+  when:
+    - has_gui

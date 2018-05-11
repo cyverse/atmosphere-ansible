@@ -1,0 +1,5 @@
+- hosts: atmosphere
+  vars:
+    ATMOUSERNAME: 'calvinmclean'
+  roles:
+    - atmo-gui-tweaks

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Name=Change Desktop Resolution
+comment=Change Desktop Resolution
+Exec=/usr/bin/python /opt/change_res.py
+Type=Application
+Categories=Accessories;Settings;System

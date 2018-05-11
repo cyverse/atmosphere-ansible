@@ -1,0 +1,24 @@
+---
+
+- name: Install python-tkinter for GUI application
+  package:
+    name: '{{ TKINTER }}'
+    state: present
+
+- name: Copy python program to change desktop resolution
+  copy:
+    src: 'files/change_res.py'
+    dest: '/opt/change_res.py'
+
+- name: Copy desktop icon for changing desktop resolution
+  copy:
+    src: 'files/change_resolution.desktop'
+    dest: '/home/{{ ATMOUSERNAME }}/Desktop/change_resolution.desktop'
+    owner: '{{ ATMOUSERNAME }}'
+    mode: '0755'
+
+- name: Add launcher to applications menu
+  copy:
+    src: 'files/change_resolution.desktop'
+    dest: '/usr/share/applications/change_resolution.desktop'
+    mode: '0644'
