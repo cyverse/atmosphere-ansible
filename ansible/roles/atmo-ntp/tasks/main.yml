@@ -107,7 +107,9 @@
     owner: 'root'
     mode: 'u=rwx,g=rx,o=rx'
   with_first_found:
-    - '{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.ntp.sh.j2'
+    - files:
+        - '../templates/{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.ntp.sh.j2'
+      skip: true
   when: 'ansible_distribution == "CentOS"'
 
 - name: 'Renew DHCP lease for CentOS'
