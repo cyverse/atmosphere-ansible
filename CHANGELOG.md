@@ -32,6 +32,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   configured NTP servers in ntp.conf when installing DHCP-provided NTP
   servers. ([#146](https://github.com/cyverse/atmosphere-ansible/pull/146))
 
+- Python app for changing the desktop resolution on instances using a GUI dropdown menu. The app is accessible from desktop icon or applications menu ([#149](https://github.com/cyverse/atmosphere-ansible/pull/149))
+
 ### Fixed
 
 - Fixed task to kill VNC servers using `pkill` instead of `vncserver -kill :$DISPLAY` ([#150](https://github.com/cyverse/atmosphere-ansible/pull/150))
