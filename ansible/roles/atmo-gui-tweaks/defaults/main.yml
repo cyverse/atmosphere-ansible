@@ -1,5 +1,6 @@
 ---
 
 background_img: 'files/atmosphere_wallpaper_v1.jpg'
+background_dest: '/usr/share/backgrounds/cloud_background.jpg' 
 
 SET_DESKTOP_BACKGROUND: false
