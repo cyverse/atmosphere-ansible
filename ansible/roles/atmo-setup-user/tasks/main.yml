@@ -84,11 +84,10 @@
   stat: path="/home/{{ ATMOUSERNAME }}"
   register: atmouser_home
 
-- name: copy skel files into home directory
-  shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
-  when: not atmouser_home.stat.exists
-
 - block:
+    - name: copy skel files into home directory
+      shell: cp -R /etc/skel /home/"{{ ATMOUSERNAME }}"
+
     - name: Set ownership for user's home, ignoring mounted volumes
       shell: >
         find /home/{{ ATMOUSERNAME }} -mount | xargs chown {{ ATMOUSERNAME }}:iplant-everyone
@@ -98,4 +97,4 @@
       shell: >
         find /home/{{ ATMOUSERNAME }} -mount | xargs chmod 755 {{ ATMOUSERNAME }}:iplant-everyone
       failed_when: False
-  tags: chown_users_home
+  when: not atmouser_home.stat.exists
