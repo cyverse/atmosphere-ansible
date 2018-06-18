@@ -48,6 +48,13 @@
     copy:
       src: 'DATA-LOSS-WARNING.txt'
       dest: '{{ MOUNT_PATH }}/DATA-LOSS-WARNING.txt'
+
+  - name: Change directory ownership
+    file:
+      state: directory
+      path: '{{ MOUNT_PATH }}'
+      owner: '{{ ATMOUSERNAME }}'
+      group: "{{ ATMO_USER_GROUP }}"
   when:
     - 'ephem_stat.stat.islnk is defined'
     - 'ephem_stat.stat.islnk == true'
