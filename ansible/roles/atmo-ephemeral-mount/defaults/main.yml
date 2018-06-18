@@ -2,6 +2,8 @@
 
 disk_mounted_elsewhere: false
 
+ATMO_USER_GROUP: "users"
+
 MOUNT_PATH: '/scratch'
 MOUNT_TYPE: 'ext4'
 MOUNT_OPTS: 'defaults,nofail'
