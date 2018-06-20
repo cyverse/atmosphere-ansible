@@ -14,19 +14,19 @@
 # note, separating out the ansible inventory into a separate directory
 # since by default the group and host vars use the base path of
 # the hosts file
-hostfile       = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/hosts
+inventory      = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/hosts
 library        = /usr/share/ansible
 remote_tmp     = $HOME/.ansible/tmp
 pattern        = *
 # set to 3x number of cores
 forks          = 45
 poll_interval  = 15
-sudo_user      = root
+become_user    = root
 #ask_sudo_pass = True
 #ask_pass      = True
 transport      = smart
 remote_port    = 22
-module_lang    = C
+# module_lang    = C
 retry_files_enabled = False
 
 # plays will gather facts by default, which contain information about
@@ -44,7 +44,7 @@ roles_path = {{ ATMOSPHERE_ANSIBLE_DIR }}/ansible/roles
 host_key_checking = False
 
 # change this for alternative sudo implementations
-sudo_exe = sudo
+become_exe = sudo
 
 # what flags to pass to sudo
 #sudo_flags = -H

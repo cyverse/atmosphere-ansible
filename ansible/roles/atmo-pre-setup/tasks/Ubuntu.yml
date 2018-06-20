@@ -6,11 +6,11 @@
 
 - name: if x64 found, remove x64 architecture
   shell: dpkg --remove-architecture x64
-  when: x64_arch_exists|success
+  when: x64_arch_exists is success
 
 - name: if x64 found, add amd64
   shell: dpkg --add-architecture amd64
-  when: x64_arch_exists|success
+  when: x64_arch_exists is success
 
 # - wait_for: path=/var/lib/apt/lists/lock state=absent
   # retries: 6

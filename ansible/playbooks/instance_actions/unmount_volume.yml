@@ -9,7 +9,7 @@
 
     - fail:
         msg: "Must set src. Pass a value in via `-e` as JSON {{example[0]}}"
-      when: "{{ src is not defined }}"
+      when: src is not defined
 
 - name: Playbook to unmount a volume
   hosts: atmosphere

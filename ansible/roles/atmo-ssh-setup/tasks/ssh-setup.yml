@@ -5,7 +5,7 @@
 
 - name: Gather OS-specific variables
   include_vars: "{{ item.var }}"
-  when: "{{ item.condition }}"
+  when: "item.condition"
   with_items:
     - { var: 'Ubuntu.yml', condition: ansible_distribution == "Ubuntu" }
     - { var: 'CentOS.yml', condition: ansible_distribution == "CentOS" }

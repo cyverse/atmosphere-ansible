@@ -6,14 +6,15 @@
 
 - name: if x64 found, remove x64 architecture
   shell: dpkg --remove-architecture x64
-  when: ansible_distribution == "Ubuntu" and x64_arch_exists|success
+  when: ansible_distribution == "Ubuntu" and x64_arch_exists is success
 
 - name: if x64 found, add amd64
   shell: dpkg --add-architecture amd64
-  when: ansible_distribution == "Ubuntu" and x64_arch_exists|success 
+  when: ansible_distribution == "Ubuntu" and x64_arch_exists is success
 
 - name: apt-get update
-  shell: apt-get update 
+  apt:
+    update_cache: yes
   when: ansible_distribution == "Ubuntu"
   failed_when: False
   tags: update
@@ -31,7 +32,8 @@
   - meta: flush_handlers
 
   - name: yum check-update
-    shell: yum check-update 
+    yum:
+      update_cache: yes
     failed_when: False
     tags: update
 
