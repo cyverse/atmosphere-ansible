@@ -1,0 +1,94 @@
+# This file is templated by the 'configure' script
+DOCUMENTATION = '''
+    callback: atmo_logger
+    type: notification
+    short_description: write playbook output to per-instance logs
+    description:
+        - This plugin is modeled after the default playbook stdout (without the banners)
+        - It writes logs per-instance to `{{ ATMOSPHERE_ANSIBLE_LOG_DIR }}/<username>/<instance_uuid>`
+    extends_documentation_fragment:
+      - default_callback
+    requirements:
+      - Whitelist in configuration
+'''
+import os
+from datetime import datetime
+
+from ansible.plugins.callback.default import CallbackModule as CallbackModule_default
+from ansible.module_utils._text import to_text
+from ansible.utils.display import Display
+
+class DisplayLogger(Display):
+    """
+    This class is used to replace the '_display' object of the Callback plugin so that the default stdout
+    methods that use '_display.display(msg)' and '_display.banner(msg)' can stil be used, but will write
+    to a log instead of to stdout.
+    """
+    def __init__(self):
+        super(DisplayLogger, self).__init__()
+        self.username = None
+        self.instance_id = None
+        self.log_dir = "{{ ATMOSPHERE_ANSIBLE_LOG_DIR }}/atmosphere_deploy.d"
+
+    def banner(self, msg, color=None, cows=True):
+        self.display(msg)
+
+    def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False):
+        # Do nothing if screen_only == True to avoid empty lines
+        if screen_only:
+            return
+        # Get log directory path with username and make sure it exists
+        path = to_text("{0}/{1}".format(self.log_dir, self.username))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        # Add UUID filename to path
+        path += "/%s.log" % self.instance_id
+        now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+        with open(path, "ab") as fd:
+            fd.write("{0} | {1} | {2} | {3}\n".format(now, self.instance_id, self.username, msg))
+
+class CallbackModule(CallbackModule_default):
+    """
+    This callback module extends the default stdout plugin. It replaces the '_display' object
+    with the DisplayLogger so that it can write to a file instead of stdout. Two methods are
+    overridden:
+        v2_playbook_on_play_start: only change is to get the 'username' and 'instance_id' from
+                                   'extra_vars' and save as an attribute
+        v2_playbook_on_stats: changed to add a runtime stat and print on one line
+    """
+    CALLBACK_VERSION = 2.0
+    CALLBACK_NEEDS_WHITELIST = True
+    CALLBACK_TYPE = 'notification'
+    CALLBACK_NAME = 'atmo_logger'
+
+    def __init__(self):
+        super(CallbackModule, self).__init__()
+        self._display = DisplayLogger()
+
+    def v2_playbook_on_play_start(self, play):
+        self.start_time = datetime.now()
+        self._display.username = to_text(play._variable_manager._extra_vars['ATMOUSERNAME'])
+        self._display.instance_id = play._variable_manager._extra_vars['INSTANCE_UUID']
+        self._play = play
+        name = play.get_name()
+        if not name:
+            msg = "PLAY"
+        else:
+            msg = "PLAY [{}]".format(name.strip())
+        self._display.display(msg)
+
+    def v2_playbook_on_stats(self, stats):
+        run_time = datetime.now() - self.start_time
+        hosts = sorted(stats.processed.keys())
+        for h in hosts:
+            t = stats.summarize(h)
+            msg = "PLAY RECAP [%s] : %s %s %s %s %s %s" % (
+                h,
+                "ok: {}".format(t['ok']),
+                "changed: {}".format(t['changed']),
+                "unreachable: {}".format(t['unreachable']),
+                "skipped: {}".format(t['skipped']),
+                "failed: {}".format(t['failures']),
+                "runtime: {0}.{1} seconds".format(run_time.seconds, run_time.microseconds)
+            )
+            self._display.display(msg)

@@ -2,12 +2,19 @@
     "SECTION_MAPPING": {
         "ansible.cfg": [
             "ansible.cfg"
+        ],
+        "COMMON": [
+            "atmo_logger.py"
         ]
     },
     "CONFIG_FILES": {
         "ansible.cfg": [
             "ansible/ansible.cfg.j2",
             "ansible/ansible.cfg"
+        ],
+        "atmo_logger.py": [
+            "ansible/plugins/callback/atmo_logger.py.j2",
+            "ansible/plugins/callback/atmo_logger.py"
         ]
     }
 }
