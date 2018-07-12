@@ -31,6 +31,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - On CentOS, the dhclient.d script `ntp.sh` is configured to remove previously
   configured NTP servers in ntp.conf when installing DHCP-provided NTP
   servers. ([#146](https://github.com/cyverse/atmosphere-ansible/pull/146))
+- New logging plugin that will create logs for each instance organized in username directories. The plugin is a template that has the log path added by the `./configure` script. ([#154](https://github.com/cyverse/atmosphere-ansible/pull/154))
+
+### Changed
+
+- Renamed Subspace variables to use Ansible keyword instead of Subspace ([#154](https://github.com/cyverse/atmosphere-ansible/pull/154))
 
 ### Fixed
 
