@@ -36,6 +36,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - Renamed Subspace variables to use Ansible keyword instead of Subspace ([#154](https://github.com/cyverse/atmosphere-ansible/pull/154))
+- Changes to make compatible with Ansible 2.6 free of deprecation warnings ([#155](https://github.com/cyverse/atmosphere-ansible/pull/155))
+- Changed 'template password-auth' task in ldap role for CentOS to say `follow=yes` since before Ansible 2.4 yes was default but now default is no. It is required because the `password-auth` file is a link ([#155](https://github.com/cyverse/atmosphere-ansible/pull/155))
+- Changed task that install iRods on Ubuntu in `atmo-kanki-irodsclient` to first download files before installing with apt module because the apt module fails to download the files (must be a bug in Ansible 2.6 because the download message is 'OK' but the status code is 'None' and Ansible looks for status code 200) ([#155](https://github.com/cyverse/atmosphere-ansible/pull/155))
 
 ### Fixed
 
