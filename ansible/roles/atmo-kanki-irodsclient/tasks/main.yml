@@ -37,6 +37,7 @@
       get_url:
         dest: '{{ item.dest }}'
         url: '{{ item.url }}'
+        checksum: 'sha1:{{ item.checksum }}'
       with_items: "{{ irods_files }}"
       when: ansible_distribution == "Ubuntu"
 
