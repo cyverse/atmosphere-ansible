@@ -52,21 +52,13 @@
   tags:
     - time
 
-- name: install ntp prep package(s) -- Ubuntu only
-  apt:
-    name: "{{ NTP_PREP_PACKAGE.name }}"
-    state: present
-  tags:
-    - install
-  when: ansible_distribution == "Ubuntu" and NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
-
-- name: install ntp prep package(s) -- Non-Ubuntu using action module
+- name: install ntp prep package(s)
   package:
     name: "{{ NTP_PREP_PACKAGE.name }}"
     state: "{{ NTP_PREP_PACKAGE.state }}"
   tags:
     - install
-  when: ansible_distribution != "Ubuntu" and NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE != ""
+  when: NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
 
 - name: install ntp package
   action: >
