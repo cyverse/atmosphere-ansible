@@ -12,8 +12,9 @@
     - install
 
 - name: Test curl installed by package manager
-  action: >
-    {{ ansible_pkg_mgr }} name=curl state=present
+  package:
+    name: curl
+    state: present
   register: package_result
   failed_when: package_result.msg is defined and package_result.msg == "No package matching 'curl' is available"
   tags:
@@ -51,19 +52,13 @@
   tags:
     - time
 
-- name: install ntp prep package(s) -- Ubuntu only
-  shell: >
-    apt-get -qy install {{ NTP_PREP_PACKAGE.name }}
+- name: install ntp prep package(s)
+  package:
+    name: "{{ NTP_PREP_PACKAGE.name }}"
+    state: "{{ NTP_PREP_PACKAGE.state }}"
   tags:
     - install
-  when: ansible_distribution == "Ubuntu" and NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
-
-- name: install ntp prep package(s) -- Non-Ubuntu using action module
-  action: >
-    {{ ansible_pkg_mgr }} name={{ NTP_PREP_PACKAGE.name }} state={{ NTP_PREP_PACKAGE.state }}
-  tags:
-    - install
-  when: ansible_distribution != "Ubuntu" and NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE != ""
+  when: NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
 
 - name: install ntp package
   action: >

@@ -1,10 +1,10 @@
 NTP_PREP_PACKAGE:
   name: libssl1.0.0
-  state: installed
+  state: present
 
 NTP_PACKAGE:
   name: ntp
-  state: installed
+  state: present
 
 NTP_SERVICE: ntp
 

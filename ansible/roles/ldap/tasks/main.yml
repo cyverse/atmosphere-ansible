@@ -19,8 +19,9 @@
     - vars
 
 - name: install ldap packages
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state={{ LDAP_PACKAGES.state }}
+  package:
+    name: '{{ item }}'
+    state: '{{ LDAP_PACKAGES.state }}'
   with_items: "{{ LDAP_PACKAGES.packages }}"
   tags:
     - install
@@ -118,7 +119,7 @@
     - authconfig
 
 - name: template password-auth
-  template: src={{ item }} dest=/etc/pam.d/password-auth backup=yes
+  template: src={{ item }} dest=/etc/pam.d/password-auth backup=yes follow=yes
   with_first_found:
     - files:
       - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.password-auth.j2"
@@ -161,7 +162,9 @@
     - restart-oddjobd
 
 - name: restart services again just to be safe for CentOS 6
-  shell: service {{ item }} restart
+  service:
+    name: '{{ item }}'
+    state: 'restarted'
   with_items:
     - "{{ LDAP_SERVICE }}"
     - messagebus
@@ -169,7 +172,9 @@
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
 
 - name: restart services again just to be safe for CentOS 7
-  shell: systemctl restart {{ item }}
+  service:
+    name: '{{ item }}'
+    state: 'restarted'
   with_items:
     - "{{ LDAP_SERVICE }}"
     - messagebus
@@ -233,19 +238,19 @@
     - reload-dbus
 
 - name: restart nscd and nslcd services again just to be safe
-  shell: service {{ item }} restart
+  service:
+    name: '{{ item }}'
+    state: 'restarted'
   with_items:
     - nscd
     - nslcd
   when: ansible_distribution == "Ubuntu"
 
-- name: restart dbus again just to be safe for pre-Ubuntu 16.04
-  shell: service dbus restart
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 16
-
-- name: reload dbus again just to be safe for Ubuntu 16.04 and later
-  shell: systemctl reload dbus
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
+- name: restart dbus again just to be safe for Ubuntu
+  service:
+    name: 'dbus'
+    state: 'reloaded'
+  when: ansible_distribution == "Ubuntu"
 
 - name: loop until ldap connection is made, fails if it can't
   command: id {{ TEST_LDAP_USER }}

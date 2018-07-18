@@ -20,7 +20,7 @@
   when:
     - 'ephem_stat.stat.islnk is defined'
     - 'ephem_stat.stat.islnk == true'
-    - 'item.device == "{{ ephem_stat.stat.lnk_source }}"'
+    - 'item.device == ephem_stat.stat.lnk_source'
     - 'item.mount != "/mnt"'
   with_items: '{{ ansible_mounts }}'
 

@@ -1,6 +1,6 @@
 NTP_PACKAGE:
   name: ntp
-  state: installed
+  state: present
 
 NTP_SERVICE: ntpd
 

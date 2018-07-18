@@ -1,4 +1,4 @@
---- 
+---
 - name: get atmo vm ip address
   set_fact:
     vm_ip: "{{ ansible_host }}"
@@ -32,7 +32,7 @@
       command ssh {{ SSH_OPTIONS}} -p {{ ansible_port }} centos@{{ vm_ip }} 'echo hello' | grep 'hello'
   register: centos_remote_user
   ignore_errors: yes
-  when: default_remote_user|failed
+  when: default_remote_user is failed
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
@@ -45,16 +45,16 @@
     command ssh {{ SSH_OPTIONS }} -p {{ ansible_port }} ubuntu@{{ vm_ip }} 'echo hello' | grep 'hello'
   register: ubuntu_remote_user
   ignore_errors: yes
-  when: default_remote_user|failed and centos_remote_user|failed
+  when: default_remote_user is failed and centos_remote_user is failed
   failed_when: False
   async: "{{ SSH_TIMEOUT }}"
   poll: 1
 
 # - debug: msg="root output is {{ default_remote_user.stdout }} and err is {{ default_remote_user.stderr }}"
-# 
+#
 # - debug: msg="centos output is {{ centos_remote_user.stdout }} and err is {{ centos_remote_user.stderr }}"
 #   when: default_remote_user|failed
-# 
+#
 # - debug: msg="ubuntu output is {{ ubuntu_remote_user.stdout }} and err is {{ ubuntu_remote_user.stderr }}"
 #   when: default_remote_user|failed and centos_remote_user|failed
 

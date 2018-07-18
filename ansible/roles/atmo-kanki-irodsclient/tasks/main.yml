@@ -33,10 +33,18 @@
       with_items: "{{ irods_files }}"
       when: ansible_distribution == "CentOS"
 
+    - name: Download iRods debs on Ubuntu
+      get_url:
+        dest: '{{ item.dest }}'
+        url: '{{ item.url }}'
+        checksum: 'sha1:{{ item.checksum }}'
+      with_items: "{{ irods_files }}"
+      when: ansible_distribution == "Ubuntu"
+
     - name: Install iRods on Ubuntu
       apt:
         state: present
-        deb: "{{ item }}"
+        deb: "{{ item.dest }}"
       with_items: "{{ irods_files }}"
       when: ansible_distribution == "Ubuntu"
 

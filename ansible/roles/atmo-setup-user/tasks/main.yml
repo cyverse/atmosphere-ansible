@@ -61,9 +61,8 @@
   lineinfile: dest=/etc/group regexp='^({{ ADD_TO_GROUP.GROUP }}:x:100:)(.*)' line="\1{{ item }},\2" state=present backrefs=yes
   with_items:
     - '{{ ADD_TO_GROUP.LIST_OF_USERS }}'
-  when: 'user_not_present.rc == 1'
   tags: debug-ssh
-  when: ADD_TO_GROUP is defined
+  when: ADD_TO_GROUP is defined and user_not_present.rc == 1
 
 - name: add ATMOUSERNAME to users group
   lineinfile: dest=/etc/group regexp='^(users:x:100:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
