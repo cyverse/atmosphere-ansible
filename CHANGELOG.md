@@ -24,8 +24,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - <in case of vulnerabilities>
 -->
 
-## [Unreleased](https://github.com/cyverse/atmosphere/compare/v33-0...HEAD) - YYYY-MM-DD
-## [v33-0](https://github.com/cyverse/atmosphere/compare/...v33-0) - 2018-08-08
+## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v33-0...HEAD) - YYYY-MM-DD
+## [v33-0](https://github.com/cyverse/atmosphere-ansible/compare/...v33-0) - 2018-08-08
 ### Added
   - On CentOS, the dhclient.d script `ntp.sh` is configured to remove previously
     configured NTP servers in ntp.conf when installing DHCP-provided NTP
