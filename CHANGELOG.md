@@ -40,7 +40,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
     the download message is 'OK' but the status code is 'None' and Ansible
     looks for status code 200)
     ([#155](https://github.com/cyverse/atmosphere-ansible/pull/155))
-  - Changed `atmo-kanki-irodsclient` and `irods-icommands` roles to download packages from the new iRods HTTPS URLs ([#161](https://github.com/cyverse/atmosphere-ansible/pull/161))  
+  - Changed `atmo-kanki-irodsclient` and `irods-icommands` roles to download packages from the new iRods HTTPS URLs ([#161](https://github.com/cyverse/atmosphere-ansible/pull/161))
+
+### Removed
+  - Remove unused `atmo-irods` role and remove unused CentOS 5 tasks from `irods-icommands` role ([#162](https://github.com/cyverse/atmosphere-ansible/pull/162))
 
 ## [v33-0](https://github.com/cyverse/atmosphere-ansible/compare/...v33-0) - 2018-08-08
 ### Added
