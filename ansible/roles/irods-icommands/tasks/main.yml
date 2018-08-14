@@ -110,14 +110,6 @@
   when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
   tags: icommands-setup
 
-- name: Download installation package for non-CentOS 5
-  get_url:
-    url: "{{ ICOMMANDS_URL }}"
-    dest: /tmp/icommands-pkg.rpm
-  changed_when: false
-  when: not (ansible_distribution == "CentOS" and ansible_distribution_major_version < '6')
-  tags: icommands-setup
-
 - name: Uninstall existing iCommands for Ubuntu
   apt:
     name: irods-icommands
@@ -135,14 +127,15 @@
 
 - name: Install iCommands for Ubuntu
   apt:
-    deb: /tmp/icommands-pkg.rpm
+    state: 'present'
+    deb: '{{ ICOMMANDS_URL }}'
   when: ansible_distribution == "Ubuntu"
   tags: icommands-setup
 
-- name: Install iCommands for CentOS 6 and 7
+- name: Install iCommands for CentOS
   yum:
-    name: /tmp/icommands-pkg.rpm
     state: present
+    name: '{{ ICOMMANDS_URL }}'
   when: (ansible_distribution == "CentOS" and ansible_distribution_major_version > "5")
   tags: icommands-setup
 
