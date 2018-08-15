@@ -1,0 +1,16 @@
+---
+
+xsession_path: /usr/bin/xinit
+xterm_path: /usr/bin/Xorg
+
+dependencies:
+  - epel-release
+  - openssl-devel
+  - libcurl-devel
+  - qt5-qtsvg-devel
+  - qt5-qtbase-devel
+
+irods_files:
+  - https://files.renci.org/pub/irods/releases/4.1.9/centos7/irods-dev-4.1.9-centos7-x86_64.rpm
+  - https://files.renci.org/pub/irods/releases/4.1.9/centos7/irods-icommands-4.1.9-centos7-x86_64.rpm
+  - https://files.renci.org/pub/irods/releases/4.1.9/centos7/irods-runtime-4.1.9-centos7-x86_64.rpm
