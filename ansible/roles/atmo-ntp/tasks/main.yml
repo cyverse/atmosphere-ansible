@@ -108,7 +108,9 @@
   when: 'ansible_distribution == "CentOS"'
 
 - name: 'Renew DHCP lease for CentOS'
-  command: 'dhclient'
+  service:
+    name: 'network'
+    state: 'restarted'
   when: 'ansible_distribution == "CentOS"'
 
 - name: start ntp service

@@ -45,6 +45,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Removed
   - Remove unused `atmo-irods` role and remove unused CentOS 5 tasks from `irods-icommands` role ([#162](https://github.com/cyverse/atmosphere-ansible/pull/162))
 
+### Fixed
+  - Fixed task that runs `dhclient` for CentOS so that it does not fail if the
+    process is already running
+    ([#156](https://github.com/cyverse/atmosphere-ansible/pull/156))
+
 ## [v33-0](https://github.com/cyverse/atmosphere-ansible/compare/...v33-0) - 2018-08-08
 ### Added
   - On CentOS, the dhclient.d script `ntp.sh` is configured to remove previously
