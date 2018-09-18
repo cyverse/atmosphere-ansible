@@ -4,11 +4,7 @@
   setup:
 
 - name: Gather OS-specific variables
-  include_vars: "{{ item.var }}"
-  when: "item.condition"
-  with_items:
-    - { var: 'Ubuntu.yml', condition: ansible_distribution == "Ubuntu" }
-    - { var: 'CentOS.yml', condition: ansible_distribution == "CentOS" }
+  include_vars: "{{ ansible_distribution }}.yml"
 
 - name: Make sure ssh directory exists with correct permissions
   file:
