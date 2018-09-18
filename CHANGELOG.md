@@ -24,7 +24,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - <in case of vulnerabilities>
 -->
 
-## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...HEAD) - YYYY-MM-DD
+## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v34-1...HEAD) - YYYY-MM-DD
+## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
+### Fixed
+  - Fixed incorrect condition resulting in Ubuntu 14 failure to restart
+    service ([#165](https://github.com/cyverse/atmosphere-ansible/pull/165))
+
 ## [v34-0](https://github.com/cyverse/atmosphere-ansible/compare/v33-0...v34-0) - 2018-09-17
 ### Changed
   - Renamed Subspace variables to use Ansible keyword instead of Subspace
