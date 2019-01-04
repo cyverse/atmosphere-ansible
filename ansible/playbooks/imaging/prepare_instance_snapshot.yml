@@ -3,6 +3,14 @@
 - name: Sync and freeze instance (Helpful as part of the imaging process)
   hosts: all
   tasks:
+    - name: Install cloud-init and cloud-utils
+      package:
+        name: '{{ item }}'
+        state: 'present'
+      with_items:
+        - 'cloud-init'
+        - 'cloud-utils'
+
     - name: Run sync command
       command: sync
 
