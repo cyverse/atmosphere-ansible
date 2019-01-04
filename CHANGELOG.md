@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
   - Fix slow iRods Fuse performance
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
+  - Install cloud-init as part of the imaging process ([#169](https://github.com/cyverse/atmosphere-ansible/pull/169))
 
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
 ### Fixed
