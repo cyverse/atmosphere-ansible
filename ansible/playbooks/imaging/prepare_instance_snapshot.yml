@@ -3,11 +3,30 @@
 - name: Sync and freeze instance (Helpful as part of the imaging process)
   hosts: all
   tasks:
+    - name: Ensure cloud-init is installed with default config on Ubuntu 18+
+      block:
+      - name: Uninstall cloud-init
+        package:
+          name: '{{ item }}'
+          state: 'absent'
+        loop:
+          - 'cloud-init'
+          - 'cloud-utils'
+
+      - name: Delete cloud-init files
+        file:
+          path: '{{ item }}'
+          state: 'absent'
+        loop:
+          - '/etc/cloud'
+          - '/var/lib/cloud'
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version >= '18'
+
     - name: Install cloud-init and cloud-utils
       package:
         name: '{{ item }}'
         state: 'present'
-      with_items:
+      loop:
         - 'cloud-init'
         - 'cloud-utils'
 
