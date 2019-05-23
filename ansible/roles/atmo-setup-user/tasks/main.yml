@@ -76,7 +76,10 @@
   failed_when: False
 
 - name: add user to docker group in /etc/group if docker group exists
-  lineinfile: dest=/etc/group regexp='^(docker:x:999:)(.*)' line="\1{{ ATMOUSERNAME }},\2" state=present backrefs=yes
+  user:
+    name: "{{ ATMOUSERNAME }}"
+    groups: "docker"
+    append: yes
   when: docker_user_present.rc == 0
 
 - name: check if the home directory exists yet
