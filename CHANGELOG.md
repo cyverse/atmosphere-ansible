@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
   - changed https to http for irods-icommands packages in vars
 
+### Changed
+  - Only use Gateone if Guacamole is disabled
+    ([#170](https://github.com/cyverse/atmosphere-ansible/pull/170))
+
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
 ### Fixed
   - Fixed incorrect condition resulting in Ubuntu 14 failure to restart
