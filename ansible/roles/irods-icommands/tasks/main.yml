@@ -62,3 +62,8 @@
     name: '{{ ICOMMANDS_URL }}'
   when: ansible_distribution == "CentOS"
   tags: icommands-setup
+
+- name: remove irodsFs
+  file:
+    path: /usr/bin/irodsFs
+    state: absent

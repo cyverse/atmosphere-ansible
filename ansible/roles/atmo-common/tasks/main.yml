@@ -159,11 +159,6 @@
   file: path={{ RC_LOCAL_ATMO }} state=absent
   failed_when: False
 
-- name: remove irodsFs
-  file:
-    path: /usr/bin/irodsFs
-    state: absent
-
 - name: load modules
   modprobe: name={{ item }} state=present
   with_items: MODULES_TO_LOAD
