@@ -10,14 +10,6 @@
     - vars
     - icommands-setup
 
-- name: Install FUSE dependencies for CentOS
-  yum: name={{ item }}
-  with_items:
-    - fuse
-    - fuse-libs
-  when: (ansible_distribution == "CentOS")
-  tags: icommands-setup
-
 - name: Delete old irodsFs and iCommands executables
   file: path={{ item }} state=absent
   with_items:
@@ -71,7 +63,7 @@
   when: ansible_distribution == "CentOS"
   tags: icommands-setup
 
-- name: fix permissions on /etc/fuse.conf
+- name: remove irodsFs
   file:
-    path: /etc/fuse.conf
-    mode: 0755
+    path: /usr/bin/irodsFs
+    state: absent

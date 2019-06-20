@@ -18,8 +18,6 @@ PACKAGES:
   - nss-tools
   - nss-devel.x86_64
   - patch
-  - fuse
-  - fuse-devel.x86_64
   - python
   - python-ldap
   - unzip
