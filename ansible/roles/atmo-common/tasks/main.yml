@@ -165,12 +165,6 @@
   when: MODULES_TO_LOAD is defined
   failed_when: False
 
-- name: copy fuse conf file over
-  copy: src=fuse.conf dest=/etc/fuse.conf
-
-- name: change fusermount permissions
-  file: path=/bin/fusermount state=touch mode="u+s,a+rx"
-
 - name: make sure ssh directory exists
   file: path=/root/.ssh/ state=directory mode="0700"
 

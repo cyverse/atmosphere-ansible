@@ -10,7 +10,6 @@ PACKAGES:
   - python-ldap
   - python-software-properties
   - python-httplib2
-  - libfuse2
   - tmux
   - screen
   - autoconf
@@ -20,8 +19,6 @@ PACKAGES:
   - tcsh
   - zsh
   - mosh
-  - fuse-utils
-  - fuse
   - git
   - ansible
 
