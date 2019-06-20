@@ -33,6 +33,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Changed
   - Only use Gateone if Guacamole is disabled
     ([#170](https://github.com/cyverse/atmosphere-ansible/pull/170))
+  - Remove FUSE and irodsFs
+    ([#172](https://github.com/cyverse/atmosphere-ansible/pull/172))
 
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
 ### Fixed
