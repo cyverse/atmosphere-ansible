@@ -171,6 +171,7 @@ cow_selection = {{ ANSIBLE_COW_SELECTION }}
 # current IP information.
 
 fact_caching = {{ ANSIBLE_FACT_CACHE_BACKEND }}
+fact_caching_connection = {{ ANSIBLE_REDIS_HOST }}:6379
 # 24 hours of fact caching
 fact_caching_timeout = {{ ANSIBLE_FACT_CACHE_TIMEOUT }}
 
