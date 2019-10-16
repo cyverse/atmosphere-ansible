@@ -32,6 +32,7 @@
         pkg: "{{ item }}"
       with_items: "{{ irods_files }}"
       when: ansible_distribution == "CentOS"
+      ignore_errors: True
 
     - name: Install iRods on Ubuntu
       apt:
@@ -39,6 +40,7 @@
         deb: "{{ item }}"
       with_items: "{{ irods_files }}"
       when: ansible_distribution == "Ubuntu"
+      ignore_errors: True
 
     - name: Create ~/.irods directory
       file:
