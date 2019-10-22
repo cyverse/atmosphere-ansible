@@ -23,6 +23,7 @@ PACKAGES:
   - qemu-guest-agent
   - git
   - ansible
+  - lsof
 
 SYSLOG_SERVICE_NAME: rsyslog
 
