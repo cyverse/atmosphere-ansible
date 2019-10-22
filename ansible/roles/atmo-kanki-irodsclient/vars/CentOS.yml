@@ -11,6 +11,5 @@ dependencies:
   - qt5-qtbase-devel
 
 irods_files:
-  - https://files.renci.org/pub/irods/releases/4.1.9/centos6/irods-dev-4.1.9-centos6-x86_64.rpm
-  - https://files.renci.org/pub/irods/releases/4.1.9/centos6/irods-icommands-4.1.9-centos6-x86_64.rpm
-  - https://files.renci.org/pub/irods/releases/4.1.9/centos6/irods-runtime-4.1.9-centos6-x86_64.rpm
+  - https://files.renci.org/pub/irods/releases/4.1.11/centos6/irods-dev-4.1.11-centos6-x86_64.rpm
+  - https://files.renci.org/pub/irods/releases/4.1.11/centos6/irods-runtime-4.1.11-centos6-x86_64.rpm

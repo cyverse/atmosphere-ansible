@@ -35,6 +35,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
     ([#170](https://github.com/cyverse/atmosphere-ansible/pull/170))
   - Remove FUSE and irodsFs
     ([#172](https://github.com/cyverse/atmosphere-ansible/pull/172))
+  - Removed AWS links for irods-commands packages; now reference renci
+  - Ignore failure of package install in kanki ansible package
   - Add lsof to cent 6 packages within atmo-common role
 
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
