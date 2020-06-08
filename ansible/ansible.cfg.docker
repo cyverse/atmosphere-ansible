@@ -2,3 +2,7 @@
 [defaults]
 roles_path        = /opt/atmosphere-ansible/roles
 host_key_checking = False
+forks          = 30
+
+[ssh_connection]
+pipelining = True
