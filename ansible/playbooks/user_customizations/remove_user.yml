@@ -1,6 +1,6 @@
 ---
 
 - name: Remove a user from the instance
-  hosts: atmosphere
+  hosts: all
   roles:
     - { role: remove-user, when: USERSSHKEYS is defined and ATMOUSERNAME is defined }

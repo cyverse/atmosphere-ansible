@@ -1,0 +1,3 @@
+# Note: the syntax of this ansible.cfg was taken from v2.5.1
+[defaults]
+roles_path    = /opt/atmosphere-ansible/roles

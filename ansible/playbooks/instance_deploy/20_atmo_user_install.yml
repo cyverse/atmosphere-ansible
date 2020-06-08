@@ -1,6 +1,6 @@
 ---
 - name: Playbook will call roles associated with 'bootstrapping' atmosphere and the LINUX USERNAME
-  hosts: atmosphere
+  hosts: all
   roles:
     - atmo-common
     - atmo-setup-user

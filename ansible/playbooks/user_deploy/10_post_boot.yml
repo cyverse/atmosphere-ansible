@@ -1,5 +1,5 @@
 ---
 - name: Playbook to run atmosphere post boot scripts
-  hosts: atmosphere
+  hosts: all
   roles:
     - atmo-user-deployment-scripts
