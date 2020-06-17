@@ -1,0 +1,78 @@
+---
+- name: Playbook will configure SSH for ansible deployments
+  hosts: all
+  gather_facts: false
+  roles:
+    - atmo-ssh-setup
+---
+- name: Playbook updates package manager and installs atmosphere dependencies
+  hosts: all
+  roles:
+    - atmo-pre-setup
+    - fix-centos6-networking
+    - atmo-ntp
+    - { role: atmo-dhcp, when: SETUP_DHCP_CLIENT is defined and SETUP_DHCP_CLIENT == true }
+    - { role: ldap, when: SETUP_LDAP is defined and SETUP_LDAP == true }
+    - atmo-fail2ban
+---
+- name: Playbook to set up local user accounts
+  hosts: all
+  roles:
+    - { role: 'atmo-local-user-account', when: '(SETUP_LDAP is not defined) or (SETUP_LDAP|bool != true) or (SETUP_LOCAL_USER_ACCOUNT is defined and SETUP_LOCAL_USER_ACCOUNT|bool == true)' }
+---
+- name: Playbook will call roles associated with 'bootstrapping' atmosphere and the LINUX USERNAME
+  hosts: all
+  roles:
+    - atmo-common
+    - atmo-setup-user
+---
+# Requires ATMOUSERNAME and VNCLICENSE
+- name: Playbook lists roles that should be executed after ATMOUSERNAME has been created
+  hosts: all
+  roles:
+    - { role: atmo-fail2ban, when: true }
+    - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
+#    - { role: atmo-kanki-irodsclient, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
+    - atmo-gui-tweaks
+    - { role: atmo-vnc, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
+    - { role: atmo-backup, when: SETUP_ATMO_BACKUP is defined and SETUP_ATMO_BACKUP == true }
+    - atmo-cleanup
+    - atmo-ephemeral-mount
+---
+- name: Enable ssh access from gateone shell host into user vm
+  hosts: all
+  vars:
+    EXTERNAL_HOST_KEY_NAME: "id_rsa_gateone"
+    EXTERNAL_HOST_KEY_DIR: "/var/lib/gateone/users/{{ ATMOUSERNAME }}/.ssh"
+    EXTERNAL_HOST_KEY_OWNER: root
+    EXTERNAL_HOST_KEY_GROUP: root
+    EXTERNAL_HOST: "shell"
+    USERNAME: "{{ ATMOUSERNAME }}"
+  roles:
+    - { role: "sshkey-host-access", when: (SETUP_GUACAMOLE | default(true)) == false }
+  tasks:
+    # Gateone reads this file in the gatone user ssh directory, and uses each
+    # identity found there when it tries to open an SSH connection from the
+    # gateone server to the user's vm
+    - name: Add the key name to gateones .default_ids
+      lineinfile:
+        dest: "{{ EXTERNAL_HOST_KEY_DIR }}/.default_ids"
+        line: "{{ EXTERNAL_HOST_KEY_NAME }}"
+        create: yes
+        state: present
+        owner: "{{ EXTERNAL_HOST_KEY_OWNER }}"
+        group: "{{ EXTERNAL_HOST_KEY_GROUP }}"
+      delegate_to: "{{ EXTERNAL_HOST }}"
+      when: (SETUP_GUACAMOLE | default(true)) == false
+
+- name: Enable ssh access from guac_server host into user vm
+  hosts: all
+  vars:
+    EXTERNAL_HOST_KEY_DIR: "/etc/guacamole/keys/{{ ATMOUSERNAME }}"
+    EXTERNAL_HOST_KEY_OWNER: tomcat7
+    EXTERNAL_HOST_KEY_GROUP: tomcat7
+    EXTERNAL_HOST_KEY_NAME: "id_rsa_guac"
+    EXTERNAL_HOST: "guac_server"
+    USERNAME: "{{ ATMOUSERNAME }}"
+  roles:
+    - { role: "sshkey-host-access", when: (SETUP_GUACAMOLE | default(true)) == true }
