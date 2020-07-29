@@ -33,7 +33,7 @@ get_hostname() {
 reverse_lookup ()  {
   if [ -n "$1" ]; then
     local ip=$1
-    local htemp=$(dig -x $ip +short)
+    local htemp=$(dig -x $ip +short|head -1)
     echo $(date +"%m%d%y %H:%M:%S") "	   DEBUG: hostname returned from dig = $htemp" >> $LOG
     if [ $? -eq 0 -a -n "$htemp" ]; then
       hostname_value=$(echo $htemp | sed 's/\.$//')
