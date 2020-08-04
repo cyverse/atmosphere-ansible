@@ -30,6 +30,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
   - changed https to http for irods-icommands packages in vars
   - Added minimal support for centos 8
+  - Fixed bare has_gui boolean to be true boolean
+
+### Removed
+  - Removed kanki and novnc installation
+  - Removed duplicate atmo-fail2ban role
 
 ### Changed
   - Only use Gateone if Guacamole is disabled
@@ -39,6 +44,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Removed AWS links for irods-commands packages; now reference renci
   - Ignore failure of package install in kanki ansible package
   - Add lsof to cent 6 packages within atmo-common role
+  - Centralized the package installs and removals into one role, rather than scattered across various roles
+  - Added new variable PACKAGE_NO_UPDATES, to control cache and package updating
 
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
 ### Fixed

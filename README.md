@@ -40,6 +40,7 @@ Enable these optional configurations by setting the corresponding variable to `t
 
 | **Variable**             | **Purpose**                                               |
 |--------------------------|-----------------------------------------------------------|
+| PACKAGE_NO_UPDATES       | Disables package cache updates and latest installs; only checks that packages are present |
 | SETUP_DHCP_CLIENT        | DHCP client                                               |
 | SETUP_LDAP               | LDAP client for user authentication                       |
 | SETUP_LOCAL_USER_ACCOUNT | Local user account (always runs when SETUP_LDAP not true) |
