@@ -4,23 +4,6 @@ SSHD: sshd
 
 RC_LOCAL_ATMO: /etc/rc.d/rc.local.atmo
 
-PACKAGES:
-  - epel-release
-  - python26
-  - zsh
-  - tmux
-  - screen
-  - autoconf
-  - gcc
-  - make
-  - tcsh
-  - nss_ldap
-  - patch
-  - python
-  - python-ldap
-  - git
-  - ansible
-
 SYSLOG_SERVICE_NAME: syslog
 
 # Add modules to be loaded here

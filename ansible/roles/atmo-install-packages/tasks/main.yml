@@ -1,0 +1,89 @@
+# TODO: do we need yum clean metadata??
+# TODO: do we need yum check-update??
+- name: INCLUDE_VARS; gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+- name: APT_REPOSITORY; for ubuntu, add the ansible official repo before installing packages
+  apt_repository:
+    repo: 'ppa:ansible/ansible'
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+# Note: per some discussions, it's better to pass package names as arrays rather than iterate e.g. loop 
+
+- name: PACKAGES; uninstall specific packages
+  package:
+    name: "{{ PACKAGES_PRE_REMOVE }}"
+    state: absent
+  when: PACKAGES_PRE_REMOVE.0 is defined
+
+  #####
+  # CHECK for PACKAGE_NO_UPDATES
+  #####
+- name: SET_FACT; set the PACKAGE_INSTALL_STATE
+  set_fact:
+    PACKAGE_INSTALL_STATE: "{{ 'present' if PACKAGE_NO_UPDATES is defined and PACKAGE_NO_UPDATES == true else 'latest' }}"
+
+- name: DEBUG; echoing the current PACKAGE_INSTALL_STATE
+  debug:
+    msg: "package install state will be {{ PACKAGE_INSTALL_STATE }}"
+
+  #####
+  # BUILD THE PACKAGE_INSTALL VARIABLE
+  #####
+- name: SET_FACT; set PACKAGES_INSTALL = PACKAGES_COMMON
+  set_fact:
+    PACKAGES_INSTALL: "{{ PACKAGES_COMMON }}"
+
+- name: SET_FACT; merge atmo-dhcp role packages
+  set_fact:
+    PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_DHCP }}"
+  when: SETUP_DHCP_CLIENT is defined and SETUP_DHCP_CLIENT == true and PACKAGES_DHCP is defined
+
+- name: SET_FACT; merge atmo-ntp role packages
+  set_fact:
+    PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_NTP }}"
+  when: PACKAGES_NTP is defined
+
+- name: SET_FACT; merge ldap role packages
+  set_fact:
+    PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_LDAP }}"
+  when: SETUP_LDAP is defined and SETUP_LDAP == true and PACKAGES_LDAP is defined
+
+  #####
+  # INSTALL PREINSTALL PACKAGES, THEN PACKAGES
+  #####
+- name: PACKAGES; install preliminary packages
+  package:
+    name: "{{ PACKAGES_PREINSTALL }}"
+    state: "{{ PACKAGE_INSTALL_STATE }}"
+  when: PACKAGES_PREINSTALL is defined and PACKAGES_PREINSTALL.0 is defined
+
+  # updates cache after, since epel is installed for epel as a preinstall
+- block:
+  - name: SHELL; centos yum check-update - checks for updates, updates is a later task
+    shell: yum check-update
+    args:
+      warn: false
+    failed_when: false
+    when: ansible_distribution == "CentOS"
+
+  - name: YUM; centos install security updates
+    yum:
+      security: yes
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: APT; Ubuntu update cache
+    apt:
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+  when: PACKAGE_NO_UPDATES is undefined or PACKAGE_NO_UPDATES == false
+  
+- name: PACKAGES; install distro specific packages
+  package:
+    name: "{{ PACKAGES_INSTALL }}"
+    state: "{{ PACKAGE_INSTALL_STATE }}"

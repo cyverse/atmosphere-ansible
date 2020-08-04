@@ -1,5 +1,0 @@
-# This should only be called for CentOS systems after a repo change
-- name: yum clean metadata
-  command: yum clean metadata
-  args:
-    warn: no

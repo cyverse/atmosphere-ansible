@@ -1,9 +1,5 @@
 ---
 
-PACKAGE:
-  to_remove:
-    - firewalld
-
 PROCESSES:
   to_kill:
     #- xscreensaver

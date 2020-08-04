@@ -32,6 +32,7 @@
   - include: guacamole.yml
     when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true
 
-  - include: novnc.yml
-    when: SETUP_NOVNC is defined and SETUP_NOVNC == true
-  when: has_gui
+# TODO: remove novnc completely as it has been deprecated
+#  - include: novnc.yml
+#    when: SETUP_NOVNC is defined and SETUP_NOVNC == true
+  when: has_gui|bool

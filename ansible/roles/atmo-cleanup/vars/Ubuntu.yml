@@ -1,9 +1,5 @@
 ---
 
-PACKAGE:
-  to_remove:
-    - xscreensaver
-
 PROCESSES:
   to_kill:
     - xscreensaver

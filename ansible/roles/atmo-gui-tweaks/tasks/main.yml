@@ -32,18 +32,18 @@
   include: 'install-browser.yml'
   ignore_errors: yes
   when:
-    - has_gui
+    - has_gui|bool
     - SETUP_GUI_BROWSER is defined and SETUP_GUI_BROWSER == true
 
 - name: install new terminal
   include: 'terminal.yml'
   ignore_errors: yes
   when:
-    - has_gui
+    - has_gui|bool
 
 - name: set desktop background
   include: 'desktop-background.yml'
   ignore_errors: yes
   when:
-    - has_gui
+    - has_gui|bool
     - SET_DESKTOP_BACKGROUND is defined and SET_DESKTOP_BACKGROUND == true
