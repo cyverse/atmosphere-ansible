@@ -23,4 +23,4 @@
 - name: SET_FACT; merge terminal_application into the PACKAGES_INSTALL
   set_fact:
       PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + [ terminal_application ] }}"
-    when: terminal_application is defined
+  when: terminal_application is defined
