@@ -34,6 +34,10 @@ PACKAGES_REALVNC:
 - xterm
 - xorg-x11-xauth
 
+# ROLE atmo-gui-tweaks
+PACKAGES_GUI_TWEAKS:
+- firefox
+
 PACKAGES_COMMON:
 - curl
 - fail2ban
@@ -55,3 +59,7 @@ PACKAGES_COMMON:
 - git
 - ansible
 - lsof
+
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/Xorg

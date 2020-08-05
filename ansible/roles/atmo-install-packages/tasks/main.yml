@@ -1,11 +1,29 @@
-# TODO: do we need yum clean metadata??
-# TODO: do we need yum check-update??
 - name: INCLUDE_VARS; gather os specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
+  #####
+  # This is needed to detect gui
+  #####
+- name: Verify that X server exists
+  stat:
+    path: '{{ XGUI.xsession_path }}'
+  register: xsession
+
+- name: Verify that xterm session exists
+  stat:
+    path: '{{ XGUI.xterm_path }}'
+  register: xterm
+
+- name: Set flag for GUI systems
+  set_fact:
+    HAS_GUI: '{{ xsession.stat.exists and xterm.stat.exists }}'
+
+  #####
+  # For Ubuntu, add ansible ppa
+  #####
 - name: APT_REPOSITORY; for ubuntu, add the ansible official repo before installing packages
   apt_repository:
     repo: 'ppa:ansible/ansible'
@@ -13,7 +31,6 @@
   when: ansible_distribution == "Ubuntu"
 
 # Note: per some discussions, it's better to pass package names as arrays rather than iterate e.g. loop 
-
 - name: PACKAGES; uninstall specific packages
   package:
     name: "{{ PACKAGES_PRE_REMOVE }}"
@@ -52,6 +69,24 @@
   set_fact:
     PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_LDAP }}"
   when: SETUP_LDAP is defined and SETUP_LDAP == true and PACKAGES_LDAP is defined
+
+  # These variables are only necessary for gui-based vms
+- block:
+
+  - name: SET_FACT; merge atmo-vnc role packages
+    set_fact:
+      PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_REALVNC }}"
+    when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true
+
+  - name: SET_FACT; merge atmo-gui-tweaks role packages
+    set_fact:
+      PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + PACKAGES_GUI_TWEAKS }}"
+    when: SETUP_GUI_BROWSER is defined and SETUP_GUI_BROWSER == true
+
+  # call out to another file to include the proper terminal
+  - include: 'terminal.yml'
+
+  when: HAS_GUI|bool
 
   #####
   # INSTALL PREINSTALL PACKAGES, THEN PACKAGES

@@ -1,0 +1,26 @@
+---
+
+- name: STAT; check if XFCE is desktop environment
+  stat:
+    path: '/usr/bin/xfce4-session'
+  register: xfce_result
+
+- name: SET_FACT; desktop environment is XFCE
+  set_fact:
+    terminal_application: 'xfce4-terminal'
+  when: xfce_result.stat.exists
+
+- name: STAT; check if Gnome is desktop environment
+  stat:
+    path: '/usr/bin/gnome-session'
+  register: gnome_result
+
+- name: SET_FACT; desktop environment is Gnome
+  set_fact:
+    terminal_application: 'gnome-terminal'
+  when: gnome_result.stat.exists
+
+- name: SET_FACT; merge terminal_application into the PACKAGES_INSTALL
+  set_fact:
+      PACKAGES_INSTALL: "{{ PACKAGES_INSTALL + [ terminal_application ] }}"
+    when: terminal_application is defined

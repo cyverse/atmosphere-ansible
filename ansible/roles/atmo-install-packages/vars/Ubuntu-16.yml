@@ -36,6 +36,10 @@ PACKAGES_REALVNC:
 - libc6-dev
 - libc6
 
+# ROLE atmo-gui-tweaks
+PACKAGES_GUI_TWEAKS:
+- firefox
+
 PACKAGES_COMMON:
 - curl
 - fail2ban
@@ -56,3 +60,7 @@ PACKAGES_COMMON:
 - qemu-guest-agent
 - git
 - ansible
+
+XGUI:
+  xsession_path: /usr/bin/X
+  xterm_path: /usr/bin/xinit
