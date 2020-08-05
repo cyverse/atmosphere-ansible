@@ -35,6 +35,10 @@
   package:
     name: "{{ PACKAGES_PRE_REMOVE }}"
     state: absent
+  register: result
+  until: result is success
+  retries: "{{ PACKAGE_RETRIES }}"
+  delay: "{{ PACKAGE_DELAY }}"
   when: PACKAGES_PRE_REMOVE.0 is defined
 
   #####
@@ -95,6 +99,10 @@
   package:
     name: "{{ PACKAGES_PREINSTALL }}"
     state: "{{ PACKAGE_INSTALL_STATE }}"
+  register: result
+  until: result is success
+  retries: "{{ PACKAGE_RETRIES }}"
+  delay: "{{ PACKAGE_DELAY }}"
   when: PACKAGES_PREINSTALL is defined and PACKAGES_PREINSTALL.0 is defined
 
   # updates cache after, since epel is installed for epel as a preinstall
@@ -122,3 +130,7 @@
   package:
     name: "{{ PACKAGES_INSTALL }}"
     state: "{{ PACKAGE_INSTALL_STATE }}"
+  register: result
+  until: result is success
+  retries: "{{ PACKAGE_RETRIES }}"
+  delay: "{{ PACKAGE_DELAY }}"

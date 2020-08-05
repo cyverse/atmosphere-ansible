@@ -1,0 +1,3 @@
+#Note: this is actually 6 attempts (the original attempt + PACKAGE_RETRIES attempts)
+PACKAGE_RETRIES: 5
+PACKAGE_DELAY: 20

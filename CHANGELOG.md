@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Added Dockerfile to build a docker image and and ansible.cfg.docker to go along with the Dockerfile
   - Centralized the package installs and removals into one role, rather than scattered across various roles
   - Added new variable PACKAGE_NO_UPDATES, to control cache and package updating
+  - Added two variables PACKAGE_RETRIES and PACKAGE_DELAY, one for the number of additional attempts to retry package install (in case there is another process locking the package manager) and the latter to specify the amount of time in seconds before a retry
 
 ### Fixed
   - Fix slow iRods Fuse performance

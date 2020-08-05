@@ -41,6 +41,8 @@ Enable these optional configurations by setting the corresponding variable to `t
 | **Variable**             | **Purpose**                                               |
 |--------------------------|-----------------------------------------------------------|
 | PACKAGE_NO_UPDATES       | Disables package cache updates and latest installs; only checks that packages are present |
+| PACKAGE_RETRIES          | Number of additional attempts to retry installing packages (total attempts is +1 to this number (default is 6) |
+| PACKAGE_DELAY            | Number of seconds between each PACKAGE_RETRIES (default is 20) |
 | SETUP_DHCP_CLIENT        | DHCP client                                               |
 | SETUP_LDAP               | LDAP client for user authentication                       |
 | SETUP_LOCAL_USER_ACCOUNT | Local user account (always runs when SETUP_LDAP not true) |
