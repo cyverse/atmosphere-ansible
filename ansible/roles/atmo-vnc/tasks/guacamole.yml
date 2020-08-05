@@ -16,6 +16,7 @@
   template:
     src: 'config.guac.j2'
     dest: '/home/{{ ATMOUSERNAME }}/.vnc/config.guac'
+    owner: '{{ ATMOUSERNAME }}'	
 
 - name: Check if vnc is already running
   command: lsof -i :5905
