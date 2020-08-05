@@ -1,6 +1,6 @@
 ---
 - name: Playbook updates package manager and installs atmosphere dependencies
-  hosts: atmosphere
+  hosts: all
   roles:
     - fix-centos6-networking
     - { role: atmo-ntp, when: ansible_distribution == "Ubuntu" or (ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 8) }

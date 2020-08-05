@@ -12,6 +12,6 @@
       when: src is not defined
 
 - name: Playbook to unmount a volume
-  hosts: atmosphere
+  hosts: all
   roles:
     - unmount-volume

@@ -16,6 +16,6 @@
 
 
 - name: Play to ensure filesystem is present before mounting
-  hosts: atmosphere
+  hosts: all
   roles:
     - atmo-mkfs-volume

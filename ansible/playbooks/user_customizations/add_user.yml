@@ -1,6 +1,6 @@
 ---
 
 - name: Add a user to the instance
-  hosts: atmosphere
+  hosts: all
   roles:
     - { role: add-user, when: USERSSHKEYS is defined and ATMOUSERNAME is defined }

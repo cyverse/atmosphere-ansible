@@ -25,27 +25,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 -->
 
 ## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v34-1...HEAD) - YYYY-MM-DD
+### Added
+  - Added minimal support for centos 8
+  - Add lsof to cent 6 packages within atmo-common role
+  - Added Dockerfile to build a docker image and and ansible.cfg.docker to go along with the Dockerfile
+  - Centralized the package installs and removals into one role, rather than scattered across various roles
+  - Added new variable PACKAGE_NO_UPDATES, to control cache and package updating
+
 ### Fixed
   - Fix slow iRods Fuse performance
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
-  - changed https to http for irods-icommands packages in vars
-  - Added minimal support for centos 8
   - Fixed bare has_gui boolean to be true boolean
-
-### Removed
-  - Removed kanki and novnc installation
-  - Removed duplicate atmo-fail2ban role
 
 ### Changed
   - Only use Gateone if Guacamole is disabled
     ([#170](https://github.com/cyverse/atmosphere-ansible/pull/170))
+  - Ignore failure of package install in kanki ansible package
+  - changed https to http for irods-icommands packages in vars
+
+### Removed
   - Remove FUSE and irodsFs
     ([#172](https://github.com/cyverse/atmosphere-ansible/pull/172))
   - Removed AWS links for irods-commands packages; now reference renci
-  - Ignore failure of package install in kanki ansible package
-  - Add lsof to cent 6 packages within atmo-common role
-  - Centralized the package installs and removals into one role, rather than scattered across various roles
-  - Added new variable PACKAGE_NO_UPDATES, to control cache and package updating
+  - Removed kanki and novnc installation
+  - Removed duplicate atmo-fail2ban role
 
 ## [v34-1](https://github.com/cyverse/atmosphere-ansible/compare/v34-0...v34-1) - 2018-09-18
 ### Fixed

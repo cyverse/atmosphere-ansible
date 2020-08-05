@@ -39,12 +39,6 @@
   tags:
     - vnc
 
-#- debug: var={{ item }}
-#  with_items:
-#    - xsession
-#    - xterm
-#    - vnc_state
-
 - name: fail if OS does not contain a GUI
   fail: msg="OS does NOT have a GUI for VNC to run on."
   when: not (xsession.stat.exists and xterm.stat.exists)

@@ -1,6 +1,6 @@
 ---
 - name: Playbook will configure SSH for ansible deployments
-  hosts: atmosphere
+  hosts: all
   gather_facts: false
   roles:
     - atmo-ssh-setup
