@@ -7,7 +7,6 @@
     - "{{ ansible_distribution }}.yml"
   tags: os-vars
 
-# EJS TBD INVESTIGATE OR CHANGE
 - name: remove non-required packages
   action: >
     {{ ansible_pkg_mgr }} name={{ item }} state=absent

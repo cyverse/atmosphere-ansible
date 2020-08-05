@@ -5,7 +5,7 @@
   roles:
     - { role: atmo-fail2ban, when: true }
     - { role: irods-icommands, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
-#    - { role: atmo-kanki-irodsclient, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
+    - { role: atmo-kanki-irodsclient, when: SETUP_IRODS_ICOMMANDS is defined and SETUP_IRODS_ICOMMANDS == true }
     - atmo-gui-tweaks
     - { role: atmo-vnc, when: SETUP_REALVNC_SERVER is defined and SETUP_REALVNC_SERVER == true }
     - { role: atmo-backup, when: SETUP_ATMO_BACKUP is defined and SETUP_ATMO_BACKUP == true }
