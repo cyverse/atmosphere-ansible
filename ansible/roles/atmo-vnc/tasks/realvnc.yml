@@ -8,10 +8,11 @@
 
 - name: Remove old vnc packages
   package:
-    name: 
+    name: "{{ item }}"
+    state: absent
+  with_items:
     - tightvncserver
     - tigervnc-server
-    state: absent
 
 - name: create needed directories
   file:
@@ -23,10 +24,10 @@
 
 - name: install the dependencies for vncserver
   package:
-    name: '{{ XGUI.vnc_dependencies }}'
+    name: '{{ item }}'
     state: present
+  with_items: '{{ XGUI.vnc_dependencies }}'
 
-# EJS TBD REWRITE
 - name: Install/remove extra package if Ubuntu 12
   apt:
     name: '{{ item.NAME }}'
@@ -54,11 +55,12 @@
 
 - name: install the package for vncserver if CentOS
   yum:
-    name:
-    - 'xorg-x11-xauth'
-    - '/tmp/{{ vncserver_pkg }}'
+    name: '{{ item }}'
     state: present
     disable_gpg_check: '{{XGUI.disable_gpg_check}}'
+  with_items:
+    - 'xorg-x11-xauth'
+    - '/tmp/{{ vncserver_pkg }}'
   when: (ansible_distribution == "CentOS")
 
 - name: install the package for vncserver if Ubuntu

@@ -18,8 +18,9 @@
 
 - name: install dependencies
   package:
-    name: '{{ PACKAGES }}'
+    name: '{{ item }}'
     state: 'present'
+  with_items: '{{ PACKAGES }}'
   tags: install
 
 ############
@@ -34,14 +35,6 @@
   template: src=etc_timezone.j2 dest=/etc/timezone
   tags:
     - timezone
-
-# noop since this only does an export
-#- name: update timezone manually
-#  become_user: '{{ item }}'
-#  shell: 'export TZ={{ TIMEZONE }}'
-#  with_items:
-#    - root
-#    - "{{ ATMOUSERNAME }}"
 
 - name: Update timezone
   file: src={{ ZONEINFO }} dest=/etc/localtime owner=root group=root state=link

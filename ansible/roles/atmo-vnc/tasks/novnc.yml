@@ -8,8 +8,9 @@
 
 - name: novnc - remove conflicting packages
   package:
-    name: "{{ XGUI.packages_to_remove }}"
+    name: "{{ item }}"
     state: absent
+  with_items: "{{ XGUI.packages_to_remove }}"
 
 - name: novnc - unarchive novnc code base for legacy ubuntu systems
   unarchive:
