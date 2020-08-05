@@ -31,9 +31,9 @@
   # this will cause the handler to execute at this point, if pending rather than at the end of playbook
   - meta: flush_handlers
 
+  # for now, leave this in since ansible yum update-cache is super slow in older version of ansible
   - name: yum check-update
-    yum:
-      update_cache: yes
+    shell: yum check-update
     failed_when: False
     tags: update
 

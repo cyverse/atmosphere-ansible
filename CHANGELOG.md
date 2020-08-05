@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Fix slow iRods Fuse performance
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
   - changed https to http for irods-icommands packages in vars
+  - Added minimal support for centos 8
 
 ### Changed
   - Only use Gateone if Guacamole is disabled
