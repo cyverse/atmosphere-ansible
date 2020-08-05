@@ -36,13 +36,6 @@
   tags:
     - timezone
 
-- name: update timezone manually
-  become_user: '{{ item }}'
-  shell: 'export TZ={{ TIMEZONE }}'
-  with_items:
-    - root
-    - "{{ ATMOUSERNAME }}"
-
 - name: Update timezone
   file: src={{ ZONEINFO }} dest=/etc/localtime owner=root group=root state=link
   tags:

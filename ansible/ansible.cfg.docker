@@ -1,0 +1,8 @@
+# Note: the syntax of this ansible.cfg was taken from v2.5.1
+[defaults]
+roles_path        = /opt/atmosphere-ansible/roles
+host_key_checking = False
+forks          = 30
+
+[ssh_connection]
+pipelining = True
