@@ -116,6 +116,7 @@
 
   - name: YUM; centos install security updates
     yum:
+      name: "*"
       security: yes
       state: latest
     when: ansible_distribution == "CentOS"
