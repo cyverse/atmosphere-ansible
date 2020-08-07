@@ -42,7 +42,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Only use Gateone if Guacamole is disabled
     ([#170](https://github.com/cyverse/atmosphere-ansible/pull/170))
   - Ignore failure of package install in kanki ansible package
-  - changed https to http for irods-icommands packages in vars
+  - Changed https to http for irods-icommands packages in vars
+  - Updated Dockerfile to Ubuntu 20.04 and cleared package cache as part of the build
 
 ### Removed
   - Remove FUSE and irodsFs
