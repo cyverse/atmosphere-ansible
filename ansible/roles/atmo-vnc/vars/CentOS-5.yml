@@ -5,11 +5,6 @@ vncserver_pkg: 'VNC-Server-5.2.3-Linux-x64.rpm'
 XGUI:
   xsession_path: /usr/bin/xinit
   xterm_path: /usr/bin/xterm
-  vnc_dependencies:
-    - xterm
-    - git
-    - numpy
-    - openssl
   packages_to_remove:
     - vnc-server
   disable_gpg_check: yes

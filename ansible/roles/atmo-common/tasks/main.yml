@@ -7,22 +7,6 @@
     - "{{ ansible_distribution }}.yml"
   tags: vars
 
-###########
-# Install #
-###########
-- name: for ubuntu, add the ansible official repo before installing packages
-  apt_repository:
-    repo: 'ppa:ansible/ansible'
-    state: present
-  when: ansible_distribution == "Ubuntu"
-
-- name: install dependencies
-  package:
-    name: '{{ item }}'
-    state: 'present'
-  with_items: '{{ PACKAGES }}'
-  tags: install
-
 ############
 # Timezone #
 ############

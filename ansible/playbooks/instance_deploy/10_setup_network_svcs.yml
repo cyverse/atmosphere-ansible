@@ -1,0 +1,8 @@
+---
+- name: Playbook installs installs and configures network services
+  hosts: all
+  roles:
+    - fix-centos6-networking
+    - atmo-ntp
+    - { role: atmo-dhcp, when: SETUP_DHCP_CLIENT is defined and SETUP_DHCP_CLIENT == true }
+    - atmo-fail2ban

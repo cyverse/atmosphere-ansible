@@ -1,6 +1,0 @@
----
-
-- name: install browser
-  package:
-    name: firefox
-    state: latest

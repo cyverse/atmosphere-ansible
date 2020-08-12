@@ -11,32 +11,6 @@
     - vars
     - install
 
-- name: Test curl installed by package manager
-  package:
-    name: curl
-    state: present
-  register: package_result
-  failed_when: package_result.msg is defined and package_result.msg == "No package matching 'curl' is available"
-  tags:
-    - install
-
-- name: Test path to curl exists
-  shell: which curl
-  register: which_result
-  failed_when: False
-  tags:
-    - install
-
-- name: Fail if curl not installed
-  fail: msg="curl is not installed on the machine."
-  when: package_result.msg is defined and package_result.msg == "No package matching 'curl' is available" and which_result.rc != 0
-  tags:
-    - install
-
-- set_fact: curl_path=which_result.stdout
-  tags:
-    - install
-
 - name: sync time with hardware clock
   shell: hwclock -s
   ignore_errors: yes
@@ -51,20 +25,6 @@
   failed_when: False
   tags:
     - time
-
-- name: install ntp prep package(s)
-  package:
-    name: "{{ NTP_PREP_PACKAGE.name }}"
-    state: "{{ NTP_PREP_PACKAGE.state }}"
-  tags:
-    - install
-  when: NTP_PREP_PACKAGE is defined and NTP_PREP_PACKAGE.name != ""
-
-- name: install ntp package
-  action: >
-    {{ ansible_pkg_mgr }} name={{ NTP_PACKAGE.name }} state={{ NTP_PACKAGE.state }}
-  tags:
-    - install
 
 - name: stop ntp service
   action: >

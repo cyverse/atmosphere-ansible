@@ -7,13 +7,6 @@
     - "{{ ansible_distribution }}.yml"
   tags: os-vars
 
-- name: remove non-required packages
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=absent
-  with_items: '{{ PACKAGE.to_remove }}'
-  failed_when: False
-  tags: remove-packages
-
 - name: kill off non-needed processes
   shell: pkill {{ item }}
   with_items: '{{ PROCESSES.to_kill }}'
@@ -32,17 +25,3 @@
   with_items: '{{ SERVICES.disabled }}'
   failed_when: False
   tags: disable-services
-
-- name: Remove iDrop files
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /etc/skel/Desktop/idrop.desktop
-    - /etc/skel/Desktop/iDrop.desktop
-    - /home/{{ ATMOUSERNAME }}/Desktop/idrop.desktop
-    - /home/{{ ATMOUSERNAME }}/Desktop/iDrop.desktop
-    - /opt/idrop.tgz
-    - /opt/iDrop
-    - /opt/irodsidrop
-  tags: remove-idrop

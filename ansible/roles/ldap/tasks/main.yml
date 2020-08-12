@@ -18,23 +18,17 @@
   tags:
     - vars
 
-- name: install ldap packages
-  package:
-    name: '{{ item }}'
-    state: '{{ LDAP_PACKAGES.state }}'
-  with_items: "{{ LDAP_PACKAGES.packages }}"
-  tags:
-    - install
-
 ###########################
 # CentOS-5 specific tasks
 ##########################
+  # TODO REMOVE CENTOS 5
 - name: uninstall sssd
   yum: name={{ item }} state=absent
   with_items:
     - sssd
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
 
+  # TODO REMOVE CENTOS 5
 - name: run ldap authentication command
   shell: "{{ LDAP_AUTHCONFIG }}"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "5"
@@ -71,13 +65,6 @@
 ###########################
 # CentOS specific tasks
 ##########################
-
-- name: uninstall nslcd and nscd
-  yum: name={{ item }} state=absent
-  with_items:
-    - nslcd
-    - nscd
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version > '5'
 
 - name: run ldap authentication command
   shell: "{{ LDAP_AUTHCONFIG }}"

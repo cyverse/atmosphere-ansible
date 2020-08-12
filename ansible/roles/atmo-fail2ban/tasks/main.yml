@@ -11,34 +11,6 @@
     - '../vars/{{ ansible_distribution }}.yml'
     - '../vars/{{ ansible_os_family }}.yml'
 
-- name: 'denyhosts stopped and disabled'
-  service:
-    name: 'denyhosts'
-    state: 'stopped'
-    enabled: false
-  ignore_errors: true
-  failed_when: false
-
-- name: 'denyhosts uninstalled'
-  package:
-    name: 'denyhosts.noarch'
-    state: 'absent'
-  tags: 'denyhosts-uninstalled'
-
-- name: 'dependencies installed'
-  yum:
-    name: '{{ item }}'
-    state: 'present'
-  with_items: '{{ fail2ban_dependencies }}'
-  when: 'ansible_distribution == "CentOS"'
-  tags: 'dependencies-installed'
-
-- name: 'fail2ban installed'
-  package:
-    name: '{{ fail2ban_package_name }}'
-    state: present
-  tags: 'fail2ban-installed'
-
 - name: 'fail2ban local jails configured'
   template:
     src: '{{ item }}'

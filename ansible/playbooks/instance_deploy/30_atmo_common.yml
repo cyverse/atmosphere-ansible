@@ -3,4 +3,3 @@
   hosts: all
   roles:
     - atmo-common
-    - atmo-setup-user

@@ -4,25 +4,6 @@ SSHD: ssh
 
 RC_LOCAL_ATMO: /etc/rc.local.atmo
 
-PACKAGES:
-  - libfam0
-  - python
-  - python-ldap
-  - python-software-properties
-  - python-httplib2
-  - tmux
-  - screen
-  - autoconf
-  - gcc
-  - make
-  - patch
-  - tcsh
-  - zsh
-  - mosh
-  - qemu-guest-agent
-  - git
-  - ansible
-
 MODULES_TO_LOAD:
   - acpiphp
 

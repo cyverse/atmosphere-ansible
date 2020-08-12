@@ -1,0 +1,65 @@
+PACKAGES_PRE_REMOVE:
+- nslcd
+- nscd
+- denyhosts
+- irods-icommands
+- tightvncserver
+- tigervnc-server
+
+# These are packages that should be installed first
+PACKAGES_PREINSTALL:
+- epel-release
+
+# ROLE: atmo-dhcp
+PACKAGES_DHCP:
+- dhcp
+- bind-utils
+- python-simplejson
+
+# ROLE: atmo-ntp
+PACKAGES_NTP:
+- ntp
+
+# ROLE: ldap
+PACKAGES_LDAP:
+- pam
+- openldap
+- openssl
+- openssl-devel
+- sssd
+- oddjob-mkhomedir
+
+# ROLE: atmo-vnc, SETUP_REALVNC_SERVER
+PACKAGES_REALVNC:
+- xterm
+- xorg-x11-xauth
+
+# ROLE atmo-gui-tweaks
+PACKAGES_GUI_TWEAKS:
+- firefox
+
+PACKAGES_COMMON:
+- curl
+- fail2ban
+- libselinux-python
+- zsh
+- screen
+- autoconf
+- gcc
+- make
+- tcsh
+- nss
+- nss_db
+- nss-tools
+- nss-devel.x86_64
+- patch
+- python
+- python-ldap
+- qemu-guest-agent
+- git
+- ansible
+- lsof
+
+XGUI:
+  xsession_path: /usr/bin/xinit
+  xterm_path: /usr/bin/Xorg

@@ -1,0 +1,66 @@
+PACKAGES_PRE_REMOVE:
+# for fail2ban
+- denyhosts
+- irods-icommands
+- tightvncserver
+- tigervnc-server
+- xscreensaver
+
+PACKAGES_PREINSTALL: []
+
+# ROLE: atmo-dhcp
+PACKAGES_DHCP:
+- isc-dhcp-server
+- dnsutils
+- python-simplejson
+
+# ROLE: atmo-ntp
+PACKAGES_NTP:
+- ntp
+
+# ROLE: ldap
+PACKAGES_LDAP:
+- ldap-utils
+- libpam-ldap
+- libnss-ldapd
+- nss-updatedb
+- libnss-db
+- nslcd
+- nscd
+
+# ROLE: atmo-vnc, SETUP_REALVNC_SERVER
+PACKAGES_REALVNC:
+- libfam0
+- libxext-dev
+- libx11-dev
+- libc6-dev
+- libc6
+
+# ROLE atmo-gui-tweaks
+PACKAGES_GUI_TWEAKS:
+- firefox
+
+PACKAGES_COMMON:
+- curl
+- fail2ban
+- libfam0
+- python
+- python-ldap
+- python-software-properties
+- python-httplib2
+- tmux
+- screen
+- autoconf
+- gcc
+- make
+- patch
+- tcsh
+- zsh
+- mosh
+- qemu-guest-agent
+- git
+- ansible
+
+XGUI:
+  xsession_path: /usr/bin/X
+  xterm_path: /usr/bin/xinit
