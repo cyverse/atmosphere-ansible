@@ -24,7 +24,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - <in case of vulnerabilities>
 -->
 
-## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v34-1...HEAD) - YYYY-MM-DD
+## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v37-0...HEAD) - YYYY-MM-DD
+
+
+## [v37-0](https://github.com/cyverse/atmosphere-ansible/compare/v34-1...v37-0) - 2020-08-17
 ### Added
   - Added minimal support for centos 8
   - Add lsof to cent 6 packages within atmo-common role
