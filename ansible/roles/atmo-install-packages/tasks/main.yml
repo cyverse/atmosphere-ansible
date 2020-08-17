@@ -5,6 +5,20 @@
     - "{{ ansible_distribution }}.yml"
 
   #####
+  # This block is specifically needed to deal with Jetstream idiosyncrasies related to centos mirrors and dhclient warning
+  # If this is not done and if the vm is plagued with a dhcp, then package updates will fail :(
+  ####
+- name: FILE; ensure /var/log/atmo exists, needed for dhcp client script
+  file:
+    path: /var/log/atmo
+    state: directory
+    mode: '0755'
+
+- name: SHELL; added this hack for Centos 7+ --  dhclient ip release, sleep, then dhclient
+  shell: /usr/sbin/dhclient -r ; sleep 1; /usr/sbin/dhclient
+  when: DHCP_RESTART_ENABLE is defined and DHCP_RESTART_ENABLE|bool and ansible_distribution == 'CentOS' and ansible_distribution_major_version|int >= 7
+
+  #####
   # This is needed to detect gui
   #####
 - name: Verify that X server exists

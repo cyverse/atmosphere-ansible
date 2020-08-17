@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Fix slow iRods Fuse performance
     ([#168](https://github.com/cyverse/atmosphere-ansible/pull/168))
   - Fixed bare has_gui boolean to be true boolean
+  - Added a CentOS workaround of releasing dhcp ip address and renewing to deal with bad DNS servers (related to timeouts to mirrors timeouts)
 
 ### Changed
   - Only use Gateone if Guacamole is disabled
