@@ -1,2 +1,4 @@
 ---
 # defaults file for atmo-check-vnc
+
+SSH_PORT_TIMEOUT: 30 

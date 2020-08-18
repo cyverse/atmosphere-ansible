@@ -39,6 +39,28 @@
   tags:
     - vnc
 
+- name: check to see if novnc is installed
+  shell: "{{ CHECK_IF_PACKAGE_INSTALLED }}"
+  ignore_errors: yes
+  failed_when: False
+  register: novnc_state
+  tags:
+    - novnc
+
+- name: check to see if websockify is running
+  shell: /bin/ps aux | grep "websockify" | grep -v grep
+  ignore_errors: yes
+  failed_when: False
+  register: websockify_state
+  tags:
+    - novnc
+
+- name: Fail if novnc is not installed
+  action: >
+    {{ ansible_pkg_mgr }} name={{ NOVNC_PACKAGE }} state=present
+  tags:
+     - novnc  
+
 - name: fail if OS does not contain a GUI
   fail: msg="OS does NOT have a GUI for VNC to run on."
   when: not (xsession.stat.exists and xterm.stat.exists)
@@ -53,3 +75,27 @@
     - vnc
     - check-vnc
 
+- name: fail when novnc is not installed
+  fail: msg="novnc is not installed for user '{{ ATMOUSERNAME }}'"
+  when: novnc_state.stdout == ""
+  tags:
+    - novnc
+    - check-novnc
+
+- name: fail when websockify is not running
+  fail: msg="Websockify is not running for user '{{ ATMOUSERNAME }}'"
+  when: websockify_state.stdout == ""
+  tags:
+    - novnc
+    - check-novnc
+
+# disabled until further notice
+#- name: fail if shell can't talk to vm
+#  wait_for: >
+#    search_regex=OpenSSH
+#    port={{ ansible_port }}
+#    host={{ ansible_host }}
+#    delay=1
+#    timeout={{ SSH_PORT_TIMEOUT }}
+#  tags: gateone_networking_check
+#  delegate_to: shell
