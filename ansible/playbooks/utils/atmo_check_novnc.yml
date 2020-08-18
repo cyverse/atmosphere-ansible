@@ -2,4 +2,4 @@
 - name: Playbook to fail when VNC is not running
   hosts: all
   roles:
-    - { role: atmo-check-novnc, when: SETUP_NOVNC is defined and SETUP_NOVNC == true }
+    - { role: atmo-check-novnc, when: SETUP_GUACAMOLE is defined and SETUP_GUACAMOLE == true }

@@ -32,9 +32,7 @@
     - x
 
 - name: check to see if VNC server is running
-  shell: /bin/ps aux | /bin/grep "/usr/bin/Xvnc-core :1 -auth /home/{{ ATMOUSERNAME }}/" | /bin/grep -v grep
-  ignore_errors: yes
-  failed_when: False
+  shell: /bin/ps aux | /bin/grep "/usr/bin/Xvnc-core :5 -auth /home/{{ ATMOUSERNAME }}/" | /bin/grep -v grep
   register: vnc_state
   tags:
     - vnc
@@ -52,4 +50,3 @@
   tags:
     - vnc
     - check-vnc
-
