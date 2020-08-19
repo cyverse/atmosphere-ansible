@@ -4,10 +4,10 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
-  # this fixes error when apt update_cache error out due to clock out of sync
-  - name: sync time with hardware clock
-    shell: hwclock -s
-    ignore_errors: yes
+# this fixes error when apt update_cache error out due to clock out of sync
+- name: sync time with hardware clock
+  shell: hwclock -s
+  ignore_errors: yes
 
   #####
   # This block is specifically needed to deal with Jetstream idiosyncrasies related to centos mirrors and dhclient warning
