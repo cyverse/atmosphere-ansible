@@ -24,8 +24,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - <in case of vulnerabilities>
 -->
 
-## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v37-0...HEAD) - YYYY-MM-DD
+## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v37-1...HEAD) - YYYY-MM-DD
 
+## [v37-1](https://github.com/cyverse/atmosphere-ansible/compare/v37-0...v37-1) - 2020-08-18
+### Changed
+- moved atmo-check-novnc to disabled; and copied atmo-check-vnc to atmo-check-novnc to fix webdesktop
 
 ## [v37-0](https://github.com/cyverse/atmosphere-ansible/compare/v34-1...v37-0) - 2020-08-17
 ### Added
