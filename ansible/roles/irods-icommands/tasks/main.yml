@@ -39,6 +39,7 @@
     state: 'present'
     deb: '{{ ICOMMANDS_URL }}'
   when: ansible_distribution == "Ubuntu"
+  ignore_errors: yes
   tags: icommands-setup
 
 - name: Install iCommands for CentOS
@@ -46,6 +47,7 @@
     state: present
     name: '{{ ICOMMANDS_URL }}'
   when: ansible_distribution == "CentOS"
+  ignore_errors: yes
   tags: icommands-setup
 
 - name: remove irodsFs
