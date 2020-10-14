@@ -34,21 +34,21 @@
   with_items: "{{ home_dirs.stdout_lines }}"
   tags: icommands-setup
 
-#- name: Install iCommands for Ubuntu
-#  apt:
-#    state: 'present'
-#    deb: '{{ ICOMMANDS_URL }}'
-#  when: ansible_distribution == "Ubuntu"
-#  ignore_errors: yes
-#  tags: icommands-setup
+- name: Install iCommands for Ubuntu
+  apt:
+    state: 'present'
+    deb: '{{ ICOMMANDS_URL }}'
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: yes
+  tags: icommands-setup
 
-#- name: Install iCommands for CentOS
-#  yum:
-#    state: present
-#    name: '{{ ICOMMANDS_URL }}'
-#  when: ansible_distribution == "CentOS"
-#  ignore_errors: yes
-#  tags: icommands-setup
+- name: Install iCommands for CentOS
+  yum:
+    state: present
+    name: '{{ ICOMMANDS_URL }}'
+  when: ansible_distribution == "CentOS"
+  ignore_errors: yes
+  tags: icommands-setup
 
 - name: remove irodsFs
   file:
