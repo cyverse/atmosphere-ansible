@@ -25,6 +25,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 -->
 
 ## [Unreleased](https://github.com/cyverse/atmosphere-ansible/compare/v37-1...HEAD) - YYYY-MM-DD
+### Added
+  - Added support for Ubuntu 20.04
+
 ### Fixed
 - fix apt update_cache fail due to clock out of sync
 
