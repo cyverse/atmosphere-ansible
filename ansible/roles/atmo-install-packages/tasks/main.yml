@@ -47,7 +47,7 @@
   apt_repository:
     repo: 'ppa:ansible/ansible'
     state: present
-  when: ansible_distribution == "Ubuntu"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 18
 
 # Note: per some discussions, it's better to pass package names as arrays rather than iterate e.g. loop 
 - name: PACKAGES; uninstall specific packages

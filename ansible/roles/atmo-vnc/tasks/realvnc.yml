@@ -51,7 +51,6 @@
   apt:
     deb: "/tmp/{{ vncserver_pkg }}"
     state: present
-    update_cache: yes
   when: ansible_distribution == "Ubuntu"
 
 - name: Link RealVNC binary to vncserver binary

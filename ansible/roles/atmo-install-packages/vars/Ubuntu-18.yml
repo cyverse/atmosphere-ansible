@@ -12,7 +12,7 @@ PACKAGES_PREINSTALL: []
 PACKAGES_DHCP:
 - isc-dhcp-server
 - dnsutils
-- python3-simplejson
+- python-simplejson
 
 # ROLE: atmo-ntp
 PACKAGES_NTP:
@@ -44,10 +44,10 @@ PACKAGES_COMMON:
 - curl
 - fail2ban
 - libfam0
-- python3
-- python3-ldap
+- python
+- python-ldap
 - software-properties-common
-- python3-httplib2
+- python-httplib2
 - tmux
 - screen
 - autoconf
