@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - fix apt update_cache fail due to clock out of sync
+- fixed Ubuntu 14.04 regression
 
 ## [v37-1](https://github.com/cyverse/atmosphere-ansible/compare/v37-0...v37-1) - 2020-08-18
 ### Changed
