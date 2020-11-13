@@ -56,6 +56,19 @@
 
   when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"'
 
+- name: setup centos 8 firewalld to mirror that of centos 7 (ports 80,443,1024-65535)
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - 1024-65535/tcp
+    - 80/tcp
+    - 443/tcp
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int >= 8
+
 - name: 'sshd.log created'
   file:
     path: '/var/log/sshd.log'

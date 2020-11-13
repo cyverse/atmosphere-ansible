@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
   - Added support for Ubuntu 20.04
 
 ### Fixed
+- fixed centos 8 firewalld, opened ports 80,443,1024-65535/tcp
 - fix apt update_cache fail due to clock out of sync
 - fixed Ubuntu 14.04 regression
 
