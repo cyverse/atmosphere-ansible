@@ -16,7 +16,7 @@
 
     - name: Generate the keypair
       command: >
-        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -f {{ EXTERNAL_HOST_KEY_DIR }}/{{ EXTERNAL_HOST_KEY_NAME }} -C {{ USERNAME }}
+        /usr/bin/ssh-keygen -N '' -t rsa -b 2048 -m PEM -f {{ EXTERNAL_HOST_KEY_DIR }}/{{ EXTERNAL_HOST_KEY_NAME }} -C {{ USERNAME }}
       when: existing_key.stat.exists == False
 
     - name: Set the permissions on the private key file
