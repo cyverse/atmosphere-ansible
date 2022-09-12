@@ -1,3 +1,5 @@
+# THIS REPOSITORY IS READONLY AND NO LONGER ACTIVE
+
 Atmosphere's Ansible Instance Deployment Setup
 ==============================================
 
